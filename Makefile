@@ -1,6 +1,6 @@
 
 all:
-	lex c.l
-	yacc c.y
+	lex SysY.l
+	yacc SysY.y
 	gcc y.tab.c -ll -ly
 
