@@ -16,11 +16,6 @@ make
 
 ### Todo
 
-- %
-- !, &&, ||
-- const
-- decimal-const, octal-const, hexadecimal-const
-- break, continue, return
-- else
+
 
 
