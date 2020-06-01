@@ -16,6 +16,16 @@ make
 
 ### Todo
 
+- LLVM IR
+
+
+### Reference
+
+##### lex&&yacc
+https://www.epaperpress.com/lexandyacc/index.html
+
+##### llvm
+https://llvm.zcopy.site/
 
 
 
