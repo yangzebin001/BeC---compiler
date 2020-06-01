@@ -129,8 +129,8 @@ Stmt: Lval '=' Exp ';'
 	| Block
 	| IF '(' Cond ')' Stmt OPTElseStmt
 	| WHILE '(' Cond ')' Stmt
-	| 'break' ';'
-	| 'continue' ';'
+	| BREAK ';'
+	| CONTINUE ';'
 	| RETURN OPTExp ';'
 	;
 

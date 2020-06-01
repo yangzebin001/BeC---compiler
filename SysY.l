@@ -15,6 +15,8 @@ else	                    return ELSE;
 printf                      return PRINTF;
 struct 	                    return STRUCT;
 "return"                    return RETURN;
+"break"                     return BREAK;
+"continue"                  return CONTINUE;
 ^"#include ".+ ;
 ("0x"|"0X")[0-9A-F]*        return HEXNUM;
 0[0-8]*                     return OCTNUM;
