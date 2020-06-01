@@ -4,89 +4,95 @@
 
 extern FILE *fp;
 
+int yylex();
+void yyerror(char *s);
+
+
 %}
 
-%token VOID INT CHAR CONST 
-%token FOR WHILE 
+%token VOID INT CONST 
+%token WHILE 
 %token IF ELSE PRINTF CONTINUE BREAK RETURN
-%token STRUCT 
-%token HEXNUM OCTNUM DECNUM ID NUM
+%token HEXNUM OCTNUM DECNUM ID
 %token INCLUDE
-%token DOT
 
 %token '='
 %token AND OR
 %token LE GE EQ NE LT GT
+%start CompUnit
+
 %%
 
-start:	CompUnit
-	;
-
 CompUnit: 
-	| FuncDef CompUnit
-	| Decl CompUnit
+	| CompUnit FuncDef
+	| CompUnit Decl
 	;
 
 Decl: VarDecl
 	| ConstDecl
 	;
 
-ConstDecl: {printf("this is constdecl\n");} CONST BType ConstDef REPConstDef ';'
-	;
-
-REPConstDef: 
-	| ',' ConstDef REPConstDef
+ConstDecl: CONST BType ConstDef ';'
 	;
 
 BType: INT
 	;
 
-ConstDef: ID REPConstExp '=' ConstInitVal
+ConstDef: DirectDecl '=' ConstInitVal
+	| ConstDef ',' DirectDecl '=' ConstInitVal
 	;
 
-REPConstExp: 
-	| '['ConstExp']' REPConstExp
-	;
 
 ConstInitVal: ConstExp
 	| '{' OPTConstInitVal '}'
 	;
 
 OPTConstInitVal: 
-	| ConstInitVal REPConstInitVal
+	| REPConstInitVal
 	;
 
-REPConstInitVal: 
-	| ',' ConstInitVal REPConstInitVal
+REPConstInitVal: ConstInitVal
+	|  REPConstInitVal ',' ConstInitVal
 	;
 
-VarDecl: {printf("this is vardecl\n");} BType VarDef REPVarDef ';'  
+VarDecl: BType VarDefList ';'  
 	;
 
-REPVarDef: 
-	| ',' VarDef REPVarDef
+
+VarDefList: InitDecl
+	| VarDefList ',' InitDecl
 	;
 
-VarDef: ID REPConstExp
-	| ID REPConstExp '=' InitVal
+InitDecl: DirectDecl
+	| DirectDecl '=' InitVal
 	;
+
+DirectDecl: ID
+	| DirectDecl '[' ']'
+	| DirectDecl '[' ConstExp ']'
+	;
+
 
 InitVal: Exp
 	| '{' OPTInitVal '}'
 	;
 
 OPTInitVal: 
-	| InitVal
-	| InitVal REPInitVal
+	| REPInitVal
 	;
 
 REPInitVal: 
-	| ',' InitVal REPInitVal
+	| InitVal
+	| REPInitVal ',' InitVal
 	;
 
-FuncDef: 
-	| INT ID '('OPTFuncFParams')' Block
-	| VOID ID '('OPTFuncFParams')' Block
+FuncDef: BType DirectFuncDecl Block
+	| VOID DirectFuncDecl Block
+	;
+
+
+DirectFuncDecl: ID
+	| DirectFuncDecl '(' OPTFuncFParams ')'
 	;
 
 
@@ -95,29 +101,17 @@ OPTFuncFParams:
 	;
 
 FuncFParams: FuncFParam
-	| FuncFParam REPFuncFParam
+	| FuncFParam ',' FuncFParams
 	;
 
-REPFuncFParam: 
-	| ',' FuncFParam REPFuncFParam
-	; 
-
-FuncFParam: BType ID OPTArrayExp
-	;
-
-OPTArrayExp: 
-	| '['']' REPArrayExp
-	;
-
-REPArrayExp: 
-	| '['Exp']' REPArrayExp
+FuncFParam: BType DirectDecl
 	; 
 
 Block: '{'REPBlockItem'}'
 	;
 
 REPBlockItem: 
-	| BlockItem REPBlockItem
+	| REPBlockItem BlockItem 
 	;
 
 BlockItem: Decl
@@ -134,8 +128,8 @@ Stmt: Lval '=' Exp ';'
 	| RETURN OPTExp ';'
 	;
 
-OPTExp: Exp
-	| 
+OPTExp: 
+	| Exp
 	;
 
 OPTElseStmt: 
@@ -148,13 +142,13 @@ Exp: AddExp
 Cond: LOrExp
 	;
 
-Lval: ID REPArrayExp
+Lval: DirectDecl
 	;
 
 
-PrimaryExp: '('Exp')'
+PrimaryExp: Number
 	| Lval
-	| Number
+	| '('Exp')'
 	;
 
 Number: IntConst
@@ -179,11 +173,8 @@ UnaryOp: '+'
 	| '!'
 	;
 
-FuncRParams: Exp REPExp
-	;
-
-REPExp: 
-	| ',' Exp REPExp
+FuncRParams: Exp
+	| FuncRParams ',' Exp
 	;
 
 MulExp: UnaryExp
@@ -192,7 +183,7 @@ MulExp: UnaryExp
 	| UnaryExp '%' MulExp
 	;
 
-AddExp:  MulExp
+AddExp: MulExp
 	| MulExp '+' AddExp
 	| MulExp '-' AddExp
 	;
@@ -239,6 +230,6 @@ int main(int argc, char *argv[])
     return 0;
 }
          
-yyerror(char *s) {
+void yyerror(char *s) {
 	printf("%d : %s %s\n", yylineno, s, yytext );
 }         

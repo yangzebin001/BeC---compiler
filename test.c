@@ -1,6 +1,9 @@
 const int INF = 0x1234;
-// int nol = 1;
+int nol[];
+int a;
+int bdlf[123] = {1,{2}};
 int main(){
+    int nol[];
     int no;
     const int a[5] = {1};
     int aa[4][2] = {1,{32,12}};
@@ -35,10 +38,13 @@ int main(){
     f(a,b);
     return 0;
 }
-
 int f(int a, int b){
+    f(a,b);
     return 1;
 }
 
+int abc[][a] = {}; 
+
 void f(int a[][4], int b[]){
 }
+const int bb = a;
