@@ -341,6 +341,9 @@ void yyfree (void *  );
 
 /* Begin user sect3 */
 
+#define yywrap() (/*CONSTCOND*/1)
+#define YY_SKIP_YYWRAP
+
 typedef unsigned char YY_CHAR;
 
 FILE *yyin = (FILE *) 0, *yyout = (FILE *) 0;
@@ -528,7 +531,7 @@ int yy_flex_debug = 0;
 #define YY_RESTORE_YY_MORE_OFFSET
 char *yytext;
 #line 1 "SysY.l"
-#line 532 "lex.yy.c"
+#line 535 "lex.yy.c"
 
 #define INITIAL 0
 
@@ -749,9 +752,9 @@ YY_DECL
 		}
 
 	{
-#line 4 "SysY.l"
+#line 6 "SysY.l"
 
-#line 755 "lex.yy.c"
+#line 758 "lex.yy.c"
 
 	while ( /*CONSTCOND*/1 )		/* loops until end-of-file is reached */
 		{
@@ -811,149 +814,149 @@ do_action:	/* This label is used only to access EOF actions. */
 
 case 1:
 YY_RULE_SETUP
-#line 5 "SysY.l"
+#line 7 "SysY.l"
 ;
 	YY_BREAK
 case 2:
 /* rule 2 can match eol */
 YY_RULE_SETUP
-#line 6 "SysY.l"
+#line 8 "SysY.l"
 { yylineno = yylineno + 1;}
 	YY_BREAK
 case 3:
 YY_RULE_SETUP
-#line 7 "SysY.l"
+#line 9 "SysY.l"
 return INT;
 	YY_BREAK
 case 4:
 YY_RULE_SETUP
-#line 8 "SysY.l"
+#line 10 "SysY.l"
 return VOID;
 	YY_BREAK
 case 5:
 YY_RULE_SETUP
-#line 9 "SysY.l"
+#line 11 "SysY.l"
 return CONST;
 	YY_BREAK
 case 6:
 YY_RULE_SETUP
-#line 10 "SysY.l"
+#line 12 "SysY.l"
 return WHILE;
 	YY_BREAK
 case 7:
 YY_RULE_SETUP
-#line 11 "SysY.l"
+#line 13 "SysY.l"
 return IF;
 	YY_BREAK
 case 8:
 YY_RULE_SETUP
-#line 12 "SysY.l"
+#line 14 "SysY.l"
 return ELSE;
 	YY_BREAK
 case 9:
 YY_RULE_SETUP
-#line 13 "SysY.l"
+#line 15 "SysY.l"
 return PRINTF;
 	YY_BREAK
 case 10:
 YY_RULE_SETUP
-#line 14 "SysY.l"
+#line 16 "SysY.l"
 return RETURN;
 	YY_BREAK
 case 11:
 YY_RULE_SETUP
-#line 15 "SysY.l"
+#line 17 "SysY.l"
 return BREAK;
 	YY_BREAK
 case 12:
 YY_RULE_SETUP
-#line 16 "SysY.l"
+#line 18 "SysY.l"
 return CONTINUE;
 	YY_BREAK
 case 13:
 YY_RULE_SETUP
-#line 17 "SysY.l"
+#line 19 "SysY.l"
 ;
 	YY_BREAK
 case 14:
 YY_RULE_SETUP
-#line 18 "SysY.l"
+#line 20 "SysY.l"
 return HEXNUM;
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
-#line 19 "SysY.l"
+#line 21 "SysY.l"
 return OCTNUM;
 	YY_BREAK
 case 16:
-#line 21 "SysY.l"
+#line 23 "SysY.l"
 case 17:
 YY_RULE_SETUP
-#line 21 "SysY.l"
+#line 23 "SysY.l"
 return ID;
 	YY_BREAK
 case 18:
 YY_RULE_SETUP
-#line 22 "SysY.l"
+#line 24 "SysY.l"
 return LE;
 	YY_BREAK
 case 19:
 YY_RULE_SETUP
-#line 23 "SysY.l"
+#line 25 "SysY.l"
 return GE;
 	YY_BREAK
 case 20:
 YY_RULE_SETUP
-#line 24 "SysY.l"
+#line 26 "SysY.l"
 return EQ;
 	YY_BREAK
 case 21:
 YY_RULE_SETUP
-#line 25 "SysY.l"
+#line 27 "SysY.l"
 return NE;
 	YY_BREAK
 case 22:
 YY_RULE_SETUP
-#line 26 "SysY.l"
+#line 28 "SysY.l"
 return GT;
 	YY_BREAK
 case 23:
 YY_RULE_SETUP
-#line 27 "SysY.l"
+#line 29 "SysY.l"
 return LT;
 	YY_BREAK
 case 24:
 YY_RULE_SETUP
-#line 28 "SysY.l"
+#line 30 "SysY.l"
 return AND;
 	YY_BREAK
 case 25:
 YY_RULE_SETUP
-#line 29 "SysY.l"
+#line 31 "SysY.l"
 return OR;
 	YY_BREAK
 case 26:
 YY_RULE_SETUP
-#line 30 "SysY.l"
+#line 32 "SysY.l"
 ;
 	YY_BREAK
 case 27:
 /* rule 27 can match eol */
 YY_RULE_SETUP
-#line 31 "SysY.l"
+#line 33 "SysY.l"
 ;
 	YY_BREAK
 case 28:
 YY_RULE_SETUP
-#line 32 "SysY.l"
+#line 34 "SysY.l"
 return yytext[0];
 	YY_BREAK
 case 29:
 YY_RULE_SETUP
-#line 33 "SysY.l"
+#line 35 "SysY.l"
 ECHO;
 	YY_BREAK
-#line 957 "lex.yy.c"
+#line 960 "lex.yy.c"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -1957,7 +1960,7 @@ void yyfree (void * ptr )
 
 #define YYTABLES_NAME "yytables"
 
-#line 33 "SysY.l"
+#line 35 "SysY.l"
 
 
 

@@ -1,6 +1,8 @@
 alpha [a-zA-Z]
 digit [0-9]
 
+%option noyywrap
+
 %%
 [ \t]		;
 [ \n]                       { yylineno = yylineno + 1;}

@@ -222,9 +222,9 @@ int main(int argc, char *argv[])
 	yyin = fopen(argv[1], "r");
 	
    if(!yyparse())
-		printf("\nParsing complete\n");
+		printf("Parsing complete\n");
 	else
-		printf("\nParsing failed\n");
+		printf("Parsing failed\n");
 	
 	fclose(yyin);
     return 0;

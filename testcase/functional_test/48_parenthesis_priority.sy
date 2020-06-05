@@ -1,0 +1,16 @@
+// Priority exchange with bracket
+int main () {
+    int a;
+    a = 1;
+    int b;
+    b = 9;
+    int c;
+    c = 12;
+    int t;
+    if ((c + b) > 0 && (b + a) % 2 != 0 || (b * (c + a % 2)) - (b > 0 && c < 0) != 0) {
+        putint(c);
+    } else {
+        putint(b);
+    }
+    return 0;
+}

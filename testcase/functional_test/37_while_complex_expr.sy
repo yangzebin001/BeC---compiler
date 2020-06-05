@@ -1,0 +1,23 @@
+// Use complex expression in while structure
+int main () {
+    int a;
+    int b;
+    int c;
+    int result;
+    a = 10;
+    b = 5;
+    c = 1;
+    result = 0;
+    while ((((a - 10) + (b - 5)) > 0 || result > 3) && c != 0) {
+        a = a - 2;
+        b = b - 1;
+        if (c > 0) {
+            c = 0;
+        } else {
+            c = 1;
+        }
+        result = result + 1;
+    }
+    putint(result);
+    return 0;
+}
