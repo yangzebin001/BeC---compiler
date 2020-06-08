@@ -9,7 +9,6 @@ for file in $dir/*; do
     ./compiler $file > $logfile
     if (grep 'complete' $logfile > /dev/null) then
         echo "\033[1;32mPASS!\033[0m"
-        rm $logfile
         pass=`expr $pass + 1`
     else
         cat $logfile

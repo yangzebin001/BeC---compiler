@@ -1,12 +1,26 @@
+all: compiler
 
-all:
-	lex SysY.l
-	yacc SysY.y
-	gcc y.tab.c -ll -ly -o compiler
+OBJS = syntactic.o main.o lexical.o
 
+LLVMCONFIG = llvm-config
+CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11
+
+syntactic.cpp: syntactic.y
+	bison -d -o $@ $^
+	
+syntactic.hpp: syntactic.cpp
+
+lexical.cpp: lexical.l syntactic.hpp
+	flex -o $@ $^
+
+%.o: %.cpp
+	g++ -c $(CPPFLAGS) -o $@ $<
+
+compiler: $(OBJS)
+	g++ -o $@ $(OBJS)
 
 clean:
-	$(RM) -rf lex.yy.c y.tab.c compiler
+	$(RM) -rf syntactic.cpp syntactic.hpp lexical.cpp $(OBJS) compiler log.txt
 
 test: compiler test.c
 	./compiler test.c

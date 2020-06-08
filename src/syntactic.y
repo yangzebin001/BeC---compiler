@@ -1,13 +1,13 @@
 %{
-#include <stdio.h>
-#include <stdlib.h>
-
-extern FILE *fp;
-
-int yylex();
-void yyerror(char *s);
-
-
+#include <cstdio>
+#include <cstdlib>
+#include <string>
+extern int yylineno;
+extern char* yytext;
+extern int yylex();
+void yyerror(std::string s) {
+	printf("%d : %s %s\n", yylineno, s.c_str(), yytext );
+}
 %}
 
 %token VOID INT CONST 
@@ -44,14 +44,11 @@ ConstDef: DirectDecl '=' ConstInitVal
 
 
 ConstInitVal: ConstExp
-	| '{' OPTConstInitVal '}'
+	| '{' REPConstInitVal '}'
 	;
 
-OPTConstInitVal: 
-	| REPConstInitVal
-	;
-
-REPConstInitVal: ConstInitVal
+REPConstInitVal: 
+	| ConstInitVal
 	|  REPConstInitVal ',' ConstInitVal
 	;
 
@@ -74,11 +71,7 @@ DirectDecl: ID
 
 
 InitVal: Exp
-	| '{' OPTInitVal '}'
-	;
-
-OPTInitVal: 
-	| REPInitVal
+	| '{' REPInitVal '}'
 	;
 
 REPInitVal: 
@@ -92,16 +85,12 @@ FuncDef: BType DirectFuncDecl Block
 
 
 DirectFuncDecl: ID
-	| DirectFuncDecl '(' OPTFuncFParams ')'
+	| DirectFuncDecl '(' FuncFParams ')'
 	;
 
-
-OPTFuncFParams: 
-	| FuncFParams
-	;
-
-FuncFParams: FuncFParam
-	| FuncFParam ',' FuncFParams
+FuncFParams: 
+	| FuncFParam
+	| FuncFParams ',' FuncFParam
 	;
 
 FuncFParam: BType DirectDecl
@@ -178,26 +167,26 @@ FuncRParams: Exp
 	;
 
 MulExp: UnaryExp
-	| UnaryExp '*' MulExp
-	| UnaryExp '/' MulExp
-	| UnaryExp '%' MulExp
+	| MulExp '*' UnaryExp
+	| MulExp '/' UnaryExp
+	| MulExp '%' UnaryExp
 	;
 
 AddExp: MulExp
-	| MulExp '+' AddExp
-	| MulExp '-' AddExp
+	| AddExp '+' MulExp
+	| AddExp '-' MulExp
 	;
 
 RelExp: AddExp
-	| AddExp GT RelExp
-	| AddExp LT RelExp
-	| AddExp GE RelExp
-	| AddExp LE RelExp
+	| RelExp GT AddExp
+	| RelExp LT AddExp
+	| RelExp GE AddExp
+	| RelExp LE AddExp
 	;
 
 EqExp: RelExp
-	| RelExp EQ EqExp 
-	| RelExp NE EqExp 
+	| EqExp EQ  RelExp
+	| EqExp NE RelExp
 	;
 
 LAndExp: EqExp
@@ -205,7 +194,7 @@ LAndExp: EqExp
 	;
 
 LOrExp: LAndExp
-	| LAndExp OR LOrExp
+	| LOrExp OR LAndExp
 	;
 
 ConstExp: AddExp
@@ -213,23 +202,5 @@ ConstExp: AddExp
 
 
 %%
-#include"lex.yy.c"
-#include<ctype.h>
-int count=0;
 
-int main(int argc, char *argv[])
-{
-	yyin = fopen(argv[1], "r");
-	
-   if(!yyparse())
-		printf("Parsing complete\n");
-	else
-		printf("Parsing failed\n");
-	
-	fclose(yyin);
-    return 0;
-}
          
-void yyerror(char *s) {
-	printf("%d : %s %s\n", yylineno, s, yytext );
-}         

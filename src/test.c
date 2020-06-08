@@ -4,6 +4,7 @@ int a;
 int bdlf[123] = {1,{2}};
 int main(){
     int nol[];
+    int arr[123][];
     int no;
     const int a[5] = {1};
     int aa[4][2] = {1,{32,12}};
@@ -29,12 +30,14 @@ int main(){
         break;
     }
     a = -a;
-
+    // if ((b > 2) != 0){
+        
+    // }
     b = !b;
     c = +a;
     while(a > b) a = b;
     while(a !=  b) c = d;
-    while(a == c && a > c || d < (a+1+4/2%3*9)) {c = d; continue;}
+    while(a == c && (a+c) > c || d < (a+1+4/2%3*9)) {c = d; continue;}
     f(a,b);
     return 0;
 }
