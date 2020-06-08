@@ -2,7 +2,7 @@ int a[3][3][3];
 
 int main(){
     int i,j,k;
-    i=0,j=0,k=0;
+    i=0;j=0;k=0;
     int cnt=0;
     while(i<3){
         while(j<3){

@@ -1,5 +1,3 @@
-int putint(int i);
-int getint();
 int n;
 int fib(int p){
 	int a;
