@@ -10,15 +10,21 @@ void yyerror(std::string s) {
 }
 %}
 
-%token VOID INT CONST 
-%token WHILE 
-%token IF ELSE PRINTF CONTINUE BREAK RETURN
-%token HEXNUM OCTNUM DECNUM ID
-%token INCLUDE
 
-%token '='
-%token AND OR
-%token LE GE EQ NE LT GT
+%union {
+	std::string *string;
+	int token;
+}
+
+%token <string> ID HEXNUM OCTNUM DECNUM 
+
+%token <token> IF ELSE WHILE PRINTF CONTINUE BREAK RETURN
+%token <token> INT VOID CONST 
+%token <token> AND OR
+%token <token> LE GE EQ NE LT GT
+%token <token> '=' '[' ']' '{' '}' ';'
+
+
 %start CompUnit
 
 %%
@@ -96,15 +102,14 @@ FuncFParams:
 FuncFParam: BType DirectDecl
 	; 
 
-Block: '{'REPBlockItem'}'
+Block: '{'BlockItem'}'
 	;
 
-REPBlockItem: 
-	| REPBlockItem BlockItem 
-	;
-
-BlockItem: Decl
+BlockItem: 
+	| Decl
 	| Stmt
+	| BlockItem Decl
+	| BlockItem Stmt
 	;
 
 Stmt: Lval '=' Exp ';'

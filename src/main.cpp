@@ -1,9 +1,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <cctype>
+#include <string>
 #include "syntactic.hpp"
+
 extern int yyparse();
 extern FILE* yyin;
+
+// #include "ast.h" extern NBlock* programBlock;
+
 int main(int argc, char *argv[])
 {
 	yyin = fopen(argv[1], "r");

@@ -4,6 +4,8 @@ OBJS = syntactic.o main.o lexical.o
 
 LLVMCONFIG = llvm-config
 CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11
+LDFLAGS = `$(LLVMCONFIG) --ldflags` -lpthread -ldl -lz -lncurses -rdynamic
+LIBS = `$(LLVMCONFIG) --libs`
 
 syntactic.cpp: syntactic.y
 	bison -d -o $@ $^
@@ -17,7 +19,7 @@ lexical.cpp: lexical.l syntactic.hpp
 	g++ -c $(CPPFLAGS) -o $@ $<
 
 compiler: $(OBJS)
-	g++ -o $@ $(OBJS)
+	g++ -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 
 clean:
 	$(RM) -rf syntactic.cpp syntactic.hpp lexical.cpp $(OBJS) compiler log.txt
