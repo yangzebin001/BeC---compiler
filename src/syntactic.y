@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include "ast.h"
 extern int yylineno;
 extern char* yytext;
 extern int yylex();
@@ -12,6 +13,7 @@ void yyerror(std::string s) {
 
 
 %union {
+	Program *program;
 	std::string *string;
 	int token;
 }
@@ -25,20 +27,23 @@ void yyerror(std::string s) {
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
-%start CompUnit
+
+%type <program> Program
+
+%start Program
 
 %%
 
-CompUnit: 
-	| CompUnit FuncDef
-	| CompUnit Decl
+Program: 
+	FuncDef {$$= new Program(); $$->addFuncDef($1);}
+	| VarDef {$$= new Program(); $$->addVarDef($1);}
+	| ConstVarDef {$$= new Program(); $$->addConstVarDef($1);}
+	| Program FuncDef {$$->addFuncDef($2);}
+	| Program VarDef {$$->addVarDef($2);}
+	| Program ConstVarDef {$$->addConstVarDef($2);}
 	;
 
-Decl: VarDecl
-	| ConstDecl
-	;
-
-ConstDecl: CONST BType ConstDef ';'
+ConstVarDef: CONST BType ConstDef ';'
 	;
 
 BType: INT
@@ -58,7 +63,7 @@ REPConstInitVal:
 	|  REPConstInitVal ',' ConstInitVal
 	;
 
-VarDecl: BType VarDefList ';'  
+VarDef: BType VarDefList ';'  
 	;
 
 

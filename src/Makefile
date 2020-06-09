@@ -16,10 +16,10 @@ lexical.cpp: lexical.l syntactic.hpp
 	flex -o $@ $^
 
 %.o: %.cpp
-	g++ -c $(CPPFLAGS) -o $@ $<
+	clang++ -c $(CPPFLAGS) -o $@ $<
 
 compiler: $(OBJS)
-	g++ -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
+	clang++ -o $@ $(OBJS) $(LIBS) $(LDFLAGS)
 
 clean:
 	$(RM) -rf syntactic.cpp syntactic.hpp lexical.cpp $(OBJS) compiler log.txt
