@@ -2,6 +2,7 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include "ast.h"
 extern int yylineno;
 extern char* yytext;
 extern int yylex();
@@ -12,6 +13,7 @@ void yyerror(std::string s) {
 
 
 %union {
+	Program *program;
 	std::string *string;
 	int token;
 }
@@ -25,65 +27,62 @@ void yyerror(std::string s) {
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
+
+%type <program> Program
+
 %start Program
 
 %%
 
-Program: FuncDef
-	| VarDecl
-	| ConstVarDecl
-	| Program FuncDef
-	| Program VarDecl
-	| Program ConstVarDecl
+Program: 
+	FuncDef {$$= new Program(); $$->addFuncDef($1);}
+	| VarDef {$$= new Program(); $$->addVarDef($1);}
+	| ConstVarDef {$$= new Program(); $$->addConstVarDef($1);}
+	| Program FuncDef {$$->addFuncDef($2);}
+	| Program VarDef {$$->addVarDef($2);}
+	| Program ConstVarDef {$$->addConstVarDef($2);}
 	;
 
-ConstVarDecl: CONST BType ConstVarDefList ';'
+ConstVarDef: CONST BType ConstDef ';'
 	;
 
 BType: INT
 	;
 
-ConstVarDefList: ConstVarDef
-	| ConstVarDefList ',' ConstVarDef
-	;
-
-ConstVarDef: Lval '=' InitVal
-	;
-
-VarDecl: BType VarDefList ';'  
+ConstDef: DirectDecl '=' ConstInitVal
+	| ConstDef ',' DirectDecl '=' ConstInitVal
 	;
 
 
-VarDefList: VarDef
-	| VarDefList ',' VarDef
+ConstInitVal: ConstExp
+	| '{' REPConstInitVal '}'
 	;
 
-Lval: ID
-	| ArrayEle
+REPConstInitVal: 
+	| ConstInitVal
+	|  REPConstInitVal ',' ConstInitVal
 	;
 
-VarDef: DirectDecl
-	| ArrayDecl
+VarDef: BType VarDefList ';'  
+	;
+
+
+VarDefList: InitDecl
+	| VarDefList ',' InitDecl
+	;
+
+InitDecl: DirectDecl
+	| DirectDecl '=' InitVal
 	;
 
 DirectDecl: ID
-	| ID '=' Exp
+	| DirectDecl '[' ']'
+	| DirectDecl '[' ConstExp ']'
 	;
 
-ArrayDecl: ArrayEle
-	| ArrayEle '=' InitVal
-	;
-
-ArrayEle: ID '[' ']'
-	| ID '[' ConstExp ']'
-	| ArrayEle '[' ConstExp ']'
-	;
 
 InitVal: Exp
-	| ArrayInit
-	;
-
-ArrayInit: '{' REPInitVal '}'
+	| '{' REPInitVal '}'
 	;
 
 REPInitVal: 
@@ -91,11 +90,13 @@ REPInitVal:
 	| REPInitVal ',' InitVal
 	;
 
-FuncDef: FuncDecl Block
+FuncDef: BType DirectFuncDecl Block
+	| VOID DirectFuncDecl Block
 	;
 
-FuncDecl: BType ID '(' FuncFParams ')'
-	| VOID ID '(' FuncFParams ')'
+
+DirectFuncDecl: ID
+	| DirectFuncDecl '(' FuncFParams ')'
 	;
 
 FuncFParams: 
@@ -103,41 +104,36 @@ FuncFParams:
 	| FuncFParams ',' FuncFParam
 	;
 
-FuncFParam: BType Lval
+FuncFParam: BType DirectDecl
 	; 
 
-Block: '{' Stmts '}'
+Block: '{'BlockItem'}'
 	;
 
-Stmts: 
+BlockItem: 
+	| Decl
 	| Stmt
-	| Stmts Stmt
+	| BlockItem Decl
+	| BlockItem Stmt
 	;
 
-Stmt: VarDecl 
-	| ConstVarDecl
-	| Lval '=' Exp ';'
-	| ';'
-	| Exp ';'
+Stmt: Lval '=' Exp ';'
+	| OPTExp ';'
 	| Block
-	| IFStmt
-	| WHILEStmt
+	| IF '(' Cond ')' Stmt OPTElseStmt
+	| WHILE '(' Cond ')' Stmt
 	| BREAK ';'
 	| CONTINUE ';'
-	| RETURNStmt
+	| RETURN OPTExp ';'
 	;
 
-IFStmt: IF '(' Cond ')' Stmt
-	| IF '(' Cond ')' Stmt ELSE Stmt
+OPTExp: 
+	| Exp
 	;
 
-WHILEStmt: WHILE '(' Cond ')' Stmt
+OPTElseStmt: 
+	| ELSE Stmt
 	;
-
-RETURNStmt: RETURN ';'
-	| RETURN Exp ';'
-	;
-
 
 Exp: AddExp
 	;
@@ -145,6 +141,8 @@ Exp: AddExp
 Cond: LOrExp
 	;
 
+Lval: DirectDecl
+	;
 
 
 PrimaryExp: Number

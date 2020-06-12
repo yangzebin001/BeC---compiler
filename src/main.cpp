@@ -2,7 +2,7 @@
 #include <cstdlib>
 #include <cctype>
 #include <string>
-#include "ast.h"
+
 #include "syntactic.hpp"
 
 extern int yyparse();
