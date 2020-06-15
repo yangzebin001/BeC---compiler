@@ -162,7 +162,7 @@ public:
 };
 
 
-class VarDef: public Statement {
+class VarDef: public Expression {
 public:
 	void codeGen(AstContext &astContext);
 }
@@ -191,5 +191,245 @@ public:
 
 //todo: FuncDef,Block,Stmts,AddExp
 
+class Block: public Node {
+public:
+	void codeGen(AstContext &astContext);
+}
+
+class FuncParam: public Node{
+public: 
+	TypeDecl *typeDecl;
+	Lval *lval;
+	FuncParam(TypeDecl *typeDecl, Lval *lval){
+		this->typeDecl = typeDecl;
+		this->lval = lval;
+	}
+}
+
+class FunctionDef: public Node {
+public:
+	TypeDecl *returnType;
+	Ident id;
+	vector<FuncParam*> ParamList;
+	Block *block;
+	FunctionDef(TypeDecl* returnType, Ident id, vector<FuncParam*> ParamList, Block* block){
+		this->returnType = returnType;
+		this->id = id;
+		this->ParamList = ParamList;
+		this->block = block;
+	}
+	void codeGen(AstContext &astContext);
+}
 
 
+class FuncCall: public Expression {
+	Ident id;
+	vector<FuncParam*> ParamList;
+	FuncCall(Ident id, vector<FuncParam*> ParamList){
+		this->id = id;
+		this->ParamList = ParamList;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+class Stmts: public Node {
+public:
+	vector<Statement*> statementList;
+	Stmts(vector<Statement*> statementList){
+		this->statementList = statementList;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+
+
+
+class Assignment: public Statement {
+public:
+	Lval *lval;
+	Expression *exp;
+	Assignment(Lval *lval, Expression *exp){
+		this->lval = lval;
+		this->exp = exp;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class ExpressionStatement: public Expression {
+	Expression *exp;
+	Assignment(Expression *exp){
+		this->exp = exp;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class BlockStatement: public Block {
+	Block *block;
+	BlockStatement(Block *block){
+		this->block = block;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+class Operator: public Expression {
+public:
+	string op;
+	Operator(string op){
+		this->op = op;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+class BinaryOpExpression: public Expression {
+public:
+	Expression *lhs;
+	Expression *rhs;
+	Operator* op;
+	BinaryOpExpression(Expression *lhs, Operator* op, Expression *rhs){
+		this->lhs = lhs;
+		this->op = op;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class LOrExpression: public BinaryOpExpression {
+public:
+	LOrExpression(Expression *lhs, Expression *rhs){
+		this->op = "or";
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class LAndExpression: public BinaryOpExpression {
+public:
+	LAndExpression(Expression *lhs, Expression *rhs){
+		this->op = "and";
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+class EqExpression: public BinaryOpExpression {
+public:
+	EqExpression(Expression *lhs, Expression *rhs){
+		this->op = "eq";
+		this->lhs = lhs;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class RelExpression: public BinaryOpExpression {
+public:
+	RelExpression(Expression *lhs, Operator* op, Expression *rhs){
+		this->lhs = lhs;
+		this->op = op;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class AddExpression: public BinaryOpExpression {
+public:
+	AddExpression(Expression *lhs, Operator* op, Expression *rhs){
+		this->lhs = lhs;
+		this->op = op;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class MulExpression: public BinaryOpExpression {
+public:
+	MulExpression(Expression *lhs, Operator* op, Expression *rhs){
+		this->lhs = lhs;
+		this->op = op;
+		this->rhs = rhs;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class PrimaryExp: public Expression {
+public:
+	int Number;
+	Lval *lval;
+	Expression *exp;
+	UnaryExp(int Number, Lval *lval, Expression *exp){
+		this->Number = Number;
+		this->lval = lval;
+		this->exp = exp;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class UnaryExp: public Expression {
+public:
+	PrimaryExp *primaryExp;
+	FuncCall *funcCall;
+	string unaryOp;
+	UnaryExp *unaryExp;
+	UnaryExp(PrimaryExp *primaryExp,FuncCall* funcCall,string unaryOp,UnaryExp* unaryExp){
+		this->primaryExp = primaryExp;
+		this->funcCall = funcCall;
+		this->unaryOp = unaryOp;
+		this->unaryExp = unaryExp;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class IFStatement: public Statement {
+public:
+	Expression *exp;
+	Stmts *TRUEStmts;
+	Stmts *FALSEStmts;
+	IFStatement(Expression *exp,Stmts *TRUEStmts,Stmts *FALSEStmts){
+		this->exp = exp;
+		this->TRUEStmts = TRUEStmts;
+		this->FALSEStmts = FALSEStmts;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+
+class WHILEStatement: public Statement {
+public:
+	Expression *exp;
+	Stmts *stmts;
+	WHILEStatement(Expression *exp,Stmts *stmts){
+		this->exp = exp;
+		this->stmts = stmts;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class RETURNStatement: public Statement {
+public:
+	Expression *exp;
+	RETURNStatement(Expression *exp){
+		this->exp = exp;
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class BREAKStatement: public Statement {
+public:
+	BREAKStatement(){
+	}
+	void codeGen(AstContext &astContext);
+}
+
+class CONTINUEStatement: public Statement {
+public:
+	CONTINUEStatement(){
+	}
+	void codeGen(AstContext &astContext);
+}

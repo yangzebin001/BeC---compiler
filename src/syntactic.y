@@ -161,21 +161,24 @@ IntConst: HEXNUM
 	;
 
 UnaryExp: PrimaryExp
-	| ID '(' OPTFuncRParams ')'
+	| FuncCall
 	| UnaryOp UnaryExp
+	;
+
+FuncCall: ID '(' OPTFuncRParams ')'
 	;
 
 OPTFuncRParams: 
 	| FuncRParams
 	;
 
+FuncRParams: Exp
+	| FuncRParams ',' Exp
+	;
+
 UnaryOp: '+'
 	| '-'
 	| '!'
-	;
-
-FuncRParams: Exp
-	| FuncRParams ',' Exp
 	;
 
 MulExp: UnaryExp
