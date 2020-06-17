@@ -2,12 +2,9 @@
 #include <string>
 #include <vector>
 #include <map>
-#include <llvm/IR/Value.h>
-#include <llvm/IR/Module.h>
-#include <llvm/IR/LLVMContext.h>
+#include <cstdio>
 
 using namespace std;
-using namespace llvm;
 
 
 class Node;
@@ -28,12 +25,12 @@ class ArrayDecl;
 class Block;
 class FuncParam;
 class FunctionDef;
-class FuncCall;
+class FunctionCall;
 class Stmts;
 class Assignment;
 class ExpressionStatement;
 class BlockStatement;
-class Operator;
+class Operation;
 class BinaryOpExpression;
 class LOrExpression;
 class LAndExpression;
@@ -41,7 +38,7 @@ class EqExpression;
 class RelExpression;
 class AddExpression;
 class MulExpression;
-class PrimaryExp;
+class PrimaryExpression;
 class UnaryExp;
 class IFStatement;
 class WHILEStatement;
@@ -56,7 +53,7 @@ public:
 
 class Program : public Node{
 public:
-	vector<VarDecl*> VarDecls;
+	vector<VarDecl*> varDecls;
     vector<ConstVarDecl*> constVarDecls;
 	vector<FunctionDef*> funcDefs;
 
@@ -65,7 +62,7 @@ public:
 	}
 
 	void addVarDecl(VarDecl *varDecl) {
-		VarDecls.push_back(varDecl);
+		varDecls.push_back(varDecl);
 	}
 
 	void addFuncDef(FunctionDef *funcDef) {
@@ -92,7 +89,7 @@ class TypeDecl: public Node {
 public:
 	string typeName;
 
-	TypeDecl(string &typeName) {
+	TypeDecl(string typeName) {
 		this->typeName = typeName;
 	}
 	void codeGen();
@@ -135,6 +132,7 @@ public:
 	Ident(string &id){
 		this->id = id;
 	}
+
 	void codeGen();
 };
 
@@ -237,11 +235,11 @@ public:
 };
 
 
-class FuncCall: public Expression {
+class FunctionCall: public Expression {
 public:
 	Ident* id;
-	vector<FuncParam*> ParamList;
-	FuncCall(Ident *id, vector<FuncParam*> ParamList){
+	vector<Expression*> ParamList;
+	FunctionCall(Ident *id, vector<Expression*> ParamList){
 		this->id = id;
 		this->ParamList = ParamList;
 	}
@@ -295,10 +293,10 @@ public:
 };
 
 
-class Operator: public Expression {
+class Operation: public Expression {
 public:
 	string op;
-	Operator(string op){
+	Operation(string op){
 		this->op = op;
 	}
 	void codeGen();
@@ -309,9 +307,13 @@ class BinaryOpExpression: public Expression {
 public:
 	Expression *lhs;
 	Expression *rhs;
-	Operator* op;
+	Expression *unaryExp;
+	Operation* op;
 	BinaryOpExpression(){}
-	BinaryOpExpression(Expression *lhs, Operator* op, Expression *rhs){
+	BinaryOpExpression(Expression *unaryExp){
+		this->unaryExp = unaryExp;
+	}
+	BinaryOpExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
@@ -321,8 +323,11 @@ public:
 
 class LOrExpression: public BinaryOpExpression {
 public:
+	LOrExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
 	LOrExpression(Expression *lhs, Expression *rhs){
-		this->op = new Operator("or");
+		this->op = new Operation("or");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
@@ -331,8 +336,11 @@ public:
 
 class LAndExpression: public BinaryOpExpression {
 public:
+	LAndExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
 	LAndExpression(Expression *lhs, Expression *rhs){
-		this->op = new Operator("and");
+		this->op = new Operation("and");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
@@ -342,8 +350,11 @@ public:
 
 class EqExpression: public BinaryOpExpression {
 public:
+	EqExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
 	EqExpression(Expression *lhs, Expression *rhs){
-		this->op = new Operator("eq");
+		this->op = new Operation("eq");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
@@ -352,7 +363,10 @@ public:
 
 class RelExpression: public BinaryOpExpression {
 public:
-	RelExpression(Expression *lhs, Operator* op, Expression *rhs){
+	RelExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
+	RelExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
@@ -362,7 +376,10 @@ public:
 
 class AddExpression: public BinaryOpExpression {
 public:
-	AddExpression(Expression *lhs, Operator* op, Expression *rhs){
+	AddExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
+	AddExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
@@ -372,7 +389,10 @@ public:
 
 class MulExpression: public BinaryOpExpression {
 public:
-	MulExpression(Expression *lhs, Operator* op, Expression *rhs){
+	MulExpression(Expression* exp){
+		this->unaryExp = exp;
+	}
+	MulExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
@@ -380,12 +400,12 @@ public:
 	void codeGen();
 };
 
-class PrimaryExp: public Expression {
+class PrimaryExpression: public Expression {
 public:
-	int number;
+	string number;
 	Lval *lval;
 	Expression *exp;
-	PrimaryExp(int number, Lval *lval, Expression *exp){
+	PrimaryExpression(string &number, Lval *lval, Expression *exp){
 		this->number = number;
 		this->lval = lval;
 		this->exp = exp;
@@ -395,11 +415,11 @@ public:
 
 class UnaryExp: public Expression {
 public:
-	PrimaryExp *primaryExp;
-	FuncCall *funcCall;
-	string unaryOp;
+	PrimaryExpression *primaryExp;
+	FunctionCall *funcCall;
+	Operation *unaryOp;
 	UnaryExp *unaryExp;
-	UnaryExp(PrimaryExp *primaryExp,FuncCall* funcCall,string unaryOp,UnaryExp* unaryExp){
+	UnaryExp(PrimaryExpression *primaryExp,FunctionCall* funcCall,Operation *unaryOp,UnaryExp* unaryExp){
 		this->primaryExp = primaryExp;
 		this->funcCall = funcCall;
 		this->unaryOp = unaryOp;

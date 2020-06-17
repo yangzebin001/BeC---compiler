@@ -9,37 +9,46 @@
 
 
 %}
+
+%option noyywrap
+
 alpha [a-zA-Z_]
 digit [0-9]
 
-%option noyywrap
+
 
 %%
 [ \t]		;
 [ \n]                       { yylineno = yylineno + 1;}
 ^"#include ".+ ;
-int	                        return TOKEN(INT);
-void                        return TOKEN(VOID);
-const                       return TOKEN(CONST);
-while	                    return TOKEN(WHILE);
-if	                        return TOKEN(IF);
-else	                    return TOKEN(ELSE);
-printf                      return TOKEN(PRINTF);
-"return"                    return TOKEN(RETURN);
-"break"                     return TOKEN(BREAK);
-"continue"                  return TOKEN(CONTINUE);
-("0x"|"0X")[0-9A-F]*        return TOKEN(HEXNUM);
-0[0-8]*                     return TOKEN(OCTNUM);
-([1-9][0-9]*) | 0           return TOKEN(DECNUM);
-{alpha}({alpha}|{digit})*   return TOKEN(ID);
-"<="                        return TOKEN(LE);
-">="                        return TOKEN(GE);
-"=="                        return TOKEN(EQ);
-"!="                        return TOKEN(NE);
-">"	                        return TOKEN(GT);
-"<"	                        return TOKEN(LT);
-"&&"                        return TOKEN(AND);
-"||"                        return TOKEN(OR);
+int	                        return INT;
+void                        return VOID;
+const                       return CONST;
+while	                    return WHILE;
+if	                        return IF;
+else	                    return ELSE;
+printf                      return PRINTF;
+"return"                    return RETURN;
+"break"                     return BREAK;
+"continue"                  return CONTINUE;
+("0x"|"0X")[0-9A-F]*        SAVE_TOKEN;return HEXNUM;
+0[0-8]*                     SAVE_TOKEN;return OCTNUM;
+([1-9][0-9]*) | 0           SAVE_TOKEN;return DECNUM;
+{alpha}({alpha}|{digit})*   SAVE_TOKEN;return ID;
+"+"                         SAVE_TOKEN;return PLUS;
+"-"                         SAVE_TOKEN;return MINUS;
+"!"                         SAVE_TOKEN;return NOT;
+"*"                         SAVE_TOKEN;return TIMES;
+"/"                         SAVE_TOKEN;return DIV;
+"%"                         SAVE_TOKEN;return MOD;
+"<="                        SAVE_TOKEN;return LE;
+">="                        SAVE_TOKEN;return GE;
+"=="                        SAVE_TOKEN;return EQ;
+"!="                        SAVE_TOKEN;return NE;
+">"	                        SAVE_TOKEN;return GT;
+"<"	                        SAVE_TOKEN;return LT;
+"&&"                        SAVE_TOKEN;return AND;
+"||"                        SAVE_TOKEN;return OR;
 \/\/.* ;
 \/\*(.*\n)*.*\*\/ ;
 .                           return yytext[0];

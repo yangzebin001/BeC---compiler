@@ -8,9 +8,7 @@ extern int yylineno;
 extern char* yytext;
 extern int yylex();
 
-
 extern Program *program;
-
 
 void yyerror(std::string s) {
 	printf("%d : %s %s\n", yylineno, s.c_str(), yytext );
@@ -19,12 +17,36 @@ void yyerror(std::string s) {
 
 
 %union {
-	Program *program;
 	std::string *string;
 	int token;
+	
+	Program *program;
+	FunctionDef *functionDef;
+	ConstVarDecl *constVarDecl;
+	VarDecl *varDecl;
+	TypeDecl *typeDecl;
+	ConstVarDef *constVarDef;
+	Lval* lval;
+	Ident *ident;
+	ArrayElement *arrayEle;
+	VarDef *varDef;
+	DirectDecl *directDecl;
+	Expression *exp;
+	Operation *operation;
+	AddExpression *addExp;
+	MulExpression *mulExp;
+	UnaryExp *unaryExp;
+	PrimaryExpression *primaryExp;
+	FuncParam *funcParam;
+	FunctionCall *funcCall;
+
+	vector<ConstVarDef*> *constVarDefList;
+	vector<VarDef*> *varDefList;
+	vector<Expression*> *paramList;
 }
 
-%token <string> ID HEXNUM OCTNUM DECNUM 
+
+%token <string> ID HEXNUM OCTNUM DECNUM PLUS MINUS TIMES DIV MOD NOT
 
 %token <token> IF ELSE WHILE PRINTF CONTINUE BREAK RETURN
 %token <token> INT VOID CONST 
@@ -33,62 +55,87 @@ void yyerror(std::string s) {
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
-
+%type <string>  IntConst Number
 %type <program> Program
+%type <functionDef> FuncDef
+%type <constVarDecl> ConstVarDecl
+%type <varDecl> VarDecl
+%type <typeDecl> BType
+%type <constVarDef> ConstVarDef
+%type <constVarDefList> ConstVarDefList
+%type <varDefList> VarDefList
+%type <lval> Lval
+%type <arrayEle> ArrayEle
+%type <varDef> VarDef
+%type <directDecl> DirectDecl
+%type <operation> UnaryOp
+%type <exp> Exp InitVal
+%type <addExp> AddExp
+%type <mulExp> MulExp
+%type <unaryExp> UnaryExp
+%type <primaryExp> PrimaryExp
+%type <paramList> ParamList FuncRParams
+%type <funcCall> FuncCall
 
 %start Program
 
 %%
 
-Program: 
-	FuncDef {$$= new Program(); $$->addFuncDef($1);}
-	| VarDef {$$= new Program(); $$->addVarDef($1);}
-	| ConstVarDef {$$= new Program(); $$->addConstVarDef($1);}
+Program: FuncDef {$$ = new Program(); $$->addFuncDef($1);}
+	| VarDecl {$$ = new Program(); $$->addVarDecl($1);}
+	| ConstVarDecl {$$ = new Program(); $$->addConstVarDecl($1);}
 	| Program FuncDef {$$->addFuncDef($2);}
-	| Program VarDef {$$->addVarDef($2);}
-	| Program ConstVarDef {$$->addConstVarDef($2);}
+	| Program VarDecl {$$->addVarDecl($2);}
+	| Program ConstVarDecl {$$->addConstVarDecl($2);}
 	;
 
-ConstVarDef: CONST BType ConstDef ';'
+ConstVarDecl: CONST BType ConstVarDefList ';'  {$$ = new ConstVarDecl($2,*$3);}
 	;
 
-BType: INT
+BType: INT {$$ = new TypeDecl("int");}
 	;
 
-ConstDef: DirectDecl '=' ConstInitVal
-	| ConstDef ',' DirectDecl '=' ConstInitVal
+ConstVarDefList: ConstVarDef {$$ = new vector<ConstVarDef*>(); $$->push_back($1);}
+	| ConstVarDefList ',' ConstVarDef {$$->push_back($3);}
 	;
 
-
-ConstInitVal: ConstExp
-	| '{' REPConstInitVal '}'
+ConstVarDef: Lval '=' InitVal {$$ = new ConstVarDef($1,$3);}
 	;
 
-REPConstInitVal: 
-	| ConstInitVal
-	|  REPConstInitVal ',' ConstInitVal
-	;
-
-VarDef: BType VarDefList ';'  
+VarDecl: BType VarDefList ';'  {$$ = new VarDecl($1, *$2);}
 	;
 
 
-VarDefList: InitDecl
-	| VarDefList ',' InitDecl
+VarDefList: VarDef {$$ = new vector<VarDef*>(); $$->push_back($1);}
+	| VarDefList ',' VarDef {$$->push_back($3);}
 	;
 
-InitDecl: DirectDecl
-	| DirectDecl '=' InitVal
+Lval: ID {$$ = new Ident(*$1);  delete $1;}
+	| ArrayEle
 	;
 
-DirectDecl: ID
-	| DirectDecl '[' ']'
-	| DirectDecl '[' ConstExp ']'
+VarDef: DirectDecl {$$ = $1;}
+	| ArrayDecl 
 	;
 
+DirectDecl: ID {$$ = new DirectDecl(new Ident(*$1), NULL); delete $1;}
+	| ID '=' Exp {$$ = new DirectDecl(new Ident(*$1), $3); delete $1;}
+	;
 
-InitVal: Exp
-	| '{' REPInitVal '}'
+ArrayDecl: ArrayEle
+	| ArrayEle '=' InitVal
+	;
+
+ArrayEle: ID '[' ']' 
+	| ID '[' ConstExp ']'
+	| ArrayEle '[' ConstExp ']'
+	;
+
+InitVal: Exp {$$ = $1;}
+	| ArrayInit
+	;
+
+ArrayInit: '{' REPInitVal '}'
 	;
 
 REPInitVal: 
@@ -96,13 +143,11 @@ REPInitVal:
 	| REPInitVal ',' InitVal
 	;
 
-FuncDef: BType DirectFuncDecl Block
-	| VOID DirectFuncDecl Block
+FuncDef: FuncDecl Block
 	;
 
-
-DirectFuncDecl: ID
-	| DirectFuncDecl '(' FuncFParams ')'
+FuncDecl: BType ID '(' FuncFParams ')'
+	| VOID ID '(' FuncFParams ')'
 	;
 
 FuncFParams: 
@@ -110,87 +155,93 @@ FuncFParams:
 	| FuncFParams ',' FuncFParam
 	;
 
-FuncFParam: BType DirectDecl
+FuncFParam: BType Lval
 	; 
 
-Block: '{'BlockItem'}'
+Block: '{' Stmts '}'
 	;
 
-BlockItem: 
-	| Decl
+Stmts: 
 	| Stmt
-	| BlockItem Decl
-	| BlockItem Stmt
+	| Stmts Stmt
 	;
 
-Stmt: Lval '=' Exp ';'
-	| OPTExp ';'
+Stmt: VarDecl 
+	| ConstVarDecl
+	| Lval '=' Exp ';'
+	| ';'
+	| Exp ';'
 	| Block
-	| IF '(' Cond ')' Stmt OPTElseStmt
-	| WHILE '(' Cond ')' Stmt
+	| IFStmt
+	| WHILEStmt
 	| BREAK ';'
 	| CONTINUE ';'
-	| RETURN OPTExp ';'
+	| RETURNStmt
 	;
 
-OPTExp: 
-	| Exp
+IFStmt: IF '(' Cond ')' Stmt
+	| IF '(' Cond ')' Stmt ELSE Stmt
 	;
 
-OPTElseStmt: 
-	| ELSE Stmt
+WHILEStmt: WHILE '(' Cond ')' Stmt
 	;
 
-Exp: AddExp
+RETURNStmt: RETURN ';'
+	| RETURN Exp ';'
+	;
+
+
+Exp: AddExp {$$ = $1;}
 	;
 
 Cond: LOrExp
 	;
 
-Lval: DirectDecl
+
+
+PrimaryExp: Number {$$ = new PrimaryExpression(*$1, NULL, NULL);}
+	| Lval {$$ = new PrimaryExpression(*new string(), $1, NULL);}
+	| '(' Exp ')' {$$ = new PrimaryExpression(*new string(), NULL, $2);}
 	;
 
-
-PrimaryExp: Number
-	| Lval
-	| '('Exp')'
+Number: IntConst {$$ = $1;}
 	;
 
-Number: IntConst
+IntConst: HEXNUM {$$ = $1;}
+	| OCTNUM {$$ = $1;}
+	| DECNUM {$$ = $1;}
 	;
 
-IntConst: HEXNUM
-	| OCTNUM
-	| DECNUM
+UnaryExp: PrimaryExp {$$ = new UnaryExp($1, NULL, NULL, NULL);}
+	| FuncCall {$$ = new UnaryExp(NULL, $1, NULL, NULL);}
+	| UnaryOp UnaryExp {$$ = new UnaryExp(NULL, NULL, $1, $2);}
 	;
 
-UnaryExp: PrimaryExp
-	| ID '(' OPTFuncRParams ')'
-	| UnaryOp UnaryExp
+FuncCall: ID '(' ParamList ')' { $$ = new FunctionCall(new Ident(*$1), *$3);  delete $1;}
 	;
 
-OPTFuncRParams: 
-	| FuncRParams
+ParamList: {$$ = new vector<Expression*>();}
+	| FuncRParams {$$ = $1;}
 	;
 
-UnaryOp: '+'
-	| '-'
-	| '!'
+FuncRParams: Exp {$$ = new vector<Expression*>(); $$->push_back($1);}
+	| FuncRParams ',' Exp {$$->push_back($3);}
 	;
 
-FuncRParams: Exp
-	| FuncRParams ',' Exp
+UnaryOp: PLUS {$$ = new Operation(*$1);}
+	| MINUS {$$ = new Operation(*$1);}
+	| NOT {$$ = new Operation(*$1);}
 	;
 
-MulExp: UnaryExp
-	| MulExp '*' UnaryExp
-	| MulExp '/' UnaryExp
-	| MulExp '%' UnaryExp
+MulExp: UnaryExp {$$ = new MulExpression($1);}
+	| MulExp TIMES UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
+	| MulExp DIV UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
+	| MulExp MOD UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
 	;
 
-AddExp: MulExp
-	| AddExp '+' MulExp
-	| AddExp '-' MulExp
+AddExp: MulExp {$$ = new AddExpression($1);}
+	| AddExp PLUS MulExp {$$ = new AddExpression($1,new Operation(*$2),$3);}
+	| AddExp MINUS MulExp {$$ = new AddExpression($1,new Operation(*$2),$3);}
 	;
 
 RelExp: AddExp

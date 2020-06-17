@@ -24,10 +24,29 @@ void yyerror(std::string s) {
 	FunctionDef *functionDef;
 	ConstVarDecl *constVarDecl;
 	VarDecl *varDecl;
+	TypeDecl *typeDecl;
+	ConstVarDef *constVarDef;
+	Lval* lval;
+	Ident *ident;
+	ArrayElement *arrayEle;
+	VarDef *varDef;
+	DirectDecl *directDecl;
+	Expression *exp;
+	Operation *operation;
+	AddExpression *addExp;
+	MulExpression *mulExp;
+	UnaryExp *unaryExp;
+	PrimaryExpression *primaryExp;
+	FuncParam *funcParam;
+	FunctionCall *funcCall;
+
+	vector<ConstVarDef*> *constVarDefList;
+	vector<VarDef*> *varDefList;
+	vector<Expression*> *paramList;
 }
 
 
-%token <string> ID HEXNUM OCTNUM DECNUM 
+%token <string> ID HEXNUM OCTNUM DECNUM PLUS MINUS TIMES DIV MOD NOT
 
 %token <token> IF ELSE WHILE PRINTF CONTINUE BREAK RETURN
 %token <token> INT VOID CONST 
@@ -36,11 +55,27 @@ void yyerror(std::string s) {
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
+%type <string>  IntConst Number
 %type <program> Program
 %type <functionDef> FuncDef
 %type <constVarDecl> ConstVarDecl
 %type <varDecl> VarDecl
-
+%type <typeDecl> BType
+%type <constVarDef> ConstVarDef
+%type <constVarDefList> ConstVarDefList
+%type <varDefList> VarDefList
+%type <lval> Lval
+%type <arrayEle> ArrayEle
+%type <varDef> VarDef
+%type <directDecl> DirectDecl
+%type <operation> UnaryOp
+%type <exp> Exp InitVal
+%type <addExp> AddExp
+%type <mulExp> MulExp
+%type <unaryExp> UnaryExp
+%type <primaryExp> PrimaryExp
+%type <paramList> ParamList FuncRParams
+%type <funcCall> FuncCall
 
 %start Program
 
@@ -54,49 +89,49 @@ Program: FuncDef {$$ = new Program(); $$->addFuncDef($1);}
 	| Program ConstVarDecl {$$->addConstVarDecl($2);}
 	;
 
-ConstVarDecl: CONST BType ConstVarDefList ';'
+ConstVarDecl: CONST BType ConstVarDefList ';'  {$$ = new ConstVarDecl($2,*$3);}
 	;
 
-BType: INT
+BType: INT {$$ = new TypeDecl("int");}
 	;
 
-ConstVarDefList: ConstVarDef
-	| ConstVarDefList ',' ConstVarDef
+ConstVarDefList: ConstVarDef {$$ = new vector<ConstVarDef*>(); $$->push_back($1);}
+	| ConstVarDefList ',' ConstVarDef {$$->push_back($3);}
 	;
 
-ConstVarDef: Lval '=' InitVal
+ConstVarDef: Lval '=' InitVal {$$ = new ConstVarDef($1,$3);}
 	;
 
-VarDecl: BType VarDefList ';'  
+VarDecl: BType VarDefList ';'  {$$ = new VarDecl($1, *$2);}
 	;
 
 
-VarDefList: VarDef
-	| VarDefList ',' VarDef
+VarDefList: VarDef {$$ = new vector<VarDef*>(); $$->push_back($1);}
+	| VarDefList ',' VarDef {$$->push_back($3);}
 	;
 
-Lval: ID
+Lval: ID {$$ = new Ident(*$1);  delete $1;}
 	| ArrayEle
 	;
 
-VarDef: DirectDecl
-	| ArrayDecl
+VarDef: DirectDecl {$$ = $1;}
+	| ArrayDecl 
 	;
 
-DirectDecl: ID
-	| ID '=' Exp
+DirectDecl: ID {$$ = new DirectDecl(new Ident(*$1), NULL); }
+	| ID '=' Exp {$$ = new DirectDecl(new Ident(*$1), $3); }
 	;
 
 ArrayDecl: ArrayEle
 	| ArrayEle '=' InitVal
 	;
 
-ArrayEle: ID '[' ']'
+ArrayEle: ID '[' ']' 
 	| ID '[' ConstExp ']'
 	| ArrayEle '[' ConstExp ']'
 	;
 
-InitVal: Exp
+InitVal: Exp {$$ = $1;}
 	| ArrayInit
 	;
 
@@ -156,7 +191,7 @@ RETURNStmt: RETURN ';'
 	;
 
 
-Exp: AddExp
+Exp: AddExp {$$ = $1;}
 	;
 
 Cond: LOrExp
@@ -164,49 +199,49 @@ Cond: LOrExp
 
 
 
-PrimaryExp: Number
-	| Lval
-	| '('Exp')'
+PrimaryExp: Number {$$ = new PrimaryExpression(*$1, NULL, NULL);}
+	| Lval {$$ = new PrimaryExpression(*new string(), $1, NULL);}
+	| '(' Exp ')' {$$ = new PrimaryExpression(*new string(), NULL, $2);}
 	;
 
-Number: IntConst
+Number: IntConst {$$ = $1;}
 	;
 
-IntConst: HEXNUM
-	| OCTNUM
-	| DECNUM
+IntConst: HEXNUM {$$ = $1;}
+	| OCTNUM {$$ = $1;}
+	| DECNUM {$$ = $1;}
 	;
 
-UnaryExp: PrimaryExp
-	| FuncCall
-	| UnaryOp UnaryExp
+UnaryExp: PrimaryExp {$$ = new UnaryExp($1, NULL, NULL, NULL);}
+	| FuncCall {$$ = new UnaryExp(NULL, $1, NULL, NULL);}
+	| UnaryOp UnaryExp {$$ = new UnaryExp(NULL, NULL, $1, $2);}
 	;
 
-FuncCall: ID '(' OPTFuncRParams ')'
+FuncCall: ID '(' ParamList ')' { $$ = new FunctionCall(new Ident(*$1), *$3);  delete $1;}
 	;
 
-OPTFuncRParams: 
-	| FuncRParams
+ParamList: {$$ = new vector<Expression*>();}
+	| FuncRParams {$$ = $1;}
 	;
 
-FuncRParams: Exp
-	| FuncRParams ',' Exp
+FuncRParams: Exp {$$ = new vector<Expression*>(); $$->push_back($1);}
+	| FuncRParams ',' Exp {$$->push_back($3);}
 	;
 
-UnaryOp: '+'
-	| '-'
-	| '!'
+UnaryOp: PLUS {$$ = new Operation(*$1);}
+	| MINUS {$$ = new Operation(*$1);}
+	| NOT {$$ = new Operation(*$1);}
 	;
 
-MulExp: UnaryExp
-	| MulExp '*' UnaryExp
-	| MulExp '/' UnaryExp
-	| MulExp '%' UnaryExp
+MulExp: UnaryExp {$$ = new MulExpression($1);}
+	| MulExp TIMES UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
+	| MulExp DIV UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
+	| MulExp MOD UnaryExp {$$ = new MulExpression($1,new Operation(*$2),$3);}
 	;
 
-AddExp: MulExp
-	| AddExp '+' MulExp
-	| AddExp '-' MulExp
+AddExp: MulExp {$$ = new AddExpression($1);}
+	| AddExp PLUS MulExp {$$ = new AddExpression($1,new Operation(*$2),$3);}
+	| AddExp MINUS MulExp {$$ = new AddExpression($1,new Operation(*$2),$3);}
 	;
 
 RelExp: AddExp
