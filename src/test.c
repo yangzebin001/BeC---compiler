@@ -4,7 +4,6 @@ int a;
 int bdlf[123] = {1,{2}};
 int main(){
     int nol[];
-    int arr[123][];
     int no;
     const int a[5] = {1};
     int aa[4][2] = {1,{32,12}};

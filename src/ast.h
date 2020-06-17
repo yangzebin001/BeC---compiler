@@ -10,52 +10,82 @@ using namespace std;
 using namespace llvm;
 
 
-class AstContext;
 class Node;
+class Program;
 class Statement;
 class Expression;
-class Program;
+class TypeDecl;
 class ConstVarDecl;
 class ConstVarDef;
+class Lval;
+class Ident;
+class ArrayElement;
+class ArrayInit;
 class VarDecl;
-
+class VarDef;
+class DirectDecl;
+class ArrayDecl;
+class Block;
+class FuncParam;
+class FunctionDef;
+class FuncCall;
+class Stmts;
+class Assignment;
+class ExpressionStatement;
+class BlockStatement;
+class Operator;
+class BinaryOpExpression;
+class LOrExpression;
+class LAndExpression;
+class EqExpression;
+class RelExpression;
+class AddExpression;
+class MulExpression;
+class PrimaryExp;
+class UnaryExp;
+class IFStatement;
+class WHILEStatement;
+class RETURNStatement;
+class BREAKStatement;
+class CONTINUEStatement;
 
 class Node {
 public:
+	void codeGen();
 };
 
 class Program : public Node{
 public:
 	vector<VarDecl*> VarDecls;
     vector<ConstVarDecl*> constVarDecls;
-	vector<FuncDef*> funcDefs;
+	vector<FunctionDef*> funcDefs;
 
 	void addConstVarDecl(ConstVarDecl *constVarDecl) {
 		constVarDecls.push_back(constVarDecl);
 	}
 
-	void addVarDecl(VarDecl *VarDecl) {
-		VarDecls.push_back(VarDecl);
+	void addVarDecl(VarDecl *varDecl) {
+		VarDecls.push_back(varDecl);
 	}
 
-	void addFuncDef(FuncDef *funcDef) {
+	void addFuncDef(FunctionDef *funcDef) {
 		funcDefs.push_back(funcDef);
 	}
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 class Statement: public Node {
 public:
 	virtual ~Statement() {
 	}
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 class Expression: public Node {
 public:
 	virtual ~Expression() {
 	}
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 class TypeDecl: public Node {
@@ -65,6 +95,7 @@ public:
 	TypeDecl(string &typeName) {
 		this->typeName = typeName;
 	}
+	void codeGen();
 };
 
 class ConstVarDecl: public Statement {
@@ -72,12 +103,12 @@ public:
 	TypeDecl *typeDecl;
 	vector<ConstVarDef*> ConstVarDefList;
 
-	ConstVarDecl(TypeDecl *typeDecl, vector<ConstVarDecl*> &ConstVarDefList) {
+	ConstVarDecl(TypeDecl *typeDecl, vector<ConstVarDef*> &constVarDefList) {
 		this->typeDecl = typeDecl;
-		this->ConstVarDefList = ConstVarDefList;
+		this->ConstVarDefList = constVarDefList;
 	}
 
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 
@@ -86,16 +117,16 @@ public:
 	Lval *lval;
 	Expression *initVal;
 
-	ConstVarDecl(Lval *lval, Expression *initVal) {
+	ConstVarDef(Lval *lval, Expression *initVal) {
 		this->lval = lval;
 		this->initVal = initVal;
 	}
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 class Lval: public Expression {
 public:
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 class Ident: public Lval {
@@ -104,9 +135,8 @@ public:
 	Ident(string &id){
 		this->id = id;
 	}
-	AValue gen(AstContext &astContext);
-	AValue lvalueGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class ArrayElement: public Lval {
 public:
@@ -118,8 +148,7 @@ public:
 		this->index = index;
 	}
 
-	AValue gen(AstContext &astContext);
-	AValue lvalueGen(AstContext &astContext);
+	void codeGen();
 };
 
 class ArrayInit: public Expression {
@@ -130,21 +159,8 @@ public:
 		this->exprList = exprList;
 	}
 
-	AValue gen(AstContext &astContext);
+	void codeGen();
 };
-
-class ArrayDecl: public Expression {
-public:
-	ArrayElement *arrayElement;
-	ArrayInit *arrayInit;
-
-	ArrayDecl(ArrayElement *arrayElement, ArrayInit *arrayInit){
-		this->arrayElement = arrayElement;
-		this->arrayInit = arrayInit;
-	}
-
-	AValue gen(AstContext &astContext);
-}
 
 class VarDecl: public Statement {
 public:
@@ -156,16 +172,14 @@ public:
 		this->VarDefList = VarDefList;
 	}
 
-	void globalGen();
-	void fieldGen(AstContext &astContext);
-	void codeGen(AstContext &astContext);
+	void codeGen();
 };
 
 
 class VarDef: public Expression {
 public:
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class DirectDecl: public VarDef {
 public:
@@ -175,8 +189,8 @@ public:
 		this->ident = ident;
 		this->exp = exp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class ArrayDecl: public VarDef {
 public:
@@ -186,15 +200,15 @@ public:
 		this->arrayElement = arrayElement;
 		this->initVal = initVal;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 //todo: FuncDef,Block,Stmts,AddExp
 
 class Block: public Node {
 public:
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class FuncParam: public Node{
 public: 
@@ -204,43 +218,48 @@ public:
 		this->typeDecl = typeDecl;
 		this->lval = lval;
 	}
-}
+	void codeGen();
+};
 
 class FunctionDef: public Node {
 public:
 	TypeDecl *returnType;
-	Ident id;
+	Ident *id;
 	vector<FuncParam*> ParamList;
 	Block *block;
-	FunctionDef(TypeDecl* returnType, Ident id, vector<FuncParam*> ParamList, Block* block){
+	FunctionDef(TypeDecl* returnType, Ident *id, vector<FuncParam*> ParamList, Block* block){
 		this->returnType = returnType;
 		this->id = id;
 		this->ParamList = ParamList;
 		this->block = block;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
 class FuncCall: public Expression {
-	Ident id;
+public:
+	Ident* id;
 	vector<FuncParam*> ParamList;
-	FuncCall(Ident id, vector<FuncParam*> ParamList){
+	FuncCall(Ident *id, vector<FuncParam*> ParamList){
 		this->id = id;
 		this->ParamList = ParamList;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
-class Stmts: public Node {
+class Stmts: public Statement {
 public:
 	vector<Statement*> statementList;
 	Stmts(vector<Statement*> statementList){
 		this->statementList = statementList;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void addStatement(Statement* stmt){
+		this->statementList.push_back(stmt);
+	}
+	void codeGen();
+};
 
 
 
@@ -254,24 +273,26 @@ public:
 		this->lval = lval;
 		this->exp = exp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class ExpressionStatement: public Expression {
+public:
 	Expression *exp;
-	Assignment(Expression *exp){
+	ExpressionStatement(Expression *exp){
 		this->exp = exp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class BlockStatement: public Block {
+public:
 	Block *block;
 	BlockStatement(Block *block){
 		this->block = block;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
 class Operator: public Expression {
@@ -280,8 +301,8 @@ public:
 	Operator(string op){
 		this->op = op;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
 class BinaryOpExpression: public Expression {
@@ -289,44 +310,45 @@ public:
 	Expression *lhs;
 	Expression *rhs;
 	Operator* op;
+	BinaryOpExpression(){}
 	BinaryOpExpression(Expression *lhs, Operator* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class LOrExpression: public BinaryOpExpression {
 public:
 	LOrExpression(Expression *lhs, Expression *rhs){
-		this->op = "or";
+		this->op = new Operator("or");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class LAndExpression: public BinaryOpExpression {
 public:
 	LAndExpression(Expression *lhs, Expression *rhs){
-		this->op = "and";
+		this->op = new Operator("and");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
 class EqExpression: public BinaryOpExpression {
 public:
 	EqExpression(Expression *lhs, Expression *rhs){
-		this->op = "eq";
+		this->op = new Operator("eq");
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class RelExpression: public BinaryOpExpression {
 public:
@@ -335,8 +357,8 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class AddExpression: public BinaryOpExpression {
 public:
@@ -345,8 +367,8 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class MulExpression: public BinaryOpExpression {
 public:
@@ -355,21 +377,21 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class PrimaryExp: public Expression {
 public:
-	int Number;
+	int number;
 	Lval *lval;
 	Expression *exp;
-	UnaryExp(int Number, Lval *lval, Expression *exp){
-		this->Number = Number;
+	PrimaryExp(int number, Lval *lval, Expression *exp){
+		this->number = number;
 		this->lval = lval;
 		this->exp = exp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class UnaryExp: public Expression {
 public:
@@ -383,8 +405,8 @@ public:
 		this->unaryOp = unaryOp;
 		this->unaryExp = unaryExp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class IFStatement: public Statement {
 public:
@@ -396,8 +418,8 @@ public:
 		this->TRUEStmts = TRUEStmts;
 		this->FALSEStmts = FALSEStmts;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 
 class WHILEStatement: public Statement {
@@ -408,8 +430,8 @@ public:
 		this->exp = exp;
 		this->stmts = stmts;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class RETURNStatement: public Statement {
 public:
@@ -417,19 +439,19 @@ public:
 	RETURNStatement(Expression *exp){
 		this->exp = exp;
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class BREAKStatement: public Statement {
 public:
 	BREAKStatement(){
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};
 
 class CONTINUEStatement: public Statement {
 public:
 	CONTINUEStatement(){
 	}
-	void codeGen(AstContext &astContext);
-}
+	void codeGen();
+};

@@ -1,5 +1,6 @@
 %{
 #include <string>
+#include "ast.h"
 #include "syntactic.hpp"
 
 

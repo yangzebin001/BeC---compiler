@@ -2,14 +2,14 @@
 #include <cstdlib>
 #include <cctype>
 #include <string>
-
+#include "ast.h"
 #include "syntactic.hpp"
 
 extern int yyparse();
 extern FILE* yyin;
 
 
-// Program *program = NULL;
+Program *program = NULL;
 
 
 int main(int argc, char *argv[])

@@ -3,9 +3,15 @@
 #include <cstdlib>
 #include <string>
 #include "ast.h"
+
 extern int yylineno;
 extern char* yytext;
 extern int yylex();
+
+
+extern Program *program;
+
+
 void yyerror(std::string s) {
 	printf("%d : %s %s\n", yylineno, s.c_str(), yytext );
 }

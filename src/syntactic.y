@@ -2,9 +2,14 @@
 #include <cstdio>
 #include <cstdlib>
 #include <string>
+#include "ast.h"
+
 extern int yylineno;
 extern char* yytext;
 extern int yylex();
+
+extern Program *program;
+
 void yyerror(std::string s) {
 	printf("%d : %s %s\n", yylineno, s.c_str(), yytext );
 }
@@ -14,7 +19,13 @@ void yyerror(std::string s) {
 %union {
 	std::string *string;
 	int token;
+	
+	Program *program;
+	FunctionDef *functionDef;
+	ConstVarDecl *constVarDecl;
+	VarDecl *varDecl;
 }
+
 
 %token <string> ID HEXNUM OCTNUM DECNUM 
 
@@ -25,16 +36,22 @@ void yyerror(std::string s) {
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
+%type <program> Program
+%type <functionDef> FuncDef
+%type <constVarDecl> ConstVarDecl
+%type <varDecl> VarDecl
+
+
 %start Program
 
 %%
 
-Program: FuncDef
-	| VarDecl
-	| ConstVarDecl
-	| Program FuncDef
-	| Program VarDecl
-	| Program ConstVarDecl
+Program: FuncDef {$$ = new Program(); $$->addFuncDef($1);}
+	| VarDecl {$$ = new Program(); $$->addVarDecl($1);}
+	| ConstVarDecl {$$ = new Program(); $$->addConstVarDecl($1);}
+	| Program FuncDef {$$->addFuncDef($2);}
+	| Program VarDecl {$$->addVarDecl($2);}
+	| Program ConstVarDecl {$$->addConstVarDecl($2);}
 	;
 
 ConstVarDecl: CONST BType ConstVarDefList ';'
