@@ -2,8 +2,7 @@ all: compiler
 
 OBJS = syntactic.o main.o lexical.o
 
-LLVMCONFIG = llvm-config
-CPPFLAGS = `$(LLVMCONFIG) --cppflags` -std=c++11
+CPPFLAGS = -std=c++11
 
 syntactic.cpp: syntactic.y
 	bison -d -o $@ $^

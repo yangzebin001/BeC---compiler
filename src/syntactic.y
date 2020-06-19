@@ -35,23 +35,36 @@ void yyerror(std::string s) {
 	Operation *operation;
 	AddExpression *addExp;
 	MulExpression *mulExp;
+	LOrExpression *lorExp;
+	LAndExpression *landExp;
+	EqExpression *eqExp;
+	RelExpression *relExp;
 	UnaryExp *unaryExp;
 	PrimaryExpression *primaryExp;
 	FuncParam *funcParam;
 	FunctionCall *funcCall;
+	Block *block;
+	Statement *statement;
+	IFStatement *ifStatement;
+	WHILEStatement *whileStatement;
+	RETURNStatement *returnStatement;
+	CONTINUEStatement *continueStatement;
+	BREAKStatement *breakStatement;
+
 
 	vector<ConstVarDef*> *constVarDefList;
 	vector<VarDef*> *varDefList;
 	vector<Expression*> *paramList;
+	vector<FuncParam*> *funcFParams;
+	vector<Statement*> *stmtList;
 }
 
 
-%token <string> ID HEXNUM OCTNUM DECNUM PLUS MINUS TIMES DIV MOD NOT
+%token <string> ID HEXNUM OCTNUM DECNUM PLUS MINUS TIMES DIV MOD NOT LE GE EQ NE LT GT
 
 %token <token> IF ELSE WHILE PRINTF CONTINUE BREAK RETURN
 %token <token> INT VOID CONST 
 %token <token> AND OR
-%token <token> LE GE EQ NE LT GT
 %token <token> '=' '[' ']' '{' '}' ';'
 
 
@@ -69,13 +82,28 @@ void yyerror(std::string s) {
 %type <varDef> VarDef
 %type <directDecl> DirectDecl
 %type <operation> UnaryOp
-%type <exp> Exp InitVal
-%type <addExp> AddExp
+%type <exp> Exp InitVal 
+%type <lorExp> LOrExp Cond
+%type <landExp> LAndExp
+%type <eqExp> EqExp
+%type <relExp> RelExp
+%type <addExp> AddExp ConstExp
 %type <mulExp> MulExp
 %type <unaryExp> UnaryExp
 %type <primaryExp> PrimaryExp
 %type <paramList> ParamList FuncRParams
 %type <funcCall> FuncCall
+%type <funcParam> FuncFParam
+%type <funcFParams> FuncFParams
+%type <block> Block
+%type <statement> Stmt
+%type <stmtList> Stmts
+%type <ifStatement> IFStmt
+%type <whileStatement> WHILEStmt
+%type <returnStatement> RETURNStmt
+%type <continueStatement> CONTINUEStmt
+%type <breakStatement> BREAKStmt
+
 
 %start Program
 
@@ -143,58 +171,63 @@ REPInitVal:
 	| REPInitVal ',' InitVal
 	;
 
-FuncDef: FuncDecl Block
+FuncDef: BType ID '(' FuncFParams ')' Block {$$ = new FunctionDef($1,new Ident(*$2),*$4,$6);}
+	| VOID ID '(' FuncFParams ')' Block {$$ = new FunctionDef(new TypeDecl("void"),new Ident(*$2),*$4,$6);}
 	;
 
-FuncDecl: BType ID '(' FuncFParams ')'
-	| VOID ID '(' FuncFParams ')'
+FuncFParams: {$$ = new vector<FuncParam*>();}
+	| FuncFParam {$$ = new vector<FuncParam*>(); $$->push_back($1);}
+	| FuncFParams ',' FuncFParam  {$$->push_back($3);}
 	;
 
-FuncFParams: 
-	| FuncFParam
-	| FuncFParams ',' FuncFParam
-	;
-
-FuncFParam: BType Lval
+FuncFParam: BType Lval {$$ = new FuncParam($1,$2);}
 	; 
 
-Block: '{' Stmts '}'
+Block: '{' Stmts '}' {$$ = new Block(*$2);}
 	;
 
-Stmts: 
-	| Stmt
-	| Stmts Stmt
+Stmts:  {$$ = new vector<Statement*>();}
+	| Stmt {$$ = new vector<Statement*>(); $$->push_back($1);}
+	| Stmts Stmt {$$->push_back($2);}
 	;
 
-Stmt: VarDecl 
-	| ConstVarDecl
-	| Lval '=' Exp ';'
+Stmt: VarDecl {$$ = $1;}
+	| ConstVarDecl {$$ = $1;}
+	| Lval '=' Exp ';' {$$ = new Assignment($1,$3);}
 	| ';'
-	| Exp ';'
-	| Block
-	| IFStmt
-	| WHILEStmt
-	| BREAK ';'
-	| CONTINUE ';'
-	| RETURNStmt
+	| Exp ';' {$$ = new ExpressionStatement($1);}
+	| Block {$$ = new BlockStatement($1);}
+	| IFStmt {$$ = $1;}
+	| WHILEStmt {$$ = $1;}
+	| BREAKStmt ';' {$$ = new BREAKStatement();}
+	| CONTINUEStmt ';' {$$ = new CONTINUEStatement();}
+	| RETURNStmt {$$ = $1;}
 	;
 
-IFStmt: IF '(' Cond ')' Stmt
-	| IF '(' Cond ')' Stmt ELSE Stmt
+
+IFStmt: IF '(' Cond ')' Stmt {$$ = new IFStatement($3,$5,NULL);}
+	| IF '(' Cond ')' Stmt ELSE Stmt {$$ = new IFStatement($3,$5,$7);}
 	;
 
-WHILEStmt: WHILE '(' Cond ')' Stmt
+WHILEStmt: WHILE '(' Cond ')' Stmt {$$ = new WHILEStatement($3,$5);}
 	;
 
-RETURNStmt: RETURN ';'
-	| RETURN Exp ';'
+BREAKStmt: BREAK
+	;
+
+CONTINUEStmt: CONTINUE
+	;
+
+
+RETURNStmt: RETURN ';' {$$ = new RETURNStatement(NULL);}
+	| RETURN Exp ';' {$$ = new RETURNStatement($2);}
 	;
 
 
 Exp: AddExp {$$ = $1;}
 	;
 
-Cond: LOrExp
+Cond: LOrExp {$$ = $1;}
 	;
 
 
@@ -244,24 +277,24 @@ AddExp: MulExp {$$ = new AddExpression($1);}
 	| AddExp MINUS MulExp {$$ = new AddExpression($1,new Operation(*$2),$3);}
 	;
 
-RelExp: AddExp
-	| RelExp GT AddExp
-	| RelExp LT AddExp
-	| RelExp GE AddExp
-	| RelExp LE AddExp
+RelExp: AddExp {$$ = new RelExpression($1);}
+	| RelExp GT AddExp {$$ = new RelExpression($1, new Operation(*$2), $3);}
+	| RelExp LT AddExp {$$ = new RelExpression($1, new Operation(*$2), $3);}
+	| RelExp GE AddExp {$$ = new RelExpression($1, new Operation(*$2), $3);}
+	| RelExp LE AddExp {$$ = new RelExpression($1, new Operation(*$2), $3);}
 	;
 
-EqExp: RelExp
-	| EqExp EQ  RelExp
-	| EqExp NE RelExp
+EqExp: RelExp {$$ = new EqExpression($1);}
+	| EqExp EQ RelExp {$$ = new EqExpression($1, new Operation(*$2), $3);}
+	| EqExp NE RelExp {$$ = new EqExpression($1, new Operation(*$2), $3);}
 	;
 
-LAndExp: EqExp
-	| LAndExp AND EqExp
+LAndExp: EqExp {$$ = new LAndExpression($1);}
+	| LAndExp AND EqExp {$$ = new LAndExpression($1, $3);}
 	;
 
-LOrExp: LAndExp
-	| LOrExp OR LAndExp
+LOrExp: LAndExp {$$ = new LOrExpression($1);}
+	| LOrExp OR LAndExp {$$ = new LOrExpression($1, $3);}
 	;
 
 ConstExp: AddExp

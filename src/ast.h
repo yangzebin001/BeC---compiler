@@ -205,6 +205,11 @@ public:
 
 class Block: public Node {
 public:
+	vector<Statement*> statementList;
+	Block(){}
+	Block(vector<Statement*> &statementList){
+		this->statementList = statementList;
+	}
 	void codeGen();
 };
 
@@ -225,7 +230,7 @@ public:
 	Ident *id;
 	vector<FuncParam*> ParamList;
 	Block *block;
-	FunctionDef(TypeDecl* returnType, Ident *id, vector<FuncParam*> ParamList, Block* block){
+	FunctionDef(TypeDecl* returnType, Ident *id, vector<FuncParam*> &ParamList, Block *block){
 		this->returnType = returnType;
 		this->id = id;
 		this->ParamList = ParamList;
@@ -247,18 +252,6 @@ public:
 };
 
 
-class Stmts: public Statement {
-public:
-	vector<Statement*> statementList;
-	Stmts(vector<Statement*> statementList){
-		this->statementList = statementList;
-	}
-	void addStatement(Statement* stmt){
-		this->statementList.push_back(stmt);
-	}
-	void codeGen();
-};
-
 
 
 
@@ -274,7 +267,7 @@ public:
 	void codeGen();
 };
 
-class ExpressionStatement: public Expression {
+class ExpressionStatement: public Statement {
 public:
 	Expression *exp;
 	ExpressionStatement(Expression *exp){
@@ -283,7 +276,7 @@ public:
 	void codeGen();
 };
 
-class BlockStatement: public Block {
+class BlockStatement: public Statement {
 public:
 	Block *block;
 	BlockStatement(Block *block){
@@ -353,9 +346,9 @@ public:
 	EqExpression(Expression* exp){
 		this->unaryExp = exp;
 	}
-	EqExpression(Expression *lhs, Expression *rhs){
-		this->op = new Operation("eq");
+	EqExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
+		this->op = op;
 		this->rhs = rhs;
 	}
 	void codeGen();
@@ -431,12 +424,12 @@ public:
 class IFStatement: public Statement {
 public:
 	Expression *exp;
-	Stmts *TRUEStmts;
-	Stmts *FALSEStmts;
-	IFStatement(Expression *exp,Stmts *TRUEStmts,Stmts *FALSEStmts){
+	Statement *TRUEStmt;
+	Statement *FALSEStmt;
+	IFStatement(Expression *exp,Statement *TRUEStmt,Statement *FALSEStmt){
 		this->exp = exp;
-		this->TRUEStmts = TRUEStmts;
-		this->FALSEStmts = FALSEStmts;
+		this->TRUEStmt = TRUEStmt;
+		this->FALSEStmt = FALSEStmt;
 	}
 	void codeGen();
 };
@@ -445,10 +438,10 @@ public:
 class WHILEStatement: public Statement {
 public:
 	Expression *exp;
-	Stmts *stmts;
-	WHILEStatement(Expression *exp,Stmts *stmts){
+	Statement *stmt;
+	WHILEStatement(Expression *exp,Statement *stmt){
 		this->exp = exp;
-		this->stmts = stmts;
+		this->stmt = stmt;
 	}
 	void codeGen();
 };
