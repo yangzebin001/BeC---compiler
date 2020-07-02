@@ -83,7 +83,7 @@ int main(){
     }
     stoptime();
     putint(ans);
-    putchar(10);
+    putch(10);
 
     return 0;
 }

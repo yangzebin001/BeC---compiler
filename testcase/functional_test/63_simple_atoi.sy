@@ -35,7 +35,7 @@ int main () {
     int i;
     i = 0;
     while (temp != 10) {
-        temp = getchar();
+        temp = getch();
         string[i] = temp;
         i = i + 1;
     }

@@ -18,6 +18,6 @@ int main()
 	putint(s);
 	int newline;
 	newline = 10;
-	putchar(newline);
+	putch(newline);
 	return s;
 }

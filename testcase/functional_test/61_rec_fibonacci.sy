@@ -22,6 +22,6 @@ int main()
 	putint(t);
 	int newline;
 	newline = 10;
-	putchar(newline);
+	putch(newline);
 	return t;
 }

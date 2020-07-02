@@ -8,7 +8,7 @@ int main() {
     i = 0;
     temp = 0;
     while (temp != 10) {
-        temp = getchar();
+        temp = getch();
         if (temp > 40 && temp < 91 || temp > 96 && temp < 123) {
             count = count + 1;
         }
