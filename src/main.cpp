@@ -4,6 +4,7 @@
 #include <string>
 #include "ast.h"
 #include "syntactic.hpp"
+#include "assembly.hpp"
 
 extern int yyparse();
 extern FILE* yyin;
@@ -22,7 +23,11 @@ int main(int argc, char *argv[])
 		printf("Parsing failed\n");
 	
 	fclose(yyin);
+	printf("source file is %s\n",argv[1]);
 
 
+	program->codeGen(argv[1], "testcase.s");
+
+	printf("code generation is done\n");
     return 0;
 }

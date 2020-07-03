@@ -48,7 +48,7 @@ class CONTINUEStatement;
 
 class Node {
 public:
-	void codeGen();
+	
 };
 
 class Program : public Node{
@@ -66,23 +66,20 @@ public:
 	}
 
 	void addFuncDef(FunctionDef *funcDef) {
+		
 		funcDefs.push_back(funcDef);
 	}
-	void codeGen();
+	void codeGen(const char* in_file_name, const char* out_file_name);
 };
 
 class Statement: public Node {
 public:
-	virtual ~Statement() {
-	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class Expression: public Node {
 public:
-	virtual ~Expression() {
-	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class TypeDecl: public Node {
@@ -92,7 +89,7 @@ public:
 	TypeDecl(string typeName) {
 		this->typeName = typeName;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class ConstVarDecl: public Statement {
@@ -105,7 +102,7 @@ public:
 		this->ConstVarDefList = constVarDefList;
 	}
 
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -118,12 +115,12 @@ public:
 		this->lval = lval;
 		this->initVal = initVal;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class Lval: public Expression {
 public:
-	void codeGen();
+	void codeGen(){}
 };
 
 class Ident: public Lval {
@@ -133,7 +130,7 @@ public:
 		this->id = id;
 	}
 
-	void codeGen();
+	void codeGen(){}
 };
 
 class ArrayElement: public Lval {
@@ -146,7 +143,7 @@ public:
 		this->index = index;
 	}
 
-	void codeGen();
+	void codeGen(){}
 };
 
 class ArrayInit: public Expression {
@@ -157,7 +154,7 @@ public:
 		this->exprList = exprList;
 	}
 
-	void codeGen();
+	void codeGen(){}
 };
 
 class VarDecl: public Statement {
@@ -170,13 +167,13 @@ public:
 		this->VarDefList = VarDefList;
 	}
 
-	void codeGen();
+	void codeGen(){}
 };
 
 
 class VarDef: public Expression {
 public:
-	void codeGen();
+	void codeGen(){}
 };
 
 class DirectDecl: public VarDef {
@@ -187,7 +184,7 @@ public:
 		this->ident = ident;
 		this->exp = exp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class ArrayDecl: public VarDef {
@@ -198,7 +195,7 @@ public:
 		this->arrayElement = arrayElement;
 		this->initVal = initVal;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 //todo: FuncDef,Block,Stmts,AddExp
@@ -210,7 +207,7 @@ public:
 	Block(vector<Statement*> &statementList){
 		this->statementList = statementList;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class FuncParam: public Node{
@@ -221,7 +218,7 @@ public:
 		this->typeDecl = typeDecl;
 		this->lval = lval;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class FunctionDef: public Node {
@@ -248,7 +245,7 @@ public:
 		this->id = id;
 		this->ParamList = ParamList;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -264,7 +261,7 @@ public:
 		this->lval = lval;
 		this->exp = exp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class ExpressionStatement: public Statement {
@@ -273,7 +270,7 @@ public:
 	ExpressionStatement(Expression *exp){
 		this->exp = exp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class BlockStatement: public Statement {
@@ -282,7 +279,7 @@ public:
 	BlockStatement(Block *block){
 		this->block = block;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -292,7 +289,7 @@ public:
 	Operation(string op){
 		this->op = op;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -311,7 +308,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class LOrExpression: public BinaryOpExpression {
@@ -324,7 +321,7 @@ public:
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class LAndExpression: public BinaryOpExpression {
@@ -337,7 +334,7 @@ public:
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -351,7 +348,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class RelExpression: public BinaryOpExpression {
@@ -364,7 +361,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class AddExpression: public BinaryOpExpression {
@@ -377,7 +374,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class MulExpression: public BinaryOpExpression {
@@ -390,7 +387,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class PrimaryExpression: public Expression {
@@ -403,7 +400,7 @@ public:
 		this->lval = lval;
 		this->exp = exp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class UnaryExp: public Expression {
@@ -418,7 +415,7 @@ public:
 		this->unaryOp = unaryOp;
 		this->unaryExp = unaryExp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class IFStatement: public Statement {
@@ -431,7 +428,7 @@ public:
 		this->TRUEStmt = TRUEStmt;
 		this->FALSEStmt = FALSEStmt;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 
@@ -443,7 +440,7 @@ public:
 		this->exp = exp;
 		this->stmt = stmt;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class RETURNStatement: public Statement {
@@ -452,19 +449,19 @@ public:
 	RETURNStatement(Expression *exp){
 		this->exp = exp;
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class BREAKStatement: public Statement {
 public:
 	BREAKStatement(){
 	}
-	void codeGen();
+	void codeGen(){}
 };
 
 class CONTINUEStatement: public Statement {
 public:
 	CONTINUEStatement(){
 	}
-	void codeGen();
+	void codeGen(){}
 };

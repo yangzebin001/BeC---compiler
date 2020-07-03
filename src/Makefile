@@ -1,6 +1,6 @@
 all: compiler
 
-OBJS = syntactic.o main.o lexical.o
+OBJS = syntactic.o main.o lexical.o ast.o assembly.o
 
 CPPFLAGS = -std=c++11
 
@@ -23,3 +23,6 @@ clean:
 
 test: compiler test.c
 	./compiler test.c
+
+test1: compiler ../testcase/functional_test/00_main.sy
+	./compiler ../testcase/functional_test/00_main.sy

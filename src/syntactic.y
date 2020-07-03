@@ -109,9 +109,9 @@ void yyerror(std::string s) {
 
 %%
 
-Program: FuncDef {$$ = new Program(); $$->addFuncDef($1);}
-	| VarDecl {$$ = new Program(); $$->addVarDecl($1);}
-	| ConstVarDecl {$$ = new Program(); $$->addConstVarDecl($1);}
+Program: FuncDef {$$ = new Program(); $$->addFuncDef($1); program = $$; }
+	| VarDecl {$$ = new Program(); $$->addVarDecl($1);  program = $$;}
+	| ConstVarDecl {$$ = new Program(); $$->addConstVarDecl($1);  program = $$;}
 	| Program FuncDef {$$->addFuncDef($2);}
 	| Program VarDecl {$$->addVarDecl($2);}
 	| Program ConstVarDecl {$$->addConstVarDecl($2);}
