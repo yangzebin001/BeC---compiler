@@ -26,7 +26,7 @@ int main(int argc, char *argv[])
 	printf("source file is %s\n",argv[1]);
 
 
-	program->codeGen(argv[1], "testcase.s");
+	program->codeGen(argv[1], argv[4]);
 
 	printf("code generation is done\n");
     return 0;

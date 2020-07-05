@@ -64,6 +64,9 @@ void emit_function_prologue() {
 }
 
 void emit_return() {
+    //
+    emit_instr("mov", "r0, #0");
+
     emit_instr("ldr", "fp, [sp], #4");
     emit_instr("bx", "lr");
 }
