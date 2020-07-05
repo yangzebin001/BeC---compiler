@@ -21,8 +21,8 @@ compiler: $(OBJS)
 clean:
 	$(RM) -rf syntactic.cpp syntactic.hpp lexical.cpp $(OBJS) compiler log.txt
 
-test: compiler test.c
-	./compiler test.c
+test: compiler ../testcase/test.c
+	./compiler ../testcase/test.c
 
 test1: compiler ../testcase/functional_test/00_main.sy
 	./compiler ../testcase/functional_test/00_main.sy
