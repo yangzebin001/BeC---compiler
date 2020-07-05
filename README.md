@@ -18,6 +18,8 @@ make
 ### test
 ```
 sh testall.sh ../testcase/functional_test
+
+./compiler  -S -o testcase.s ../testcase/functional_test/00_main.sy
 ```
 
 ### clean

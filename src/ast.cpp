@@ -40,3 +40,7 @@ void RETURNStatement::codeGen(){
 void Statement::codeGen(){
     printf("SSS\n");
 }
+
+// void Node::codeGen(){
+//     printf("NNN\n");
+// }

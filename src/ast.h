@@ -48,7 +48,6 @@ class CONTINUEStatement;
 
 class Node {
 public:
-	
 };
 
 class Program : public Node{
