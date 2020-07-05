@@ -13,5 +13,30 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 void FunctionDef::codeGen(){
     emit_lable(id->id.c_str());
     emit_function_prologue();
+
+    block->codeGen();
+
     emit_function_epilogue();
+}
+
+void Expression::codeGen(){
+    printf("EEE\n");
+}
+
+void Block::codeGen(){
+    for(int i = 0; i < statementList.size(); i++){
+        statementList[i]->codeGen();
+    }
+}
+
+void BinaryOpExpression::codeGen(){
+    printf("hhh\n");
+}
+
+void RETURNStatement::codeGen(){
+    printf("RRR\n");
+}
+
+void Statement::codeGen(){
+    printf("SSS\n");
 }

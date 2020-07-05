@@ -74,12 +74,12 @@ public:
 
 class Statement: public Node {
 public:
-	void codeGen(){}
+	void codeGen();
 };
 
 class Expression: public Node {
 public:
-	void codeGen(){}
+	void codeGen();
 };
 
 class TypeDecl: public Node {
@@ -207,7 +207,7 @@ public:
 	Block(vector<Statement*> &statementList){
 		this->statementList = statementList;
 	}
-	void codeGen(){}
+	void codeGen();
 };
 
 class FuncParam: public Node{
@@ -308,7 +308,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	void codeGen(){}
+	void codeGen();
 };
 
 class LOrExpression: public BinaryOpExpression {
@@ -449,7 +449,7 @@ public:
 	RETURNStatement(Expression *exp){
 		this->exp = exp;
 	}
-	void codeGen(){}
+	void codeGen();
 };
 
 class BREAKStatement: public Statement {

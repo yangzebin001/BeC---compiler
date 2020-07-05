@@ -15,7 +15,7 @@ Program *program = NULL;
 
 int main(int argc, char *argv[])
 {
-	yyin = fopen(argv[1], "r");
+	yyin = fopen(argv[4], "r");
 	
    if(!yyparse())
 		printf("Parsing complete\n");
@@ -23,10 +23,10 @@ int main(int argc, char *argv[])
 		printf("Parsing failed\n");
 	
 	fclose(yyin);
-	printf("source file is %s\n",argv[1]);
 
+	printf("source file is %s\n",argv[4]);
 
-	program->codeGen(argv[1], argv[4]);
+	program->codeGen(argv[4], argv[3]);
 
 	printf("code generation is done\n");
     return 0;
