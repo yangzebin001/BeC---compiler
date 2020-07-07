@@ -34,13 +34,43 @@ void BinaryOpExpression::codeGen(){
 }
 
 void RETURNStatement::codeGen(){
-    printf("RRR\n");
+    printf("gen returnstatement\n");
+    if(exp != NULL){
+        exp->codeGen();
+    }
 }
 
 void Statement::codeGen(){
     printf("SSS\n");
 }
 
-// void Node::codeGen(){
-//     printf("NNN\n");
-// }
+void AddExpression::codeGen(){
+    printf("gen AddExpression\n");
+    if(unaryExp != NULL){
+        unaryExp->codeGen();
+    }
+}
+
+void MulExpression::codeGen(){
+    printf("gen MulExpression\n");
+    if(unaryExp != NULL){
+        unaryExp->codeGen();
+    }
+}
+void PrimaryExpression::codeGen(){
+    printf("gen PrimaryExpression\n");
+    if(lval != NULL){
+        lval->codeGen();
+    }else if(exp != NULL){
+        exp->codeGen();
+    }else{
+        emit_instr_format("mov","r0, #%s",number.c_str());
+    }
+}
+void UnaryExp::codeGen(){
+    printf("gen UnaryExp\n");
+    if(primaryExp != NULL){
+        primaryExp->codeGen();
+    }
+}
+

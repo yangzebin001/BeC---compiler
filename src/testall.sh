@@ -6,7 +6,7 @@ for file in $dir/*; do
     all=`expr $all + 1`
     echo "testing " $file
     logfile=./log.txt
-    ./compiler $file > $logfile
+    ./compiler -S -o testcase.s $file > $logfile
     if (grep 'complete' $logfile > /dev/null) then
         echo "\033[1;32mPASS!\033[0m"
         pass=`expr $pass + 1`

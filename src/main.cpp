@@ -26,9 +26,13 @@ int main(int argc, char *argv[])
 
 	printf("source file is %s\n",argv[4]);
 
+	printf("%d\n",program->funcDefs.size());
+
+
 	program->codeGen(argv[4], argv[3]);
-	
-	printf("code generation is done\n");
-	printf("%d\n",program->funcDefs[0]->block->statementList.size());
+
+
+	// printf("code generation is done\n");
+	// printf("%d\n",program->funcDefs[0]->block->statementList.size());
     return 0;
 }

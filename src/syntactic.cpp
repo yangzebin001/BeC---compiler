@@ -161,7 +161,7 @@ union YYSTYPE
 	VarDecl *varDecl;
 	TypeDecl *typeDecl;
 	ConstVarDef *constVarDef;
-	Lval* lval;
+	Lval *lval;
 	Ident *ident;
 	ArrayElement *arrayEle;
 	VarDef *varDef;

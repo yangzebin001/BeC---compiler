@@ -33,7 +33,7 @@ printf                      return PRINTF;
 "continue"                  return CONTINUE;
 ("0x"|"0X")[0-9A-F]*        SAVE_TOKEN;return HEXNUM;
 0[0-8]*                     SAVE_TOKEN;return OCTNUM;
-([1-9][0-9]*) | 0           SAVE_TOKEN;return DECNUM;
+[1-9][0-9]*                 SAVE_TOKEN;return DECNUM;
 {alpha}({alpha}|{digit})*   SAVE_TOKEN;return ID;
 "+"                         SAVE_TOKEN;return PLUS;
 "-"                         SAVE_TOKEN;return MINUS;

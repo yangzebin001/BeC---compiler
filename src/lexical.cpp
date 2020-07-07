@@ -903,7 +903,10 @@ YY_RULE_SETUP
 SAVE_TOKEN;return OCTNUM;
 	YY_BREAK
 case 16:
-#line 37 "lexical.l"
+YY_RULE_SETUP
+#line 36 "lexical.l"
+SAVE_TOKEN;return DECNUM;
+	YY_BREAK
 case 17:
 YY_RULE_SETUP
 #line 37 "lexical.l"
@@ -1000,7 +1003,7 @@ YY_RULE_SETUP
 #line 55 "lexical.l"
 ECHO;
 	YY_BREAK
-#line 1004 "lexical.cpp"
+#line 1007 "lexical.cpp"
 case YY_STATE_EOF(INITIAL):
 	yyterminate();
 
@@ -2101,7 +2104,7 @@ union YYSTYPE
 	VarDecl *varDecl;
 	TypeDecl *typeDecl;
 	ConstVarDef *constVarDef;
-	Lval* lval;
+	Lval *lval;
 	Ident *ident;
 	ArrayElement *arrayEle;
 	VarDef *varDef;
