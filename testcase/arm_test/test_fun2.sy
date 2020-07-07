@@ -1,7 +1,11 @@
 int foo(){
-
+	coo();
+}
+int coo(){
 }
 int main(){
+	int a = 20;
 	foo();
 	return 0;
+
 }
