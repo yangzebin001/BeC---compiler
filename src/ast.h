@@ -149,7 +149,7 @@ class ArrayInit: public Expression {
 public:
 	vector<Expression*> exprList;
 
-	ArrayInit(vector<Expression*> exprList) {
+	ArrayInit(vector<Expression*> &exprList) {
 		this->exprList = exprList;
 	}
 
@@ -240,11 +240,11 @@ class FunctionCall: public Expression {
 public:
 	Ident* id;
 	vector<Expression*> ParamList;
-	FunctionCall(Ident *id, vector<Expression*> ParamList){
+	FunctionCall(Ident *id, vector<Expression*> &ParamList){
 		this->id = id;
 		this->ParamList = ParamList;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 
@@ -269,7 +269,7 @@ public:
 	ExpressionStatement(Expression *exp){
 		this->exp = exp;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 class BlockStatement: public Statement {
@@ -320,7 +320,7 @@ public:
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 class LAndExpression: public BinaryOpExpression {
@@ -333,7 +333,7 @@ public:
 		this->lhs = lhs;
 		this->rhs = rhs;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 
@@ -347,7 +347,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 class RelExpression: public BinaryOpExpression {
@@ -360,7 +360,7 @@ public:
 		this->op = op;
 		this->rhs = rhs;
 	}
-	virtual void codeGen(){}
+	virtual void codeGen();
 };
 
 class AddExpression: public BinaryOpExpression {

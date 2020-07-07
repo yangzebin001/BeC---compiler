@@ -63,14 +63,24 @@ void emit_function_prologue() {
     emit_instr("add", "fp, sp, #0");
 }
 
-void emit_return() {
+void emit_function_prologue2() {
+    emit_instr("push", "{fp, lr}");
+    emit_instr("add", "fp, sp, #4");
+}
 
+void emit_return() {
     emit_instr("ldr", "fp, [sp], #4");
     emit_instr("bx", "lr");
 }
 
 void emit_function_epilogue() {
     emit_return();
+    fprintf(outfile, "\n");
+}
+
+void emit_function_epilogue2() {
+    emit_instr("sub", "sp, fp, #4");
+    emit_instr("pop", "{fp, pc}");
     fprintf(outfile, "\n");
 }
 
