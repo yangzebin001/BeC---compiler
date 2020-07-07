@@ -8,7 +8,7 @@
 main:
     str        fp, [sp, #-4]!
     add        fp, sp, #0
-    mov        r0, #1
+    mov        r0, #0
     ldr        fp, [sp], #4
     bx         lr
 

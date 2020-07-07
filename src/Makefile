@@ -24,5 +24,3 @@ clean:
 test: compiler ../testcase/test.sy
 	./compiler ../testcase/test.sy
 
-test1: compiler ../testcase/functional_test/00_main.sy
-	./compiler ../testcase/functional_test/00_main.sy
