@@ -12,11 +12,7 @@ static FILE* outfile;
 void emit_header(const char* name){
     fprintf(outfile, "	.file	\"%s\"\n", name);
     fprintf(outfile, "	.text\n");
-    fprintf(outfile, "	.align	2\n");
-    fprintf(outfile, "	.global	main\n");
-    fprintf(outfile, "	.arch armv7-a\n");
-    fprintf(outfile, "	.arm\n");
-    fprintf(outfile, "	.type	main, %%function\n");
+
 }
 
 void emit_instr(char *instr, char *operands) {
@@ -59,11 +55,18 @@ void emit_lable(const char* name){
 }
 
 void emit_function_prologue() {
+
     emit_instr("str", "fp, [sp, #-4]!");
     emit_instr("add", "fp, sp, #0");
 }
 
-void emit_function_prologue2() {
+void emit_function_prologue2(const char* name) {
+    fprintf(outfile, "	.align	2\n");
+    fprintf(outfile, "	.global	%s\n", name);
+    fprintf(outfile, "	.arch armv7-a\n");
+    fprintf(outfile, "	.arm\n");
+    fprintf(outfile, "	.type	%s, %%function\n", name);
+    emit_lable(name);
     emit_instr("push", "{fp, lr}");
     emit_instr("add", "fp, sp, #4");
 }
@@ -78,10 +81,10 @@ void emit_function_epilogue() {
     fprintf(outfile, "\n");
 }
 
-void emit_function_epilogue2() {
+void emit_function_epilogue2(const char* name) {
     emit_instr("sub", "sp, fp, #4");
     emit_instr("pop", "{fp, pc}");
-    fprintf(outfile, "\n");
+    fprintf(outfile, "	.size	%s, .-%s\n", name, name);
 }
 
 void init_assembly(const char* in_file_name, const char* out_file_name) {

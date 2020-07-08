@@ -12,11 +12,10 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 }
 
 void FunctionDef::codeGen(){
-    emit_lable(id->id.c_str());
-    emit_function_prologue2();
+    emit_function_prologue2(id->id.c_str());
     block->codeGen();
 
-    emit_function_epilogue2();
+    emit_function_epilogue2(id->id.c_str());
 }
 
 void Expression::codeGen(){
