@@ -32,7 +32,6 @@ main:
     push       {fp, lr}
     add        fp, sp, #4
     bl         foo
-    mov        r0, #0
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
