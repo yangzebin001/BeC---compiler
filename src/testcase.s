@@ -31,7 +31,15 @@ coo:
 main:
     push       {fp, lr}
     add        fp, sp, #4
+    sub        sp, sp, #4
+    mov        r3, #20
+    str        r3, [fp, #-4]
+    sub        sp, sp, #4
+    mov        r3, #30
+    str        r3, [fp, #-8]
     bl         foo
+    ldr        r3, [fp, #-8]
+    mov        r0, r3
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main

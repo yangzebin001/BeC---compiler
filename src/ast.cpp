@@ -5,9 +5,11 @@
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
-    Context* topctx = new Context();
+    
     for(int i = 0; i < funcDefs.size(); i++){
-        funcDefs[i]->codeGen(*topctx);
+        Context* funcxt = new Context();
+        funcDefs[i]->codeGen(*funcxt);
+        delete funcxt;
     }
 }
 
@@ -36,7 +38,9 @@ void RETURNStatement::codeGen(Context &ctx){
     printf("gen returnstatement\n");
     if(exp != NULL){
         exp->codeGen(ctx);
+        emit_instr_format("mov","r0, r3");
     }
+
 }
 
 void Statement::codeGen(Context &ctx){
@@ -64,7 +68,7 @@ void PrimaryExpression::codeGen(Context &ctx){
     }else if(exp != NULL){
         exp->codeGen(ctx);
     }else{
-        emit_instr_format("mov","r0, #%s",number.c_str());
+        emit_instr_format("mov","r3, #%s",number.c_str());
     }
 }
 
@@ -111,7 +115,41 @@ void LOrExpression::codeGen(Context &ctx){
 }
 
 void ExpressionStatement::codeGen(Context &ctx){
-    printf("ExpressionStatement\n");
+    printf("gen ExpressionStatement\n");
     assert(exp != NULL);
     exp->codeGen(ctx);
 }
+
+void VarDecl::codeGen(Context &ctx){
+    for(int i = 0; i < VarDefList.size(); i++){
+        VarDefList[i]->codeGen(ctx);
+    }
+}
+
+void VarDef::codeGen(Context &ctx){
+    printf("gen VarDef\n");
+}
+
+void DirectDecl::codeGen(Context &ctx){
+    printf("gen DirectDecl\n");
+    assert(ident != NULL);
+    bool offset_result = ctx.set_offset(ident->id);
+    if(offset_result) {
+        emit_instr_format("sub", "sp, sp, #4");
+    }
+    if(exp != NULL){
+        exp->codeGen(ctx);
+        emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(ident->id));
+    }
+}
+
+void Lval::codeGen(Context &ctx){
+    printf("gen Lval\n");
+}
+
+
+void Ident::codeGen(Context &ctx){
+    printf("gen Ident\n");
+    emit_instr_format("ldr", "r3, [fp, #%d]", ctx.get_offset(id));
+}
+

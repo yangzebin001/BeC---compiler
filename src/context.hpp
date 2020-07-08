@@ -22,9 +22,16 @@ public:
 		}
         return stack_offset[var];
     }
-    void set_offset(string& var){
-    	if(stack_offset.count(var)) return;
+
+    bool set_offset(string& var){
+    	if(stack_offset.count(var)) return false;
         stack_offset[var] = cur_offset;
         cur_offset -= WORD_SIZE;
+        return true;
     }
+
+    ~Context(){
+    	stack_offset.clear();
+	}
+
 };

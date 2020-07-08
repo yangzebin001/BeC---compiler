@@ -120,7 +120,7 @@ public:
 
 class Lval: public Expression {
 public:
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class Ident: public Lval {
@@ -130,7 +130,7 @@ public:
 		this->id = id;
 	}
 
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class ArrayElement: public Lval {
@@ -167,13 +167,13 @@ public:
 		this->VarDefList = VarDefList;
 	}
 
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 
 class VarDef: public Expression {
 public:
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class DirectDecl: public VarDef {
@@ -184,7 +184,7 @@ public:
 		this->ident = ident;
 		this->exp = exp;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class ArrayDecl: public VarDef {

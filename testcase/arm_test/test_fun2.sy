@@ -4,8 +4,7 @@ int foo(){
 int coo(){
 }
 int main(){
-	int a = 20;
-	int b = 30;
+	int a = 20, b = 30;
 	foo();
 	return b;
 
