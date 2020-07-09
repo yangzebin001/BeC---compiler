@@ -1,0 +1,3 @@
+out_file_name is testcase.s
+source file is ../testcase/functional_test/65_word_count.sy
+Parsing complete
