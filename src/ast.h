@@ -153,11 +153,11 @@ public:
 class ConstVarDecl: public Statement {
 public:
 	TypeDecl *typeDecl;
-	vector<ConstVarDef*> ConstVarDefList;
+	vector<ConstVarDef*> constVarDefList;
 
 	ConstVarDecl(TypeDecl *typeDecl, vector<ConstVarDef*> &constVarDefList) {
 		this->typeDecl = typeDecl;
-		this->ConstVarDefList = constVarDefList;
+		this->constVarDefList = constVarDefList;
 		this->type = CONSTVARDECL;
 	}
 

@@ -6,9 +6,15 @@
 static GobalContext* gobalctx = new GobalContext();
 
 
-const char* get_expression_value(Expression* top){
-    return "a";
+string get_const_value(AddExpression* top){
+    return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
+
+string get_lval_name(Lval* lval){
+    if(lval->type == IDENT){
+        return ((Ident*)lval)->id;
+    }
+}
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
@@ -29,6 +35,14 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
     //     }
     // }
 
+    for(int i = 0; i < constVarDecls.size(); i++){
+        for(int j = 0; j < constVarDecls[i]->constVarDefList.size(); j++){
+            string var_name = get_lval_name(constVarDecls[i]->constVarDefList[i]->lval);
+            string var_val = get_const_value((AddExpression*)constVarDecls[i]->constVarDefList[i]->initVal);
+            cout << var_name << ":" << var_val << endl;
+        }
+
+    }
 
 
     for(int i = 0; i < funcDefs.size(); i++){

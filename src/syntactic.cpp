@@ -1501,7 +1501,7 @@ yyreduce:
 
   case 16:
 #line 141 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.lval) = new Ident(*(yyvsp[0].string));  delete (yyvsp[0].string);}
+    {(yyval.lval) = new Ident(*(yyvsp[0].string));}
 #line 1506 "syntactic.cpp" /* yacc.c:1646  */
     break;
 

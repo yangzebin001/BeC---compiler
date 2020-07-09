@@ -138,7 +138,7 @@ VarDefList: VarDef {$$ = new vector<VarDef*>(); $$->push_back($1);}
 	| VarDefList ',' VarDef {$$->push_back($3);}
 	;
 
-Lval: ID {$$ = new Ident(*$1);  delete $1;}
+Lval: ID {$$ = new Ident(*$1);}
 	| ArrayEle
 	;
 
