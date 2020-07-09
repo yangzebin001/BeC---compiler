@@ -1,0 +1,7 @@
+int a = 22,b;
+int c = 44;
+int main(){
+	c = 33;
+	b = 55;
+	return b;
+}

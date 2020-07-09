@@ -1,0 +1,4 @@
+int a = 22;
+int main(){
+	return 1;
+}

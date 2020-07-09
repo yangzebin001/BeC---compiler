@@ -3,10 +3,38 @@
 #include "ast.h"
 #include "assembly.hpp"
 
+static GobalContext* gobalctx = new GobalContext();
+
+
+const char* get_expression_value(Expression* top){
+    return "a";
+} 
+
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
     
+    // for(int i = 0; i < varDecls.size(); i++){
+    //     if(i == 0){
+    //         emit_data();
+    //     }
+    //     if(varDecls[i]->typeDecl->typeName == "int"){
+    //         for(int j = 0; j < varDecls[i]->VarDefList.size(); j++){
+    //             DirectDecl* now_varDecls = (DirectDecl*)varDecls[i]->VarDefList[j];
+    //             if(now_varDecls->exp != NULL){
+    //                 emit_gobal_var_def(now_varDecls->ident->id.c_str(), get_expression_value(now_varDecls->exp));
+    //             }else{
+    //                 emit_gobal_var_decl(now_varDecls->ident->id.c_str());
+    //             }
+    //         }
+    //     }
+    // }
+
+
+
     for(int i = 0; i < funcDefs.size(); i++){
+        if(i == 0){
+            emit_data();
+        }
         Context* funcxt = new Context();
         funcDefs[i]->codeGen(*funcxt);
         delete funcxt;

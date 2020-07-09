@@ -7,6 +7,48 @@
 
 using namespace std;
 
+typedef enum {
+    NODE,
+	PROGRAM,
+	STATEMENT,
+	EXPRESSION,
+	TYPEDECL,
+	CONSTVARDECL,
+	CONSTVARDEF,
+	LVAL,
+	IDENT,
+	ARRAYELEMENT,
+	ARRAYINIT,
+	VARDECL,
+	VARDEF,
+	DIRECTDECL,
+	ARRAYDECL,
+	BLOCK,
+	FUNCPARAM,
+	FUNCTIONDEF,
+	FUNCTIONCALL,
+	STMTS,
+	ASSIGNMENT,
+	EXPRESSIONSTATEMENT,
+	BLOCKSTATEMENT,
+	OPERATION,
+	BINARYOPEXPRESSION,
+	LOREXPRESSION,
+	LANDEXPRESSION,
+	EQEXPRESSION,
+	RELEXPRESSION,
+	ADDEXPRESSION,
+	MULEXPRESSION,
+	PRIMARYEXPRESSION,
+	UNARYEXP,
+	IFSTATEMENT,
+	WHILESTATEMENT,
+	RETURNSTATEMENT,
+	BREAKSTATEMENT,
+	CONTINUESTATEMENT,
+
+} node_t;
+
 
 class Node;
 class Program;
@@ -47,12 +89,20 @@ class RETURNStatement;
 class BREAKStatement;
 class CONTINUEStatement;
 
+
+
+
+
 class Node {
 public:
+	node_t type;
 };
 
-class Program{
+class Program : public Node{
 public:
+	Program(){
+		this->type = PROGRAM;
+	}
 	vector<VarDecl*> varDecls;
     vector<ConstVarDecl*> constVarDecls;
 	vector<FunctionDef*> funcDefs;
@@ -74,11 +124,18 @@ public:
 
 class Statement: public Node {
 public:
+	Statement(){
+		this->type = STATEMENT;
+
+	}
 	virtual void codeGen(Context &ctx);
 };
 
 class Expression: public Node {
 public:
+	Expression(){
+		this->type = EXPRESSION;
+	}
 	virtual void codeGen(Context &ctx);
 };
 
@@ -88,6 +145,7 @@ public:
 
 	TypeDecl(string typeName) {
 		this->typeName = typeName;
+		this->type = TYPEDECL;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -100,6 +158,7 @@ public:
 	ConstVarDecl(TypeDecl *typeDecl, vector<ConstVarDef*> &constVarDefList) {
 		this->typeDecl = typeDecl;
 		this->ConstVarDefList = constVarDefList;
+		this->type = CONSTVARDECL;
 	}
 
 	virtual void codeGen(Context &ctx){}
@@ -114,6 +173,7 @@ public:
 	ConstVarDef(Lval *lval, Expression *initVal) {
 		this->lval = lval;
 		this->initVal = initVal;
+		this->type = CONSTVARDEF;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -121,6 +181,9 @@ public:
 class Lval: public Expression {
 public:
 	virtual void codeGen(Context &ctx);
+	Lval(){
+		this->type = LVAL;
+	}
 };
 
 class Ident: public Lval {
@@ -128,6 +191,7 @@ public:
 	string id;
 	Ident(string &id){
 		this->id = id;
+		this->type = IDENT;
 	}
 
 	virtual void codeGen(Context &ctx);
@@ -141,6 +205,7 @@ public:
 	ArrayElement(Expression *array, Expression *index) {
 		this->array = array;
 		this->index = index;
+		this->type = ARRAYELEMENT;
 	}
 
 	virtual void codeGen(Context &ctx){}
@@ -152,6 +217,7 @@ public:
 
 	ArrayInit(vector<Expression*> &exprList) {
 		this->exprList = exprList;
+		this->type = ARRAYINIT;
 	}
 
 	virtual void codeGen(Context &ctx){}
@@ -165,6 +231,7 @@ public:
 	VarDecl(TypeDecl *typeDecl, vector<VarDef*> &VarDefList) {
 		this->typeDecl = typeDecl;
 		this->VarDefList = VarDefList;
+		this->type = VARDECL;
 	}
 
 	virtual void codeGen(Context &ctx);
@@ -174,6 +241,9 @@ public:
 class VarDef: public Expression {
 public:
 	virtual void codeGen(Context &ctx);
+	VarDef(){
+		this->type = VARDEF;
+	}
 };
 
 class DirectDecl: public VarDef {
@@ -183,6 +253,7 @@ public:
 	DirectDecl(Ident *ident, Expression* exp){
 		this->ident = ident;
 		this->exp = exp;
+		this->type = DIRECTDECL;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -194,11 +265,11 @@ public:
 	ArrayDecl(ArrayElement *arrayElement, Expression* initVal){
 		this->arrayElement = arrayElement;
 		this->initVal = initVal;
+		this->type = ARRAYDECL;
 	}
 	virtual void codeGen(Context &ctx){}
 };
 
-//todo: FuncDef,Block,Stmts,AddExp
 
 class Block: public Node {
 public:
@@ -206,6 +277,7 @@ public:
 	Block(){}
 	Block(vector<Statement*> &statementList){
 		this->statementList = statementList;
+		this->type = BLOCK;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -217,6 +289,7 @@ public:
 	FuncParam(TypeDecl *typeDecl, Lval *lval){
 		this->typeDecl = typeDecl;
 		this->lval = lval;
+		this->type = FUNCPARAM;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -232,6 +305,7 @@ public:
 		this->id = id;
 		this->ParamList = ParamList;
 		this->block = block;
+		this->type = FUNCTIONDEF;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -244,6 +318,7 @@ public:
 	FunctionCall(Ident *id, vector<Expression*> &ParamList){
 		this->id = id;
 		this->ParamList = ParamList;
+		this->type = FUNCTIONCALL;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -260,6 +335,7 @@ public:
 	Assignment(Lval *lval, Expression *exp){
 		this->lval = lval;
 		this->exp = exp;
+		this->type = ASSIGNMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -269,6 +345,7 @@ public:
 	Expression *exp;
 	ExpressionStatement(Expression *exp){
 		this->exp = exp;
+		this->type = EXPRESSIONSTATEMENT;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -278,6 +355,7 @@ public:
 	Block *block;
 	BlockStatement(Block *block){
 		this->block = block;
+		this->type = BLOCKSTATEMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -288,6 +366,7 @@ public:
 	string op;
 	Operation(string op){
 		this->op = op;
+		this->type = OPERATION;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -302,11 +381,13 @@ public:
 	BinaryOpExpression(){}
 	BinaryOpExpression(Expression *unaryExp){
 		this->unaryExp = unaryExp;
+		this->type = BINARYOPEXPRESSION;
 	}
 	BinaryOpExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
+		this->type = BINARYOPEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -315,11 +396,13 @@ class LOrExpression: public BinaryOpExpression {
 public:
 	LOrExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = LOREXPRESSION;
 	}
 	LOrExpression(Expression *lhs, Expression *rhs){
 		this->op = new Operation("or");
 		this->lhs = lhs;
 		this->rhs = rhs;
+		this->type = LOREXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -328,11 +411,13 @@ class LAndExpression: public BinaryOpExpression {
 public:
 	LAndExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = LANDEXPRESSION;
 	}
 	LAndExpression(Expression *lhs, Expression *rhs){
 		this->op = new Operation("and");
 		this->lhs = lhs;
 		this->rhs = rhs;
+		this->type = LANDEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -342,11 +427,13 @@ class EqExpression: public BinaryOpExpression {
 public:
 	EqExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = EQEXPRESSION;
 	}
 	EqExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
+		this->type = EQEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -355,11 +442,13 @@ class RelExpression: public BinaryOpExpression {
 public:
 	RelExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = RELEXPRESSION;
 	}
 	RelExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
+		this->type = RELEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -368,11 +457,13 @@ class AddExpression: public BinaryOpExpression {
 public:
 	AddExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = ADDEXPRESSION;
 	}
 	AddExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
+		this->type = ADDEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -381,11 +472,13 @@ class MulExpression: public BinaryOpExpression {
 public:
 	MulExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->type = MULEXPRESSION;
 	}
 	MulExpression(Expression *lhs, Operation* op, Expression *rhs){
 		this->lhs = lhs;
 		this->op = op;
 		this->rhs = rhs;
+		this->type = MULEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -399,6 +492,7 @@ public:
 		this->number = number;
 		this->lval = lval;
 		this->exp = exp;
+		this->type = PRIMARYEXPRESSION;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -414,6 +508,7 @@ public:
 		this->funcCall = funcCall;
 		this->unaryOp = unaryOp;
 		this->unaryExp = unaryExp;
+		this->type = UNARYEXP;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -427,6 +522,7 @@ public:
 		this->exp = exp;
 		this->TRUEStmt = TRUEStmt;
 		this->FALSEStmt = FALSEStmt;
+		this->type = IFSTATEMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -439,6 +535,7 @@ public:
 	WHILEStatement(Expression *exp,Statement *stmt){
 		this->exp = exp;
 		this->stmt = stmt;
+		this->type = WHILESTATEMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -448,6 +545,7 @@ public:
 	Expression *exp;
 	RETURNStatement(Expression *exp){
 		this->exp = exp;
+		this->type = RETURNSTATEMENT;
 	}
 	virtual void codeGen(Context &ctx);
 };
@@ -455,6 +553,7 @@ public:
 class BREAKStatement: public Statement {
 public:
 	BREAKStatement(){
+		this->type = BREAKSTATEMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };
@@ -462,6 +561,7 @@ public:
 class CONTINUEStatement: public Statement {
 public:
 	CONTINUEStatement(){
+		this->type = CONTINUESTATEMENT;
 	}
 	virtual void codeGen(Context &ctx){}
 };

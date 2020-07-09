@@ -29,7 +29,15 @@ make clean
 
 ### Todo
 
-- IR
+- gobal var const var array
+- local array
+- binaryop
+- if
+- while
+- break
+- continue
+- getint()
+- funcparam var, array
 
 
 ### Reference

@@ -11,9 +11,12 @@ static FILE* outfile;
 
 void emit_header(const char* name){
     fprintf(outfile, "	.file	\"%s\"\n", name);
-    fprintf(outfile, "	.text\n");
-
 }
+
+void emit_data(){
+    fprintf(outfile, "	.text\n");
+}
+
 
 void emit_instr(char *instr, char *operands) {
     // TODO: fix duplication with emit_instr_format.
@@ -85,6 +88,20 @@ void emit_function_epilogue2(const char* name) {
     emit_instr("sub", "sp, fp, #4");
     emit_instr("pop", "{fp, pc}");
     fprintf(outfile, "	.size	%s, .-%s\n", name, name);
+}
+
+void emit_gobal_var_def(const char* name, const char* data){
+    fprintf(outfile, "	.global %s\n", name);
+    fprintf(outfile, "	.data\n");
+    fprintf(outfile, "	.align	2\n");
+    fprintf(outfile, "	.type	%s, %%object\n", name);
+    fprintf(outfile, "	.size	%s, 4\n", name);
+    fprintf(outfile, "%s:\n",name);
+    fprintf(outfile, "	.word	%s\n", data);
+}
+
+void emit_gobal_var_decl(const char*name){
+    fprintf(outfile, "	.comm	%s,4,4\n", name);
 }
 
 void init_assembly(const char* in_file_name, const char* out_file_name) {

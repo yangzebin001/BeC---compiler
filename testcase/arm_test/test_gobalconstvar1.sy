@@ -1,0 +1,5 @@
+const int a = 22;
+int main(){
+	int b = a;
+	return 1;
+}
