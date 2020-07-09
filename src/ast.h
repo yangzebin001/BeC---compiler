@@ -19,6 +19,7 @@ typedef enum {
 	IDENT,
 	ARRAYELEMENT,
 	ARRAYINIT,
+	INITVAL,
 	VARDECL,
 	VARDEF,
 	DIRECTDECL,
@@ -61,6 +62,7 @@ class Lval;
 class Ident;
 class ArrayElement;
 class ArrayInit;
+class InitVal;
 class VarDecl;
 class VarDef;
 class DirectDecl;
@@ -165,12 +167,26 @@ public:
 };
 
 
+class InitVal: public Expression {
+public:
+	Expression *initVal;
+	ArrayInit *arrayInit;
+
+	InitVal(Expression *initVal, ArrayInit *arrayInit){
+		this->initVal = initVal;
+		this->arrayInit = arrayInit;
+		this->type = INITVAL;
+	}
+
+	virtual void codeGen(Context &ctx){}
+};
+
 class ConstVarDef: public Statement {
 public:
 	Lval *lval;
-	Expression *initVal;
+	InitVal *initVal;
 
-	ConstVarDef(Lval *lval, Expression *initVal) {
+	ConstVarDef(Lval *lval, InitVal *initVal) {
 		this->lval = lval;
 		this->initVal = initVal;
 		this->type = CONSTVARDEF;
@@ -213,10 +229,12 @@ public:
 
 class ArrayInit: public Expression {
 public:
-	vector<Expression*> exprList;
+	vector<InitVal*> exprList;
+	ArrayInit *arrayInit;
 
-	ArrayInit(vector<Expression*> &exprList) {
+	ArrayInit(vector<InitVal*> &exprList, ArrayInit *arrayInit) {
 		this->exprList = exprList;
+		this->arrayInit = arrayInit;
 		this->type = ARRAYINIT;
 	}
 

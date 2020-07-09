@@ -9,6 +9,8 @@ string get_gobal_label(int label){
     return ".L" + to_string(label);
 }
 
+
+//**TODO*/
 string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
@@ -26,13 +28,13 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
     for(int i = 0; i < constVarDecls.size(); i++){
         for(int j = 0; j < constVarDecls[i]->constVarDefList.size(); j++){
             string var_name = get_lval_name(constVarDecls[i]->constVarDefList[j]->lval);
-            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal);
+            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal->initVal);
             // cout << var_name << ":" << var_val << endl;
             gobal_ctx->set_const_value(var_name, var_val);
         }
     }
 
-    // gen gobal var
+    // gen gobal var 
     for(int i = 0; i < varDecls.size(); i++){
         if(i == 0){
             emit_text();

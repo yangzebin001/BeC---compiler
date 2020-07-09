@@ -50,6 +50,9 @@ void yyerror(std::string s) {
 	RETURNStatement *returnStatement;
 	CONTINUEStatement *continueStatement;
 	BREAKStatement *breakStatement;
+	InitVal *initVal;
+	ArrayDecl *arrayDecl;
+	ArrayInit *arrayInit;
 
 
 	vector<ConstVarDef*> *constVarDefList;
@@ -57,6 +60,7 @@ void yyerror(std::string s) {
 	vector<Expression*> *paramList;
 	vector<FuncParam*> *funcFParams;
 	vector<Statement*> *stmtList;
+	vector<InitVal*> *repInitVal;
 }
 
 
@@ -79,10 +83,12 @@ void yyerror(std::string s) {
 %type <varDefList> VarDefList
 %type <lval> Lval
 %type <arrayEle> ArrayEle
+%type <arrayDecl> ArrayDecl
 %type <varDef> VarDef
 %type <directDecl> DirectDecl
 %type <operation> UnaryOp
-%type <exp> Exp InitVal 
+%type <exp> Exp 
+%type <initVal> InitVal
 %type <lorExp> LOrExp Cond
 %type <landExp> LAndExp
 %type <eqExp> EqExp
@@ -103,6 +109,8 @@ void yyerror(std::string s) {
 %type <returnStatement> RETURNStmt
 %type <continueStatement> CONTINUEStmt
 %type <breakStatement> BREAKStmt
+%type <arrayInit> ArrayInit
+%type <repInitVal> REPInitVal
 
 
 %start Program
@@ -139,36 +147,36 @@ VarDefList: VarDef {$$ = new vector<VarDef*>(); $$->push_back($1);}
 	;
 
 Lval: ID {$$ = new Ident(*$1);}
-	| ArrayEle
+	| ArrayEle { $$ = $1; }
 	;
 
 VarDef: DirectDecl {$$ = $1;}
-	| ArrayDecl 
+	| ArrayDecl {$$ = $1;}
 	;
 
 DirectDecl: ID {$$ = new DirectDecl(new Ident(*$1), NULL); }
 	| ID '=' Exp {$$ = new DirectDecl(new Ident(*$1), $3); }
 	;
 
-ArrayDecl: ArrayEle
-	| ArrayEle '=' InitVal
+ArrayDecl: ArrayEle {$$ = new ArrayDecl($1,NULL);}
+	| ArrayEle '=' InitVal {$$ = new ArrayDecl($1,$3);}
 	;
 
-ArrayEle: ID '[' ']' 
-	| ID '[' ConstExp ']'
-	| ArrayEle '[' ConstExp ']'
+ArrayEle: ID '[' ']'  { $$ = new ArrayElement(new Ident(*$1), NULL); }
+	| ID '[' ConstExp ']' { $$ = new ArrayElement(new Ident(*$1), $3); }
+	| ArrayEle '[' ConstExp ']' { $$ = new ArrayElement($1, $3); }
 	;
 
-InitVal: Exp {$$ = $1;}
-	| ArrayInit
+InitVal: Exp {$$ = new InitVal($1 ,NULL);}
+	| ArrayInit {$$ = new InitVal(NULL, $1);}
 	;
 
-ArrayInit: '{' REPInitVal '}'
+ArrayInit: '{' REPInitVal '}' {$$ = new ArrayInit(*$2, NULL);}
 	;
 
-REPInitVal: 
-	| InitVal
-	| REPInitVal ',' InitVal
+REPInitVal:  { $$ = new vector<InitVal*>(); }
+	| InitVal { $$ = new vector<InitVal*>(); $$->push_back($1); }
+	| REPInitVal ',' InitVal { $$->push_back($3); }
 	;
 
 FuncDef: BType ID '(' FuncFParams ')' Block {$$ = new FunctionDef($1,new Ident(*$2),*$4,$6);}
@@ -297,7 +305,7 @@ LOrExp: LAndExp {$$ = new LOrExpression($1);}
 	| LOrExp OR LAndExp {$$ = new LOrExpression($1, $3);}
 	;
 
-ConstExp: AddExp
+ConstExp: AddExp {$$ = $1;}
 	;
 
 

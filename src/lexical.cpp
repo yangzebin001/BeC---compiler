@@ -2128,6 +2128,9 @@ union YYSTYPE
 	RETURNStatement *returnStatement;
 	CONTINUEStatement *continueStatement;
 	BREAKStatement *breakStatement;
+	InitVal *initVal;
+	ArrayDecl *arrayDecl;
+	ArrayInit *arrayInit;
 
 
 	vector<ConstVarDef*> *constVarDefList;
@@ -2135,8 +2138,9 @@ union YYSTYPE
 	vector<Expression*> *paramList;
 	vector<FuncParam*> *funcFParams;
 	vector<Statement*> *stmtList;
+	vector<InitVal*> *repInitVal;
 
-#line 128 "syntactic.hpp" /* yacc.c:1909  */
+#line 132 "syntactic.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;
