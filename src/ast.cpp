@@ -3,10 +3,13 @@
 #include "ast.h"
 #include "assembly.hpp"
 
-static GobalContext* gobalctx = new GobalContext();
+static GobalContext* gobal_ctx = new GobalContext();
 
+string get_gobal_label(int label){
+    return ".L" + to_string(label);
+}
 
-string get_const_value(AddExpression* top){
+string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
 
@@ -19,40 +22,57 @@ string get_lval_name(Lval* lval){
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
     
-    // for(int i = 0; i < varDecls.size(); i++){
-    //     if(i == 0){
-    //         emit_data();
-    //     }
-    //     if(varDecls[i]->typeDecl->typeName == "int"){
-    //         for(int j = 0; j < varDecls[i]->VarDefList.size(); j++){
-    //             DirectDecl* now_varDecls = (DirectDecl*)varDecls[i]->VarDefList[j];
-    //             if(now_varDecls->exp != NULL){
-    //                 emit_gobal_var_def(now_varDecls->ident->id.c_str(), get_expression_value(now_varDecls->exp));
-    //             }else{
-    //                 emit_gobal_var_decl(now_varDecls->ident->id.c_str());
-    //             }
-    //         }
-    //     }
-    // }
-
+    // store gobal const var
     for(int i = 0; i < constVarDecls.size(); i++){
         for(int j = 0; j < constVarDecls[i]->constVarDefList.size(); j++){
-            string var_name = get_lval_name(constVarDecls[i]->constVarDefList[i]->lval);
-            string var_val = get_const_value((AddExpression*)constVarDecls[i]->constVarDefList[i]->initVal);
-            cout << var_name << ":" << var_val << endl;
+            string var_name = get_lval_name(constVarDecls[i]->constVarDefList[j]->lval);
+            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal);
+            // cout << var_name << ":" << var_val << endl;
+            gobal_ctx->set_const_value(var_name, var_val);
         }
-
     }
 
+    // gen gobal var
+    for(int i = 0; i < varDecls.size(); i++){
+        if(i == 0){
+            emit_text();
+            emit_data();
+        }
+        for(int j = 0; j < varDecls[i]->VarDefList.size(); j++){
+            if(varDecls[i]->VarDefList[j]->type == DIRECTDECL){
+                DirectDecl* now_varDecls = (DirectDecl*)varDecls[i]->VarDefList[j];
+                
+                // now just support immi number
+                if(now_varDecls->exp != NULL){
+                    emit_gobal_var_def(now_varDecls->ident->id.c_str(), get_var_value((AddExpression*)now_varDecls->exp).c_str());
+                }
+                else{
+                    emit_gobal_var_decl(now_varDecls->ident->id.c_str());
+                }
+                // cout << now_varDecls->ident->id << ":" << endl; 
+                gobal_ctx->set_label(now_varDecls->ident->id);
+            }  
+        }
+    }
 
+    // gen function
     for(int i = 0; i < funcDefs.size(); i++){
         if(i == 0){
-            emit_data();
+            emit_text();
         }
         Context* funcxt = new Context();
         funcDefs[i]->codeGen(*funcxt);
         delete funcxt;
     }
+
+
+    //gen var lable
+    string tmp = "";
+	int label_idx = 1;
+	gobal_ctx->init_label_for();
+	while(gobal_ctx->get_next_label(tmp,label_idx)){
+		emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+	}
 }
 
 void FunctionDef::codeGen(Context &ctx){

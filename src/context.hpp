@@ -9,15 +9,15 @@ static const int WORD_SIZE = 4;
 class Context{
 private:
     map<string,int> stack_offset;
-    map<string,int> var_lable;
+    map<string,int> var_label;
     int cur_offset;
-    int lable_count;
+    int label_count;
 public:
     Context(){
         stack_offset.clear();
-        var_lable.clear();
+        var_label.clear();
         cur_offset = -4;
-        lable_count = 3;
+        label_count = 3;
     }
     int get_offset(string& var){
 		if(!stack_offset.count(var)){
@@ -34,25 +34,25 @@ public:
         return true;
     }
 
-    int get_lable(string& var){
-		if(!stack_offset.count(var)){
-			fprintf(stderr,"lable: %s not exist\n", var.c_str());
+    int get_label(string& var){
+		if(!var_label.count(var)){
+			fprintf(stderr,"label: %s not exist\n", var.c_str());
             exit(-1);
 		}
-        return var_lable[var];
+        return var_label[var];
     }
 
-    bool set_lable(string& var){
-    	if(var_lable.count(var)) return false;
-        var_lable[var] = cur_offset;
-        lable_count++;
+    bool set_label(string& var){
+    	if(var_label.count(var)) return false;
+        var_label[var] = label_count;
+        label_count++;
         return true;
     }
 
 
     ~Context(){
     	stack_offset.clear();
-        var_lable.clear();
+        var_label.clear();
 	}
 
 };
@@ -61,15 +61,19 @@ class GobalContext{
 
 private: 
     map<string, string> const_value;
+    map<string, int> var_label;
+    map<string, int>::iterator it;
+    int label_count;
 
 public:
     GobalContext(){
         const_value.clear();
+        this->label_count = 3;
     }
     string get_const_value(string& var){
 		if(!const_value.count(var)){
 			fprintf(stderr,"const value: %s not exist\n", var.c_str());
-            exit(-1);
+            return "";
 		}
         return const_value[var];
     }
@@ -81,8 +85,38 @@ public:
     }
 
 
+    int get_label(string& var){
+		if(!var_label.count(var)){
+			fprintf(stderr,"label: %s not exist\n", var.c_str());
+            exit(-1);
+		}
+        return var_label[var];
+    }
+
+    bool set_label(string& var){
+    	if(var_label.count(var)) return false;
+        var_label[var] = label_count;
+        label_count++;
+        return true;
+    }
+
+    void init_label_for(){
+        this->it = var_label.begin();
+    }
+
+    bool get_next_label(string &tmp, int &label){
+        if(this->it == var_label.end()){
+            return false;
+        }
+        tmp = this->it->first;
+        label = this->it->second;
+        ++(this->it);
+        return true;
+    }
+
     ~GobalContext(){
     	const_value.clear();
+        var_label.clear();
 	}
 
 };

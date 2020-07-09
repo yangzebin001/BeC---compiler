@@ -52,10 +52,10 @@ main:
 	@ sp needed
 	ldr	fp, [sp], #4
 	bx	lr
+	.size	main, .-main
 .L4:
 	.align	2
 .L5:
 	.word	b
 .L3:
 	.word	c
-	.size	main, .-main

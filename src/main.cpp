@@ -27,7 +27,7 @@ int main(int argc, char *argv[])
 			printf("out_file_name is %s\n", out_file_name);
 			break;
 		case 'S':
-			printf("S here\n");
+			// printf("S here\n");
 			break;
 		case 'O':
 			if(optarg[0] == '2'){
@@ -40,12 +40,14 @@ int main(int argc, char *argv[])
             exit(EXIT_FAILURE);
 		}
 	}
+
 	if (optind >= argc) {
 		fprintf(stderr, "Expected argument after options\n");
 		exit(EXIT_FAILURE);
 	}
-	in_file_name = argv[optind];
 
+	in_file_name = argv[optind];
+	printf("source file is %s\n",in_file_name);
 
 	yyin = fopen(in_file_name, "r");
 	
@@ -56,7 +58,6 @@ int main(int argc, char *argv[])
 	
 	fclose(yyin);
 
-	printf("source file is %s\n",in_file_name);
 
 	// printf("%d\n",program->funcDefs.size());
 
