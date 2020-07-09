@@ -145,7 +145,9 @@ void UnaryExp::codeGen(Context &ctx){
 
 void FunctionCall::codeGen(Context &ctx){
     printf("gen FunctionCall\n");
+    ctx.cur_type = CFUNCTIONCALL;
     emit_instr_format("bl","%s",id->id.c_str());
+    emit_instr_format("mov", "r3, r0");
 }
 
 void RelExpression::codeGen(Context &ctx){
@@ -209,9 +211,49 @@ void Lval::codeGen(Context &ctx){
     printf("gen Lval\n");
 }
 
-
 void Ident::codeGen(Context &ctx){
     printf("gen Ident\n");
-    emit_instr_format("ldr", "r3, [fp, #%d]", ctx.get_offset(id));
+
+    ctx.cur_var_name = id;
+
+    int offset = ctx.get_offset(id);
+    //local var
+    if(offset != -1){
+        ctx.cur_type = CLOCAL_VAR;
+        emit_instr_format("ldr", "r3, [fp, #%d]", offset);
+    }else{
+        int label = gobal_ctx->get_label(id);
+        
+        if(label != -1){
+            ctx.cur_type = CGOBAL_VAR;
+            emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
+        }else{
+            string gobal_const_var = gobal_ctx->get_const_value(id);
+            if(gobal_const_var != ""){
+                emit_instr_format("mov","r3, #%s",gobal_const_var.c_str());
+            }else {
+                fprintf(stderr,"cannot find : %s not def\n", id.c_str());
+                exit(-1);
+            }
+        }
+    }
+}
+
+void Assignment::codeGen(Context &ctx){
+    exp->codeGen(ctx);  //in r3
+    ctx_t exp_type = ctx.cur_type;
+
+    lval->codeGen(ctx); //in r2
+    ctx_t lval_type = ctx.cur_type;
+    string lval_name = ctx.cur_var_name;
+
+
+
+    if(lval_type == CGOBAL_VAR){
+        emit_instr_format("str", "r3, [r2]");
+    }else if(lval_type == CLOCAL_VAR){
+        // str        r3, [fp, #-4]
+        emit_instr_format("str", "r3, [fp, #%d]",  ctx.get_offset(lval_name));
+    }
 }
 

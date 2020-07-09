@@ -337,7 +337,7 @@ public:
 		this->exp = exp;
 		this->type = ASSIGNMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class ExpressionStatement: public Statement {

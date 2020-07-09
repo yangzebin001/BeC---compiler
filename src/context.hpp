@@ -6,6 +6,16 @@ using namespace std;
 
 static const int WORD_SIZE = 4;
 
+typedef enum{
+    CGOBAL_VAR,
+    CGOBAL_CONST_VAR,
+    CARRAY,
+    CLOCAL_VAR,
+    CLOCAL_CONST_VAR,
+    CFUNCTIONCALL
+} ctx_t;
+
+
 class Context{
 private:
     map<string,int> stack_offset;
@@ -13,6 +23,8 @@ private:
     int cur_offset;
     int label_count;
 public:
+    ctx_t cur_type;
+    string cur_var_name;
     Context(){
         stack_offset.clear();
         var_label.clear();
@@ -21,8 +33,7 @@ public:
     }
     int get_offset(string& var){
 		if(!stack_offset.count(var)){
-			fprintf(stderr,"offset: %s not exist\n", var.c_str());
-            exit(-1);
+			return -1;
 		}
         return stack_offset[var];
     }
@@ -87,8 +98,7 @@ public:
 
     int get_label(string& var){
 		if(!var_label.count(var)){
-			fprintf(stderr,"label: %s not exist\n", var.c_str());
-            exit(-1);
+			return -1;
 		}
         return var_label[var];
     }

@@ -1,13 +1,18 @@
-	.file	"../testcase/test2.sy"
+	.file	"../testcase/functional_test/06_var_defn_func.sy"
 	.text
-	.data
-	.global c
 	.align	2
-	.type	c, %object
-	.size	c, 4
-c:
-	.word	3
-	.text
+	.global	defn
+	.arch armv7-a
+	.arm
+	.type	defn, %function
+defn:
+    push       {fp, lr}
+    add        fp, sp, #4
+    mov        r3, #4
+    mov        r0, r3
+    sub        sp, fp, #4
+    pop        {fp, pc}
+	.size	defn, .-defn
 	.align	2
 	.global	main
 	.arch armv7-a
@@ -16,10 +21,12 @@ c:
 main:
     push       {fp, lr}
     add        fp, sp, #4
-    mov        r3, #1
+    sub        sp, sp, #4
+    bl         defn
+    mov        r3, r0
+    str        r3, [fp, #-4]
+    ldr        r3, [fp, #-4]
     mov        r0, r3
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
-.L3:
-	.word	c
