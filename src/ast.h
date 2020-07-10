@@ -285,7 +285,7 @@ public:
 		this->initVal = initVal;
 		this->type = ARRAYDECL;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 

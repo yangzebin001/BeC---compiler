@@ -4,7 +4,7 @@
 
 using namespace std;
 
-static const int WORD_SIZE = 4;
+const int WORD_SIZE = 4;
 
 typedef enum{
     CGOBAL_VAR,

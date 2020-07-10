@@ -21,6 +21,10 @@ void emit_data(){
     fprintf(outfile, "	.data\n");
 }
 
+void emit_word(const char* data){
+    fprintf(outfile, "	.word	%s\n",data);
+}
+
 void emit_instr(char *instr, char *operands) {
     // TODO: fix duplication with emit_instr_format.
     // The assembler requires at least 4 spaces for indentation.
@@ -98,17 +102,22 @@ void emit_function_epilogue2(const char* name) {
     fprintf(outfile, "	.size	%s, .-%s\n", name, name);
 }
 
-void emit_gobal_var_def(const char* name, const char* data){
+void emit_part_gobal_var_def(const char* name, int ele_size){
     fprintf(outfile, "	.global %s\n", name);
     fprintf(outfile, "	.align	2\n");
     fprintf(outfile, "	.type	%s, %%object\n", name);
-    fprintf(outfile, "	.size	%s, 4\n", name);
+    fprintf(outfile, "	.size	%s, %d\n", name, ele_size);
     fprintf(outfile, "%s:\n",name);
-    fprintf(outfile, "	.word	%s\n", data);
 }
 
-void emit_gobal_var_decl(const char*name){
-    fprintf(outfile, "	.comm	%s,4,4\n", name);
+void emit_gobal_var_def(const char* name, const char* data){
+    emit_part_gobal_var_def(name, 4);
+    emit_data(data);
+}
+
+
+void emit_gobal_var_decl(const char*name, int ele_size){
+    fprintf(outfile, "	.comm	%s,%d,%d\n", name, ele_size,WORD_SIZE);
 }
 
 void init_assembly(const char* in_file_name, const char* out_file_name) {

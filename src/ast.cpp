@@ -10,7 +10,7 @@ string get_gobal_label(int label){
 }
 
 
-//**TODO*/
+//**just support immediate number*/
 string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
@@ -20,6 +20,44 @@ string get_lval_name(Lval* lval){
         return ((Ident*)lval)->id;
     }
 }
+
+
+int get_array_element_number(ArrayDecl* nowarray){
+    ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
+    int number = 1;
+    vector<int> array_layer;
+
+    //decl
+    while(ae->type != IDENT){
+        if(ae->index != NULL){
+            string cur_ele_number = get_var_value((AddExpression*)ae->index);
+            array_layer.push_back(stoi(cur_ele_number));
+        }else{
+            array_layer.push_back(0);
+        }
+        ae = (ArrayElement*)ae->array;
+    }
+
+    //def
+
+    return number;
+}
+
+int get_array_def_number(InitVal* initVal, int cur_layer){
+    
+}
+
+string get_array_name(ArrayDecl* nowarray){
+    ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
+    int number = 1;
+    while(ae->type != IDENT){
+        ae = (ArrayElement*)ae->array;
+    }
+    return ((Ident*)ae)->id;
+}
+
+void gen_array_initval()
+
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
@@ -44,16 +82,29 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
             if(varDecls[i]->VarDefList[j]->type == DIRECTDECL){
                 DirectDecl* now_varDecls = (DirectDecl*)varDecls[i]->VarDefList[j];
                 
-                // now just support immi number
+                // now just support immediate number
                 if(now_varDecls->exp != NULL){
                     emit_gobal_var_def(now_varDecls->ident->id.c_str(), get_var_value((AddExpression*)now_varDecls->exp).c_str());
                 }
                 else{
-                    emit_gobal_var_decl(now_varDecls->ident->id.c_str());
+                    emit_gobal_var_decl(now_varDecls->ident->id.c_str(), 4);
                 }
                 // cout << now_varDecls->ident->id << ":" << endl; 
                 gobal_ctx->set_label(now_varDecls->ident->id);
-            }  
+            }else if(varDecls[i]->VarDefList[j]->type == ARRAYDECL){
+                ArrayDecl* now_arrDecls = (ArrayDecl*)varDecls[i]->VarDefList[j];
+                int ele_number = get_array_element_number(now_arrDecls);
+                string array_name = get_array_name(now_arrDecls);
+                
+                cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
+
+                if(now_arrDecls->initVal != NULL){
+                    emit_part_gobal_var_def(array_name.c_str(), ele_number*WORD_SIZE);
+                }else{
+                    emit_gobal_var_decl(array_name.c_str(), ele_number*WORD_SIZE);
+                }
+                gobal_ctx->set_label(array_name);
+            }
         }
     }
 
@@ -207,6 +258,10 @@ void DirectDecl::codeGen(Context &ctx){
         exp->codeGen(ctx);
         emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(ident->id));
     }
+}
+
+void ArrayDecl::codeGen(Context &ctx){
+    printf("gen ArrayDecl\n");
 }
 
 void Lval::codeGen(Context &ctx){
