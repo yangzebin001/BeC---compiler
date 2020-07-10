@@ -12,7 +12,8 @@ typedef enum{
     CARRAY,
     CLOCAL_VAR,
     CLOCAL_CONST_VAR,
-    CFUNCTIONCALL
+    CFUNCTIONCALL,
+    CARRAY_DECL
 } ctx_t;
 
 
@@ -36,11 +37,11 @@ public:
         return stack_offset[var];
     }
 
-    bool set_offset(string var, int &cur_offset){
+    bool set_offset(string var, int &cur_offset, int size){
 
     	if(stack_offset.count(var)) return false;
         stack_offset[var] = cur_offset;
-        cur_offset -= WORD_SIZE;
+        cur_offset -= WORD_SIZE*size;
         return true;
     }
 
@@ -97,8 +98,11 @@ public:
 		
 
     bool set_offset(string var){
+    	return scope->set_offset(var, cur_offset, 1);
+    }
 
-    	return scope->set_offset(var,cur_offset);
+    bool set_assign_offset(string var, int size){
+        return scope->set_offset(var, cur_offset, size);
     }
 
     int get_label(string var){

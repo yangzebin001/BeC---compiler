@@ -96,6 +96,7 @@ int gen_array_initval_from_index(InitVal* initVal, int index){
     return flat_array_eles[index];
 }
 
+
 // suppose that element is side by side
 void get_gobal_array_initval_from_vec(InitVal* initVal, vector<string> &array_eles, int cur_layer){
     int cur_number = initVal->initValList.size();
@@ -104,6 +105,16 @@ void get_gobal_array_initval_from_vec(InitVal* initVal, vector<string> &array_el
     }
     for(int i = 0; i < cur_number; i++){
         get_gobal_array_initval_from_vec(initVal->initValList[i], array_eles, cur_layer+1);
+    }
+}
+
+void get_gobal_array_initval(InitVal* initVal, vector<Expression*> &array_eles, int cur_layer){
+    int cur_number = initVal->initValList.size();
+    if(initVal->exp != NULL){
+        array_eles.push_back(initVal->exp);
+    }
+    for(int i = 0; i < cur_number; i++){
+        get_gobal_array_initval(initVal->initValList[i], array_eles, cur_layer+1);
     }
 }
 
@@ -346,7 +357,27 @@ void DirectDecl::codeGen(Context &ctx){
 }
 
 void ArrayDecl::codeGen(Context &ctx){
-    printf("gen ArrayDecl\n");
+    ctx.cur_type = CARRAY_DECL;
+
+    int number = get_array_element_number(this);
+    string array_name = get_array_name(arrayElement);
+    cout << "array size is:" <<number << endl;
+    bool offset_result = ctx.set_offset(array_name);
+    if(offset_result) {
+        emit_instr_format("sub", "sp, sp, #%d", number*WORD_SIZE);
+    }
+    emit_instr_format("sub", "r2, fp, #%d", number*WORD_SIZE);
+    emit_instr_format("mov", "r3, #0");
+    for(int i = 0; i < number; i++){
+        emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
+    }
+
+    vector<Expression*> expList;
+    get_gobal_array_initval(initVal, expList, 0);
+    for(int i = 0; i < expList.size(); i++){
+        expList[i]->codeGen(ctx);
+        emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
+    }
 }
 
 void Lval::codeGen(Context &ctx){
@@ -381,7 +412,14 @@ void Ident::codeGen(Context &ctx){
     }
 }
 
+void ArrayElement::codeGen(Context &ctx){
+    printf("gen arrayElement\n");
+    if(ctx.cur_type == CARRAY_DECL) return;
+
+}
+
 void Assignment::codeGen(Context &ctx){
+    printf("gen Assignment\n");
     exp->codeGen(ctx);  //in r3
     ctx_t exp_type = ctx.cur_type;
 

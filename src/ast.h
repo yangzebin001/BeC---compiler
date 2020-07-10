@@ -222,7 +222,7 @@ public:
 		this->type = ARRAYELEMENT;
 	}
 
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 
