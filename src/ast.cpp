@@ -70,8 +70,7 @@ int get_array_element_number(ArrayDecl* nowarray){
 }
 
 
-string get_array_name(ArrayDecl* nowarray){
-    ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
+string get_array_name(ArrayElement* ae){
     int number = 1;
     while(ae->type != IDENT){
         ae = (ArrayElement*)ae->array;
@@ -113,17 +112,37 @@ void get_gobal_array_initval_from_vec(InitVal* initVal, vector<string> &array_el
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
     
-    // store gobal const var
+    // store gobal const var and array
     for(int i = 0; i < constVarDecls.size(); i++){
         for(int j = 0; j < constVarDecls[i]->constVarDefList.size(); j++){
-            string var_name = get_lval_name(constVarDecls[i]->constVarDefList[j]->lval);
-            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal->exp);
-            // cout << var_name << ":" << var_val << endl;
-            gobal_ctx->set_const_value(var_name, var_val);
+            //const var
+            if(constVarDecls[i]->constVarDefList[j]->lval->type != ARRAYELEMENT){
+                string var_name = get_lval_name(constVarDecls[i]->constVarDefList[j]->lval);
+                string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal->exp);
+                // cout << var_name << ":" << var_val << endl;
+                gobal_ctx->set_const_value(var_name, var_val);
+
+            }else{
+            //const array
+                cout << "111" << endl;
+                ArrayElement* now_arr = (ArrayElement*)constVarDecls[i]->constVarDefList[j]->lval;
+                InitVal* initVal = (InitVal*)constVarDecls[i]->constVarDefList[j]->initVal;
+                string array_name = get_array_name(now_arr);
+
+                cout << array_name << endl;
+                
+                vector<string> flat_array_eles;
+                get_gobal_array_initval_from_vec(initVal, flat_array_eles, 0);
+                for(int i = 0; i < flat_array_eles.size(); i++){
+                    string array_ele_name = make_array_ele_name(array_name,i);
+                    cout << array_ele_name << " : " << flat_array_eles[i] << endl;
+                    gobal_ctx->set_const_value(array_ele_name, flat_array_eles[i]);
+                }
+            }
         }
     }
 
-    
+
 
     // gen gobal var and array
     for(int i = 0; i < varDecls.size(); i++){
@@ -150,7 +169,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
             }else if(varDecls[i]->VarDefList[j]->type == ARRAYDECL){
                 ArrayDecl* now_arrDecls = (ArrayDecl*)varDecls[i]->VarDefList[j];
                 int ele_number = get_array_element_number(now_arrDecls);
-                string array_name = get_array_name(now_arrDecls);
+                string array_name = get_array_name(now_arrDecls->arrayElement);
                 
                 // cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
 
