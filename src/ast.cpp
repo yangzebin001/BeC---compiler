@@ -24,6 +24,10 @@ string get_lval_name(Lval* lval){
     }
 }
 
+string make_array_ele_name(string array,int index){
+    return array + "__" + to_string(index);
+}
+
 void get_array_def_number(InitVal* initVal, vector<int> &array_layer, int cur_layer){
     int cur_number = initVal->initValList.size();
     if(array_layer[cur_layer] == 0){
@@ -75,44 +79,34 @@ string get_array_name(ArrayDecl* nowarray){
     return ((Ident*)ae)->id;
 }
 
-void get_array_initval_1(InitVal* initVal, vector<int> &array_eles, int cur_layer){
+void get_array_initval_from_index_1(InitVal* initVal, vector<int> &array_eles, int cur_layer){
     int cur_number = initVal->initValList.size();
     if(initVal->exp != NULL){
         int val = stoi(get_var_value((AddExpression*)initVal->exp));
         array_eles.push_back(val);
     }
     for(int i = 0; i < cur_number; i++){
-        get_array_initval_1(initVal->initValList[i], array_eles, cur_layer+1);
+        get_array_initval_from_index_1(initVal->initValList[i], array_eles, cur_layer+1);
     }
 }
 
 
-int gen_array_initval(InitVal* initVal, int index){
+int gen_array_initval_from_index(InitVal* initVal, int index){
     vector<int> flat_array_eles;
-    get_array_initval_1(initVal,flat_array_eles, 0);
+    get_array_initval_from_index_1(initVal,flat_array_eles, 0);
     return flat_array_eles[index];
 }
 
-void write_gobal_array_initval_1(InitVal* initVal, vector<string> &array_eles, int cur_layer){
+// suppose that element is side by side
+void get_gobal_array_initval_from_vec(InitVal* initVal, vector<string> &array_eles, int cur_layer){
     int cur_number = initVal->initValList.size();
     if(initVal->exp != NULL){
         array_eles.push_back(get_var_value((AddExpression*)initVal->exp));
     }
     for(int i = 0; i < cur_number; i++){
-        write_gobal_array_initval_1(initVal->initValList[i], array_eles, cur_layer+1);
+        get_gobal_array_initval_from_vec(initVal->initValList[i], array_eles, cur_layer+1);
     }
 }
-
-// suppose that element is side by side
-void write_gobal_array_initval(InitVal* initVal){
-    vector<string> flat_array_eles;
-    write_gobal_array_initval_1(initVal,flat_array_eles, 0);
-    for(int i = 0; i < flat_array_eles.size(); i++){
-        emit_word(flat_array_eles[i].c_str());
-    }
-}
-
-
 
 
 
@@ -128,6 +122,8 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
             gobal_ctx->set_const_value(var_name, var_val);
         }
     }
+
+    
 
     // gen gobal var and array
     for(int i = 0; i < varDecls.size(); i++){
@@ -159,8 +155,15 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 // cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
 
                 if(now_arrDecls->initVal != NULL){
+                    
                     emit_part_gobal_var_def(array_name.c_str(), ele_number*WORD_SIZE);
-                    write_gobal_array_initval(now_arrDecls->initVal);
+                    
+                    vector<string> flat_array_eles;
+                    get_gobal_array_initval_from_vec(now_arrDecls->initVal, flat_array_eles, 0);
+                    for(int i = 0; i < flat_array_eles.size(); i++){
+                        emit_word(flat_array_eles[i].c_str());
+                    }
+
                 }else{
                     emit_gobal_var_decl(array_name.c_str(), ele_number*WORD_SIZE);
                 }
