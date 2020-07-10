@@ -1,5 +1,5 @@
 int arr[4] = {1, 2, 3}; 
-int arr2[] = {22,33,44};
+int arr2[][4] = {22,33,44,{1,2}};
 int main(){
 	arr[3] = 4;
 	return 3;

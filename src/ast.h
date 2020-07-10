@@ -265,8 +265,8 @@ public:
 class ArrayDecl: public VarDef {
 public:
 	ArrayElement *arrayElement;
-	Expression* initVal;
-	ArrayDecl(ArrayElement *arrayElement, Expression* initVal){
+	InitVal* initVal;
+	ArrayDecl(ArrayElement *arrayElement, InitVal* initVal){
 		this->arrayElement = arrayElement;
 		this->initVal = initVal;
 		this->type = ARRAYDECL;

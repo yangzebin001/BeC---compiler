@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <assert.h>
+#include <algorithm>
 #include "ast.h"
 #include "assembly.hpp"
 
@@ -21,6 +22,13 @@ string get_lval_name(Lval* lval){
     }
 }
 
+void get_array_def_number(InitVal* initVal, vector<int> &array_layer, int cur_layer){
+    int cur_number = initVal->initValList.size();
+    array_layer[cur_layer] = cur_number > array_layer[cur_layer] ? cur_number : array_layer[cur_layer];
+    for(int i = 0; i < cur_number; i++){
+        get_array_def_number(initVal->initValList[i], array_layer, cur_layer+1);
+    }
+}
 
 int get_array_element_number(ArrayDecl* nowarray){
     ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
@@ -37,15 +45,19 @@ int get_array_element_number(ArrayDecl* nowarray){
         }
         ae = (ArrayElement*)ae->array;
     }
+    // because array decl is back forward front
+    reverse(array_layer.begin(),array_layer.end());
 
     //def
+    get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
 
+    for(int i = 0; i < array_layer.size(); i++){
+        number = number * array_layer[i];
+    }
+    
     return number;
 }
 
-// int get_array_def_number(InitVal* initVal, int cur_layer){
-
-// }
 
 string get_array_name(ArrayDecl* nowarray){
     ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
@@ -56,7 +68,7 @@ string get_array_name(ArrayDecl* nowarray){
     return ((Ident*)ae)->id;
 }
 
-// void gen_array_initval()
+// int gen_array_initval()
 
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
