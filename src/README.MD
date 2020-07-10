@@ -9,3 +9,7 @@ Functioncall's result store r0 -> r3
 gobal var 's result store -> r2
 
 local var 's result store -> r3
+
+
+look up var:
+local scope -> local const -> fathers scope -> fathers const -> gobal var -> gobal const

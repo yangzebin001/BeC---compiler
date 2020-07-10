@@ -1,4 +1,6 @@
 #include <cstdio>
+#include <cstdlib>
+#include <cstring>
 #include <assert.h>
 #include <algorithm>
 #include "ast.h"
@@ -11,7 +13,7 @@ string get_gobal_label(int label){
 }
 
 
-//**just support immediate number*/
+/*just support immediate number*/
 string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
@@ -24,11 +26,14 @@ string get_lval_name(Lval* lval){
 
 void get_array_def_number(InitVal* initVal, vector<int> &array_layer, int cur_layer){
     int cur_number = initVal->initValList.size();
-    array_layer[cur_layer] = cur_number > array_layer[cur_layer] ? cur_number : array_layer[cur_layer];
+    if(array_layer[cur_layer] == 0){
+        array_layer[cur_layer] = cur_number > array_layer[cur_layer] ? cur_number : array_layer[cur_layer];
+    }
     for(int i = 0; i < cur_number; i++){
         get_array_def_number(initVal->initValList[i], array_layer, cur_layer+1);
     }
 }
+
 
 int get_array_element_number(ArrayDecl* nowarray){
     ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
@@ -45,11 +50,13 @@ int get_array_element_number(ArrayDecl* nowarray){
         }
         ae = (ArrayElement*)ae->array;
     }
-    // because array decl is back forward front
+    // because array decl is back to front
     reverse(array_layer.begin(),array_layer.end());
 
-    //def
-    get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
+    // //def
+    if(nowarray->initVal != NULL){
+        get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
+    }
 
     for(int i = 0; i < array_layer.size(); i++){
         number = number * array_layer[i];
@@ -68,7 +75,45 @@ string get_array_name(ArrayDecl* nowarray){
     return ((Ident*)ae)->id;
 }
 
-// int gen_array_initval()
+void get_array_initval_1(InitVal* initVal, vector<int> &array_eles, int cur_layer){
+    int cur_number = initVal->initValList.size();
+    if(initVal->exp != NULL){
+        int val = stoi(get_var_value((AddExpression*)initVal->exp));
+        array_eles.push_back(val);
+    }
+    for(int i = 0; i < cur_number; i++){
+        get_array_initval_1(initVal->initValList[i], array_eles, cur_layer+1);
+    }
+}
+
+
+int gen_array_initval(InitVal* initVal, int index){
+    vector<int> flat_array_eles;
+    get_array_initval_1(initVal,flat_array_eles, 0);
+    return flat_array_eles[index];
+}
+
+void write_gobal_array_initval_1(InitVal* initVal, vector<string> &array_eles, int cur_layer){
+    int cur_number = initVal->initValList.size();
+    if(initVal->exp != NULL){
+        array_eles.push_back(get_var_value((AddExpression*)initVal->exp));
+    }
+    for(int i = 0; i < cur_number; i++){
+        write_gobal_array_initval_1(initVal->initValList[i], array_eles, cur_layer+1);
+    }
+}
+
+// suppose that element is side by side
+void write_gobal_array_initval(InitVal* initVal){
+    vector<string> flat_array_eles;
+    write_gobal_array_initval_1(initVal,flat_array_eles, 0);
+    for(int i = 0; i < flat_array_eles.size(); i++){
+        emit_word(flat_array_eles[i].c_str());
+    }
+}
+
+
+
 
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
@@ -84,7 +129,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         }
     }
 
-    // gen gobal var 
+    // gen gobal var and array
     for(int i = 0; i < varDecls.size(); i++){
         if(i == 0){
             emit_text();
@@ -101,21 +146,26 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 else{
                     emit_gobal_var_decl(now_varDecls->ident->id.c_str(), 4);
                 }
+                
                 // cout << now_varDecls->ident->id << ":" << endl; 
+                
                 gobal_ctx->set_label(now_varDecls->ident->id);
+
             }else if(varDecls[i]->VarDefList[j]->type == ARRAYDECL){
                 ArrayDecl* now_arrDecls = (ArrayDecl*)varDecls[i]->VarDefList[j];
                 int ele_number = get_array_element_number(now_arrDecls);
                 string array_name = get_array_name(now_arrDecls);
                 
-                cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
+                // cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
 
                 if(now_arrDecls->initVal != NULL){
                     emit_part_gobal_var_def(array_name.c_str(), ele_number*WORD_SIZE);
+                    write_gobal_array_initval(now_arrDecls->initVal);
                 }else{
                     emit_gobal_var_decl(array_name.c_str(), ele_number*WORD_SIZE);
                 }
                 gobal_ctx->set_label(array_name);
+
             }
         }
     }
@@ -131,7 +181,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
     }
 
 
-    //gen var lable
+    //gen var and array lable
     string tmp = "";
 	int label_idx = 1;
 	gobal_ctx->init_label_for();
