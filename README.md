@@ -29,8 +29,7 @@ make clean
 
 ### Todo
 
-- gobal var const var array
-- local array
+- local array --> ArrayEle
 - binaryop
 - if
 - while
