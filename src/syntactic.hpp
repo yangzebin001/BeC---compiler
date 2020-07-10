@@ -118,7 +118,6 @@ union YYSTYPE
 	BREAKStatement *breakStatement;
 	InitVal *initVal;
 	ArrayDecl *arrayDecl;
-	ArrayInit *arrayInit;
 
 
 	vector<ConstVarDef*> *constVarDefList;
@@ -128,7 +127,7 @@ union YYSTYPE
 	vector<Statement*> *stmtList;
 	vector<InitVal*> *repInitVal;
 
-#line 132 "syntactic.hpp" /* yacc.c:1909  */
+#line 131 "syntactic.hpp" /* yacc.c:1909  */
 };
 
 typedef union YYSTYPE YYSTYPE;

@@ -11,7 +11,9 @@
 	.eabi_attribute 18, 4
 	.file	"test_arraydef1.c"
 	.text
+
 	.comm	arr,16,4
+
 	.align	2
 	.global	main
 	.arch armv6

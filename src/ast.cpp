@@ -43,9 +43,9 @@ int get_array_element_number(ArrayDecl* nowarray){
     return number;
 }
 
-int get_array_def_number(InitVal* initVal, int cur_layer){
-    
-}
+// int get_array_def_number(InitVal* initVal, int cur_layer){
+
+// }
 
 string get_array_name(ArrayDecl* nowarray){
     ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
@@ -56,7 +56,7 @@ string get_array_name(ArrayDecl* nowarray){
     return ((Ident*)ae)->id;
 }
 
-void gen_array_initval()
+// void gen_array_initval()
 
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
@@ -66,7 +66,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
     for(int i = 0; i < constVarDecls.size(); i++){
         for(int j = 0; j < constVarDecls[i]->constVarDefList.size(); j++){
             string var_name = get_lval_name(constVarDecls[i]->constVarDefList[j]->lval);
-            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal->initVal);
+            string var_val = get_var_value((AddExpression*)constVarDecls[i]->constVarDefList[j]->initVal->exp);
             // cout << var_name << ":" << var_val << endl;
             gobal_ctx->set_const_value(var_name, var_val);
         }

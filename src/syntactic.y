@@ -52,7 +52,6 @@ void yyerror(std::string s) {
 	BREAKStatement *breakStatement;
 	InitVal *initVal;
 	ArrayDecl *arrayDecl;
-	ArrayInit *arrayInit;
 
 
 	vector<ConstVarDef*> *constVarDefList;
@@ -109,7 +108,6 @@ void yyerror(std::string s) {
 %type <returnStatement> RETURNStmt
 %type <continueStatement> CONTINUEStmt
 %type <breakStatement> BREAKStmt
-%type <arrayInit> ArrayInit
 %type <repInitVal> REPInitVal
 
 
@@ -167,11 +165,8 @@ ArrayEle: ID '[' ']'  { $$ = new ArrayElement(new Ident(*$1), NULL); }
 	| ArrayEle '[' ConstExp ']' { $$ = new ArrayElement($1, $3); }
 	;
 
-InitVal: Exp {$$ = new InitVal($1 ,NULL);}
-	| ArrayInit {$$ = new InitVal(NULL, $1);}
-	;
-
-ArrayInit: '{' REPInitVal '}' {$$ = new ArrayInit(*$2, NULL);}
+InitVal: Exp {$$ = new InitVal($1 ,*new vector<InitVal*>());}
+	| '{' REPInitVal '}' {$$ = new InitVal(NULL ,*$2);}
 	;
 
 REPInitVal:  { $$ = new vector<InitVal*>(); }

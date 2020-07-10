@@ -112,7 +112,7 @@ void emit_part_gobal_var_def(const char* name, int ele_size){
 
 void emit_gobal_var_def(const char* name, const char* data){
     emit_part_gobal_var_def(name, 4);
-    emit_data(data);
+    emit_word(data);
 }
 
 

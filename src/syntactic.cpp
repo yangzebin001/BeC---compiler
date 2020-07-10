@@ -187,7 +187,6 @@ union YYSTYPE
 	BREAKStatement *breakStatement;
 	InitVal *initVal;
 	ArrayDecl *arrayDecl;
-	ArrayInit *arrayInit;
 
 
 	vector<ConstVarDef*> *constVarDefList;
@@ -197,7 +196,7 @@ union YYSTYPE
 	vector<Statement*> *stmtList;
 	vector<InitVal*> *repInitVal;
 
-#line 201 "syntactic.cpp" /* yacc.c:355  */
+#line 200 "syntactic.cpp" /* yacc.c:355  */
 };
 
 typedef union YYSTYPE YYSTYPE;
@@ -214,7 +213,7 @@ int yyparse (void);
 
 /* Copy the second part of user declarations.  */
 
-#line 218 "syntactic.cpp" /* yacc.c:358  */
+#line 217 "syntactic.cpp" /* yacc.c:358  */
 
 #ifdef short
 # undef short
@@ -456,16 +455,16 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  11
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   207
+#define YYLAST   233
 
 /* YYNTOKENS -- Number of terminals.  */
 #define YYNTOKENS  40
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  44
+#define YYNNTS  43
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  100
+#define YYNRULES  99
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  167
+#define YYNSTATES  166
 
 /* YYTRANSLATE[YYX] -- Symbol number corresponding to YYX as returned
    by yylex, with out-of-bounds checking.  */
@@ -514,17 +513,16 @@ static const yytype_uint8 yytranslate[] =
   /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_uint16 yyrline[] =
 {
-       0,   120,   120,   121,   122,   123,   124,   125,   128,   131,
-     134,   135,   138,   141,   145,   146,   149,   150,   153,   154,
-     157,   158,   161,   162,   165,   166,   167,   170,   171,   174,
-     177,   178,   179,   182,   183,   186,   187,   188,   191,   194,
-     197,   198,   199,   202,   203,   204,   205,   206,   207,   208,
-     209,   210,   211,   212,   216,   217,   220,   223,   226,   230,
-     231,   235,   238,   243,   244,   245,   248,   251,   252,   253,
-     256,   257,   258,   261,   264,   265,   268,   269,   272,   273,
-     274,   277,   278,   279,   280,   283,   284,   285,   288,   289,
-     290,   291,   292,   295,   296,   297,   300,   301,   304,   305,
-     308
+       0,   118,   118,   119,   120,   121,   122,   123,   126,   129,
+     132,   133,   136,   139,   143,   144,   147,   148,   151,   152,
+     155,   156,   159,   160,   163,   164,   165,   168,   169,   172,
+     173,   174,   177,   178,   181,   182,   183,   186,   189,   192,
+     193,   194,   197,   198,   199,   200,   201,   202,   203,   204,
+     205,   206,   207,   211,   212,   215,   218,   221,   225,   226,
+     230,   233,   238,   239,   240,   243,   246,   247,   248,   251,
+     252,   253,   256,   259,   260,   263,   264,   267,   268,   269,
+     272,   273,   274,   275,   278,   279,   280,   283,   284,   285,
+     286,   287,   290,   291,   292,   295,   296,   299,   300,   303
 };
 #endif
 
@@ -540,12 +538,11 @@ static const char *const yytname[] =
   "'{'", "'}'", "';'", "','", "'('", "')'", "$accept", "Program",
   "ConstVarDecl", "BType", "ConstVarDefList", "ConstVarDef", "VarDecl",
   "VarDefList", "Lval", "VarDef", "DirectDecl", "ArrayDecl", "ArrayEle",
-  "InitVal", "ArrayInit", "REPInitVal", "FuncDef", "FuncFParams",
-  "FuncFParam", "Block", "Stmts", "Stmt", "IFStmt", "WHILEStmt",
-  "BREAKStmt", "CONTINUEStmt", "RETURNStmt", "Exp", "Cond", "PrimaryExp",
-  "Number", "IntConst", "UnaryExp", "FuncCall", "ParamList", "FuncRParams",
-  "UnaryOp", "MulExp", "AddExp", "RelExp", "EqExp", "LAndExp", "LOrExp",
-  "ConstExp", YY_NULLPTR
+  "InitVal", "REPInitVal", "FuncDef", "FuncFParams", "FuncFParam", "Block",
+  "Stmts", "Stmt", "IFStmt", "WHILEStmt", "BREAKStmt", "CONTINUEStmt",
+  "RETURNStmt", "Exp", "Cond", "PrimaryExp", "Number", "IntConst",
+  "UnaryExp", "FuncCall", "ParamList", "FuncRParams", "UnaryOp", "MulExp",
+  "AddExp", "RelExp", "EqExp", "LAndExp", "LOrExp", "ConstExp", YY_NULLPTR
 };
 #endif
 
@@ -561,10 +558,10 @@ static const yytype_uint16 yytoknum[] =
 };
 # endif
 
-#define YYPACT_NINF -111
+#define YYPACT_NINF -110
 
 #define yypact_value_is_default(Yystate) \
-  (!!((Yystate) == (-111)))
+  (!!((Yystate) == (-110)))
 
 #define YYTABLE_NINF -1
 
@@ -575,23 +572,23 @@ static const yytype_uint16 yytoknum[] =
      STATE-NUM.  */
 static const yytype_int16 yypact[] =
 {
-      36,  -111,     5,   -13,     9,  -111,    27,  -111,  -111,     0,
-      41,  -111,  -111,  -111,  -111,    51,    37,  -111,  -111,  -111,
-      81,   -13,    19,    59,  -111,    46,    21,    64,    42,   -13,
-    -111,    85,    53,    64,    41,   -16,  -111,  -111,    41,    53,
-     -20,  -111,  -111,  -111,  -111,  -111,  -111,    64,  -111,  -111,
-    -111,  -111,  -111,  -111,  -111,    64,    83,   109,  -111,   109,
-      57,    -6,   101,  -111,    53,  -111,  -111,  -111,    66,  -111,
-     -13,    52,  -111,  -111,    64,    62,  -111,    64,    64,    64,
-      64,    64,  -111,    52,  -111,     4,  -111,  -111,   159,  -111,
-    -111,    65,   108,  -111,  -111,  -111,  -111,    83,    83,  -111,
-    -111,    53,   112,   114,  -111,  -111,   169,  -111,  -111,    85,
-    -111,   122,  -111,   123,  -111,  -111,  -111,   118,   120,  -111,
-     124,  -111,    64,  -111,    64,    64,  -111,   132,    64,  -111,
-    -111,  -111,  -111,  -111,  -111,   130,   109,    97,   121,   141,
-     149,   147,  -111,   152,   159,    64,    64,    64,    64,    64,
-      64,    64,    64,   159,  -111,   170,   109,   109,   109,   109,
-      97,    97,   121,   141,  -111,   159,  -111
+      63,  -110,     5,   -13,     9,  -110,    27,  -110,  -110,     0,
+      49,  -110,  -110,  -110,  -110,    32,    39,  -110,  -110,  -110,
+      62,   -13,    24,    64,  -110,    23,    52,   195,    41,   -13,
+    -110,    84,    54,   195,    49,   -16,  -110,  -110,    49,    54,
+     -20,  -110,  -110,  -110,  -110,  -110,  -110,   195,  -110,  -110,
+    -110,  -110,  -110,  -110,  -110,   195,    58,    99,  -110,    99,
+      65,    -6,    77,  -110,    54,  -110,  -110,    70,  -110,   -13,
+      61,  -110,  -110,   195,    92,  -110,   195,   195,   195,   195,
+     195,  -110,    61,  -110,     4,  -110,  -110,   158,  -110,  -110,
+      93,    79,  -110,  -110,  -110,  -110,    58,    58,  -110,  -110,
+      54,    97,    98,  -110,  -110,   168,  -110,  -110,    84,  -110,
+     106,  -110,   122,  -110,  -110,  -110,   102,   103,  -110,   104,
+    -110,   195,  -110,   195,   195,  -110,   108,   195,  -110,  -110,
+    -110,  -110,  -110,  -110,   110,    99,    68,    95,   123,   121,
+     114,  -110,   119,   158,   195,   195,   195,   195,   195,   195,
+     195,   195,   158,  -110,   139,    99,    99,    99,    99,    68,
+      68,    95,   123,  -110,   158,  -110
 };
 
   /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -601,41 +598,41 @@ static const yytype_uint8 yydefact[] =
 {
        0,     9,     0,     0,     0,     4,     0,     3,     2,     0,
        0,     1,     7,     6,     5,    20,     0,    14,    18,    19,
-      22,    35,    16,     0,    10,     0,    17,     0,     0,    35,
-      13,     0,     0,     0,     0,     0,    36,     8,     0,     0,
-      16,    67,    68,    69,    78,    79,    80,     0,    64,    21,
-      70,    63,    66,    81,    71,     0,    85,    61,    24,   100,
-       0,     0,    20,    15,    30,    23,    28,    27,     0,    38,
-       0,     0,    11,    12,    74,     0,    72,     0,     0,     0,
-       0,     0,    25,     0,    31,     0,    26,    37,    40,    34,
-      76,     0,    75,    65,    82,    83,    84,    86,    87,    33,
-      29,     0,     0,     0,    58,    57,     0,    46,    44,     0,
-      43,    64,    48,     0,    41,    49,    50,     0,     0,    53,
-       0,    73,     0,    32,     0,     0,    59,     0,     0,    39,
-      42,    51,    52,    47,    77,     0,    88,    93,    96,    98,
-      62,     0,    60,     0,     0,     0,     0,     0,     0,     0,
-       0,     0,     0,     0,    45,    54,    92,    91,    90,    89,
-      94,    95,    97,    99,    56,     0,    55
+      22,    34,    16,     0,    10,     0,    17,     0,     0,    34,
+      13,     0,     0,     0,     0,     0,    35,     8,     0,     0,
+      16,    66,    67,    68,    77,    78,    79,     0,    63,    21,
+      69,    62,    65,    80,    70,     0,    84,    60,    24,    99,
+       0,     0,    20,    15,    29,    23,    27,     0,    37,     0,
+       0,    11,    12,    73,     0,    71,     0,     0,     0,     0,
+       0,    25,     0,    30,     0,    26,    36,    39,    33,    75,
+       0,    74,    64,    81,    82,    83,    85,    86,    32,    28,
+       0,     0,     0,    57,    56,     0,    45,    43,     0,    42,
+      63,    47,     0,    40,    48,    49,     0,     0,    52,     0,
+      72,     0,    31,     0,     0,    58,     0,     0,    38,    41,
+      50,    51,    46,    76,     0,    87,    92,    95,    97,    61,
+       0,    59,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    44,    53,    91,    90,    89,    88,    93,
+      94,    96,    98,    55,     0,    54
 };
 
   /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int16 yypgoto[] =
 {
-    -111,  -111,    16,    11,  -111,   151,    22,  -111,   -10,   160,
-    -111,  -111,    -4,   -35,  -111,  -111,   188,   165,   126,   -64,
-    -111,  -110,  -111,  -111,  -111,  -111,  -111,   -22,    73,  -111,
-    -111,  -111,    30,  -111,  -111,  -111,  -111,    58,   -27,    -9,
-      48,    49,  -111,   167
+    -110,  -110,    16,    11,  -110,   129,    22,  -110,   -10,   137,
+    -110,  -110,    -4,   -35,  -110,   165,   149,   116,   -63,  -110,
+    -109,  -110,  -110,  -110,  -110,  -110,   -22,    66,  -110,  -110,
+    -110,    -5,  -110,  -110,  -110,  -110,    33,   -27,   -34,    37,
+      38,  -110,   155
 };
 
   /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int16 yydefgoto[] =
 {
-      -1,     4,   108,   109,    23,    24,   110,    16,    48,    17,
-      18,    19,    26,    65,    66,    85,     8,    35,    36,   112,
-     113,   114,   115,   116,   117,   118,   119,   120,   135,    50,
-      51,    52,    53,    54,    91,    92,    55,    56,    57,   137,
-     138,   139,   140,    60
+      -1,     4,   107,   108,    23,    24,   109,    16,    48,    17,
+      18,    19,    26,    65,    84,     8,    35,    36,   111,   112,
+     113,   114,   115,   116,   117,   118,   119,   134,    50,    51,
+      52,    53,    54,    90,    91,    55,    56,    57,   136,   137,
+     138,   139,    60
 };
 
   /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -643,75 +640,81 @@ static const yytype_int16 yydefgoto[] =
      number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_uint8 yytable[] =
 {
-      25,    59,    20,   130,    73,    49,    59,    89,     9,    11,
-      67,     6,    28,     1,    10,     6,     5,    67,    74,    99,
-      12,    70,     7,    71,    69,    75,    13,    20,    25,    84,
-      15,    70,    34,    83,   155,     1,     2,     3,    21,   100,
-      34,   101,    67,   164,    22,    40,    41,    42,    43,    44,
-      45,    28,    90,    33,    46,   166,    40,    41,    42,    43,
-      44,    45,     1,     2,     3,    46,   123,    40,    41,    42,
-      43,    44,    45,    30,    31,    58,    46,    39,   111,    67,
-      47,    34,    27,    28,   127,    76,    88,    64,    62,    29,
-      82,    47,    77,    78,    79,    37,    38,   136,   136,    86,
-     134,    93,    47,   111,   121,    20,   143,    94,    95,    96,
-     145,   146,    32,    33,   147,   148,    80,    81,   156,   157,
-     158,   159,   136,   136,   136,   136,    40,    41,    42,    43,
-      44,    45,    27,    28,   111,    46,   149,   150,    97,    98,
-     160,   161,   102,   111,   103,   122,   104,   105,   106,     1,
-     124,     3,   125,   128,   131,   111,   132,    88,   129,   107,
-     133,    47,    40,    41,    42,    43,    44,    45,   142,   144,
-     151,    46,    40,    41,    42,    43,    44,    45,   102,   152,
-     103,    46,   104,   105,   106,     1,   153,     3,   154,    72,
-     165,    63,    14,    88,    61,   107,    87,    47,   141,   162,
-      68,   163,     0,     0,     0,   126,     0,    47
+      25,    59,    20,   129,    72,    49,    59,    88,     9,    11,
+      66,     6,    28,     1,    10,     6,     5,    66,    73,    98,
+      12,    69,     7,    70,    68,    74,    13,    20,    25,    83,
+      15,    69,    34,    82,   154,     1,     2,     3,    21,    99,
+      34,   100,    66,   163,    40,    41,    42,    43,    44,    45,
+      75,    89,    22,    46,    39,   165,    28,    40,    41,    42,
+      43,    44,    45,    27,    28,   122,    46,    76,    77,    78,
+      29,    93,    94,    95,    58,    30,    31,   110,    66,    47,
+      34,   144,   145,   126,    33,   146,   147,    62,    64,     1,
+       2,     3,    47,    32,    33,    87,   135,   135,    81,   133,
+      37,    38,   110,    85,    20,   142,    79,    80,    27,    28,
+     148,   149,    96,    97,   159,   160,   121,   155,   156,   157,
+     158,   135,   135,   135,   135,    40,    41,    42,    43,    44,
+      45,    92,   120,   110,    46,   123,   124,   127,   130,   131,
+     132,   101,   110,   102,   141,   103,   104,   105,     1,   143,
+       3,   151,   150,   152,   110,   153,    87,   128,   106,   164,
+      47,    40,    41,    42,    43,    44,    45,    71,    63,    14,
+      46,    40,    41,    42,    43,    44,    45,   101,    61,   102,
+      46,   103,   104,   105,     1,    86,     3,   161,    67,   162,
+     140,     0,    87,     0,   106,     0,    47,     0,    40,    41,
+      42,    43,    44,    45,   125,     0,    47,    46,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,     0,     0,     0,     0,     0,     0,     0,
+       0,     0,     0,    47
 };
 
 static const yytype_int16 yycheck[] =
 {
-      10,    28,     6,   113,    39,    27,    33,    71,     3,     0,
-      32,     0,    32,    26,     3,     4,     0,    39,    38,    83,
+      10,    28,     6,   112,    39,    27,    33,    70,     3,     0,
+      32,     0,    32,    26,     3,     4,     0,    39,    38,    82,
        4,    37,     0,    39,    34,    47,     4,    31,    38,    64,
-       3,    37,    21,    39,   144,    26,    27,    28,    38,    35,
-      29,    37,    64,   153,     3,     3,     4,     5,     6,     7,
-       8,    32,    74,    32,    12,   165,     3,     4,     5,     6,
-       7,     8,    26,    27,    28,    12,   101,     3,     4,     5,
-       6,     7,     8,    36,    37,    33,    12,    31,    88,   101,
-      38,    70,    31,    32,   106,    55,    34,    34,     3,    38,
-      33,    38,     9,    10,    11,    36,    37,   124,   125,    33,
-     122,    39,    38,   113,    39,   109,   128,    77,    78,    79,
-      13,    14,    31,    32,    17,    18,     7,     8,   145,   146,
-     147,   148,   149,   150,   151,   152,     3,     4,     5,     6,
-       7,     8,    31,    32,   144,    12,    15,    16,    80,    81,
-     149,   150,    19,   153,    21,    37,    23,    24,    25,    26,
-      38,    28,    38,    31,    36,   165,    36,    34,    35,    36,
-      36,    38,     3,     4,     5,     6,     7,     8,    36,    39,
-      29,    12,     3,     4,     5,     6,     7,     8,    19,    30,
-      21,    12,    23,    24,    25,    26,    39,    28,    36,    38,
-      20,    31,     4,    34,    29,    36,    70,    38,   125,   151,
-      33,   152,    -1,    -1,    -1,    36,    -1,    38
+       3,    37,    21,    39,   143,    26,    27,    28,    38,    35,
+      29,    37,    64,   152,     3,     4,     5,     6,     7,     8,
+      55,    73,     3,    12,    31,   164,    32,     3,     4,     5,
+       6,     7,     8,    31,    32,   100,    12,     9,    10,    11,
+      38,    76,    77,    78,    33,    36,    37,    87,   100,    38,
+      69,    13,    14,   105,    32,    17,    18,     3,    34,    26,
+      27,    28,    38,    31,    32,    34,   123,   124,    33,   121,
+      36,    37,   112,    33,   108,   127,     7,     8,    31,    32,
+      15,    16,    79,    80,   148,   149,    37,   144,   145,   146,
+     147,   148,   149,   150,   151,     3,     4,     5,     6,     7,
+       8,    39,    39,   143,    12,    38,    38,    31,    36,    36,
+      36,    19,   152,    21,    36,    23,    24,    25,    26,    39,
+      28,    30,    29,    39,   164,    36,    34,    35,    36,    20,
+      38,     3,     4,     5,     6,     7,     8,    38,    31,     4,
+      12,     3,     4,     5,     6,     7,     8,    19,    29,    21,
+      12,    23,    24,    25,    26,    69,    28,   150,    33,   151,
+     124,    -1,    34,    -1,    36,    -1,    38,    -1,     3,     4,
+       5,     6,     7,     8,    36,    -1,    38,    12,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,    -1,
+      -1,    -1,    -1,    38
 };
 
   /* YYSTOS[STATE-NUM] -- The (internal number of the) accessing
      symbol of state STATE-NUM.  */
 static const yytype_uint8 yystos[] =
 {
-       0,    26,    27,    28,    41,    42,    43,    46,    56,     3,
-      43,     0,    42,    46,    56,     3,    47,    49,    50,    51,
+       0,    26,    27,    28,    41,    42,    43,    46,    55,     3,
+      43,     0,    42,    46,    55,     3,    47,    49,    50,    51,
       52,    38,     3,    44,    45,    48,    52,    31,    32,    38,
-      36,    37,    31,    32,    43,    57,    58,    36,    37,    31,
-       3,     4,     5,     6,     7,     8,    12,    38,    48,    67,
-      69,    70,    71,    72,    73,    76,    77,    78,    33,    78,
-      83,    57,     3,    49,    34,    53,    54,    67,    83,    48,
-      37,    39,    45,    53,    38,    67,    72,     9,    10,    11,
-       7,     8,    33,    39,    53,    55,    33,    58,    34,    59,
-      67,    74,    75,    39,    72,    72,    72,    77,    77,    59,
-      35,    37,    19,    21,    23,    24,    25,    36,    42,    43,
-      46,    48,    59,    60,    61,    62,    63,    64,    65,    66,
-      67,    39,    37,    53,    38,    38,    36,    67,    31,    35,
-      61,    36,    36,    36,    67,    68,    78,    79,    80,    81,
-      82,    68,    36,    67,    39,    13,    14,    17,    18,    15,
-      16,    29,    30,    39,    36,    61,    78,    78,    78,    78,
-      79,    79,    80,    81,    61,    20,    61
+      36,    37,    31,    32,    43,    56,    57,    36,    37,    31,
+       3,     4,     5,     6,     7,     8,    12,    38,    48,    66,
+      68,    69,    70,    71,    72,    75,    76,    77,    33,    77,
+      82,    56,     3,    49,    34,    53,    66,    82,    48,    37,
+      39,    45,    53,    38,    66,    71,     9,    10,    11,     7,
+       8,    33,    39,    53,    54,    33,    57,    34,    58,    66,
+      73,    74,    39,    71,    71,    71,    76,    76,    58,    35,
+      37,    19,    21,    23,    24,    25,    36,    42,    43,    46,
+      48,    58,    59,    60,    61,    62,    63,    64,    65,    66,
+      39,    37,    53,    38,    38,    36,    66,    31,    35,    60,
+      36,    36,    36,    66,    67,    77,    78,    79,    80,    81,
+      67,    36,    66,    39,    13,    14,    17,    18,    15,    16,
+      29,    30,    39,    36,    60,    77,    77,    77,    77,    78,
+      78,    79,    80,    60,    20,    60
 };
 
   /* YYR1[YYN] -- Symbol number of symbol that rule YYN derives.  */
@@ -720,14 +723,13 @@ static const yytype_uint8 yyr1[] =
        0,    40,    41,    41,    41,    41,    41,    41,    42,    43,
       44,    44,    45,    46,    47,    47,    48,    48,    49,    49,
       50,    50,    51,    51,    52,    52,    52,    53,    53,    54,
-      55,    55,    55,    56,    56,    57,    57,    57,    58,    59,
-      60,    60,    60,    61,    61,    61,    61,    61,    61,    61,
-      61,    61,    61,    61,    62,    62,    63,    64,    65,    66,
-      66,    67,    68,    69,    69,    69,    70,    71,    71,    71,
-      72,    72,    72,    73,    74,    74,    75,    75,    76,    76,
-      76,    77,    77,    77,    77,    78,    78,    78,    79,    79,
-      79,    79,    79,    80,    80,    80,    81,    81,    82,    82,
-      83
+      54,    54,    55,    55,    56,    56,    56,    57,    58,    59,
+      59,    59,    60,    60,    60,    60,    60,    60,    60,    60,
+      60,    60,    60,    61,    61,    62,    63,    64,    65,    65,
+      66,    67,    68,    68,    68,    69,    70,    70,    70,    71,
+      71,    71,    72,    73,    73,    74,    74,    75,    75,    75,
+      76,    76,    76,    76,    77,    77,    77,    78,    78,    78,
+      78,    78,    79,    79,    79,    80,    80,    81,    81,    82
 };
 
   /* YYR2[YYN] -- Number of symbols on the right hand side of rule YYN.  */
@@ -735,15 +737,14 @@ static const yytype_uint8 yyr2[] =
 {
        0,     2,     1,     1,     1,     2,     2,     2,     4,     1,
        1,     3,     3,     3,     1,     3,     1,     1,     1,     1,
-       1,     3,     1,     3,     3,     4,     4,     1,     1,     3,
-       0,     1,     3,     6,     6,     0,     1,     3,     2,     3,
-       0,     1,     2,     1,     1,     4,     1,     2,     1,     1,
-       1,     2,     2,     1,     5,     7,     5,     1,     1,     2,
-       3,     1,     1,     1,     1,     3,     1,     1,     1,     1,
-       1,     1,     2,     4,     0,     1,     1,     3,     1,     1,
-       1,     1,     3,     3,     3,     1,     3,     3,     1,     3,
-       3,     3,     3,     1,     3,     3,     1,     3,     1,     3,
-       1
+       1,     3,     1,     3,     3,     4,     4,     1,     3,     0,
+       1,     3,     6,     6,     0,     1,     3,     2,     3,     0,
+       1,     2,     1,     1,     4,     1,     2,     1,     1,     1,
+       2,     2,     1,     5,     7,     5,     1,     1,     2,     3,
+       1,     1,     1,     1,     3,     1,     1,     1,     1,     1,
+       1,     2,     4,     0,     1,     1,     3,     1,     1,     1,
+       1,     3,     3,     3,     1,     3,     3,     1,     3,     3,
+       3,     3,     1,     3,     3,     1,     3,     1,     3,     1
 };
 
 
@@ -1420,583 +1421,577 @@ yyreduce:
   switch (yyn)
     {
         case 2:
-#line 120 "syntactic.y" /* yacc.c:1646  */
+#line 118 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program) = new Program(); (yyval.program)->addFuncDef((yyvsp[0].functionDef)); program = (yyval.program); }
-#line 1426 "syntactic.cpp" /* yacc.c:1646  */
+#line 1427 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 3:
-#line 121 "syntactic.y" /* yacc.c:1646  */
+#line 119 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program) = new Program(); (yyval.program)->addVarDecl((yyvsp[0].varDecl));  program = (yyval.program);}
-#line 1432 "syntactic.cpp" /* yacc.c:1646  */
+#line 1433 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 4:
-#line 122 "syntactic.y" /* yacc.c:1646  */
+#line 120 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program) = new Program(); (yyval.program)->addConstVarDecl((yyvsp[0].constVarDecl));  program = (yyval.program);}
-#line 1438 "syntactic.cpp" /* yacc.c:1646  */
+#line 1439 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 5:
-#line 123 "syntactic.y" /* yacc.c:1646  */
+#line 121 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program)->addFuncDef((yyvsp[0].functionDef));}
-#line 1444 "syntactic.cpp" /* yacc.c:1646  */
+#line 1445 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 6:
-#line 124 "syntactic.y" /* yacc.c:1646  */
+#line 122 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program)->addVarDecl((yyvsp[0].varDecl));}
-#line 1450 "syntactic.cpp" /* yacc.c:1646  */
+#line 1451 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 7:
-#line 125 "syntactic.y" /* yacc.c:1646  */
+#line 123 "syntactic.y" /* yacc.c:1646  */
     {(yyval.program)->addConstVarDecl((yyvsp[0].constVarDecl));}
-#line 1456 "syntactic.cpp" /* yacc.c:1646  */
+#line 1457 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 8:
-#line 128 "syntactic.y" /* yacc.c:1646  */
+#line 126 "syntactic.y" /* yacc.c:1646  */
     {(yyval.constVarDecl) = new ConstVarDecl((yyvsp[-2].typeDecl),*(yyvsp[-1].constVarDefList));}
-#line 1462 "syntactic.cpp" /* yacc.c:1646  */
+#line 1463 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 9:
-#line 131 "syntactic.y" /* yacc.c:1646  */
+#line 129 "syntactic.y" /* yacc.c:1646  */
     {(yyval.typeDecl) = new TypeDecl("int");}
-#line 1468 "syntactic.cpp" /* yacc.c:1646  */
+#line 1469 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 10:
-#line 134 "syntactic.y" /* yacc.c:1646  */
+#line 132 "syntactic.y" /* yacc.c:1646  */
     {(yyval.constVarDefList) = new vector<ConstVarDef*>(); (yyval.constVarDefList)->push_back((yyvsp[0].constVarDef));}
-#line 1474 "syntactic.cpp" /* yacc.c:1646  */
+#line 1475 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 11:
-#line 135 "syntactic.y" /* yacc.c:1646  */
+#line 133 "syntactic.y" /* yacc.c:1646  */
     {(yyval.constVarDefList)->push_back((yyvsp[0].constVarDef));}
-#line 1480 "syntactic.cpp" /* yacc.c:1646  */
+#line 1481 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 12:
-#line 138 "syntactic.y" /* yacc.c:1646  */
+#line 136 "syntactic.y" /* yacc.c:1646  */
     {(yyval.constVarDef) = new ConstVarDef((yyvsp[-2].lval),(yyvsp[0].initVal));}
-#line 1486 "syntactic.cpp" /* yacc.c:1646  */
+#line 1487 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 13:
-#line 141 "syntactic.y" /* yacc.c:1646  */
+#line 139 "syntactic.y" /* yacc.c:1646  */
     {(yyval.varDecl) = new VarDecl((yyvsp[-2].typeDecl), *(yyvsp[-1].varDefList));}
-#line 1492 "syntactic.cpp" /* yacc.c:1646  */
+#line 1493 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 14:
-#line 145 "syntactic.y" /* yacc.c:1646  */
+#line 143 "syntactic.y" /* yacc.c:1646  */
     {(yyval.varDefList) = new vector<VarDef*>(); (yyval.varDefList)->push_back((yyvsp[0].varDef));}
-#line 1498 "syntactic.cpp" /* yacc.c:1646  */
+#line 1499 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 15:
-#line 146 "syntactic.y" /* yacc.c:1646  */
+#line 144 "syntactic.y" /* yacc.c:1646  */
     {(yyval.varDefList)->push_back((yyvsp[0].varDef));}
-#line 1504 "syntactic.cpp" /* yacc.c:1646  */
+#line 1505 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 16:
-#line 149 "syntactic.y" /* yacc.c:1646  */
+#line 147 "syntactic.y" /* yacc.c:1646  */
     {(yyval.lval) = new Ident(*(yyvsp[0].string));}
-#line 1510 "syntactic.cpp" /* yacc.c:1646  */
+#line 1511 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 17:
-#line 150 "syntactic.y" /* yacc.c:1646  */
+#line 148 "syntactic.y" /* yacc.c:1646  */
     { (yyval.lval) = (yyvsp[0].arrayEle); }
-#line 1516 "syntactic.cpp" /* yacc.c:1646  */
+#line 1517 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 18:
-#line 153 "syntactic.y" /* yacc.c:1646  */
+#line 151 "syntactic.y" /* yacc.c:1646  */
     {(yyval.varDef) = (yyvsp[0].directDecl);}
-#line 1522 "syntactic.cpp" /* yacc.c:1646  */
+#line 1523 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 19:
-#line 154 "syntactic.y" /* yacc.c:1646  */
+#line 152 "syntactic.y" /* yacc.c:1646  */
     {(yyval.varDef) = (yyvsp[0].arrayDecl);}
-#line 1528 "syntactic.cpp" /* yacc.c:1646  */
+#line 1529 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 20:
-#line 157 "syntactic.y" /* yacc.c:1646  */
+#line 155 "syntactic.y" /* yacc.c:1646  */
     {(yyval.directDecl) = new DirectDecl(new Ident(*(yyvsp[0].string)), NULL); }
-#line 1534 "syntactic.cpp" /* yacc.c:1646  */
+#line 1535 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 21:
-#line 158 "syntactic.y" /* yacc.c:1646  */
+#line 156 "syntactic.y" /* yacc.c:1646  */
     {(yyval.directDecl) = new DirectDecl(new Ident(*(yyvsp[-2].string)), (yyvsp[0].exp)); }
-#line 1540 "syntactic.cpp" /* yacc.c:1646  */
+#line 1541 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 22:
-#line 161 "syntactic.y" /* yacc.c:1646  */
+#line 159 "syntactic.y" /* yacc.c:1646  */
     {(yyval.arrayDecl) = new ArrayDecl((yyvsp[0].arrayEle),NULL);}
-#line 1546 "syntactic.cpp" /* yacc.c:1646  */
+#line 1547 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 23:
-#line 162 "syntactic.y" /* yacc.c:1646  */
+#line 160 "syntactic.y" /* yacc.c:1646  */
     {(yyval.arrayDecl) = new ArrayDecl((yyvsp[-2].arrayEle),(yyvsp[0].initVal));}
-#line 1552 "syntactic.cpp" /* yacc.c:1646  */
+#line 1553 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 24:
-#line 165 "syntactic.y" /* yacc.c:1646  */
+#line 163 "syntactic.y" /* yacc.c:1646  */
     { (yyval.arrayEle) = new ArrayElement(new Ident(*(yyvsp[-2].string)), NULL); }
-#line 1558 "syntactic.cpp" /* yacc.c:1646  */
+#line 1559 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 25:
-#line 166 "syntactic.y" /* yacc.c:1646  */
+#line 164 "syntactic.y" /* yacc.c:1646  */
     { (yyval.arrayEle) = new ArrayElement(new Ident(*(yyvsp[-3].string)), (yyvsp[-1].addExp)); }
-#line 1564 "syntactic.cpp" /* yacc.c:1646  */
+#line 1565 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 26:
-#line 167 "syntactic.y" /* yacc.c:1646  */
+#line 165 "syntactic.y" /* yacc.c:1646  */
     { (yyval.arrayEle) = new ArrayElement((yyvsp[-3].arrayEle), (yyvsp[-1].addExp)); }
-#line 1570 "syntactic.cpp" /* yacc.c:1646  */
+#line 1571 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 27:
-#line 170 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.initVal) = new InitVal((yyvsp[0].exp) ,NULL);}
-#line 1576 "syntactic.cpp" /* yacc.c:1646  */
+#line 168 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.initVal) = new InitVal((yyvsp[0].exp) ,*new vector<InitVal*>());}
+#line 1577 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 28:
-#line 171 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.initVal) = new InitVal(NULL, (yyvsp[0].arrayInit));}
-#line 1582 "syntactic.cpp" /* yacc.c:1646  */
+#line 169 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.initVal) = new InitVal(NULL ,*(yyvsp[-1].repInitVal));}
+#line 1583 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 29:
-#line 174 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.arrayInit) = new ArrayInit(*(yyvsp[-1].repInitVal), NULL);}
-#line 1588 "syntactic.cpp" /* yacc.c:1646  */
+#line 172 "syntactic.y" /* yacc.c:1646  */
+    { (yyval.repInitVal) = new vector<InitVal*>(); }
+#line 1589 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 30:
-#line 177 "syntactic.y" /* yacc.c:1646  */
-    { (yyval.repInitVal) = new vector<InitVal*>(); }
-#line 1594 "syntactic.cpp" /* yacc.c:1646  */
+#line 173 "syntactic.y" /* yacc.c:1646  */
+    { (yyval.repInitVal) = new vector<InitVal*>(); (yyval.repInitVal)->push_back((yyvsp[0].initVal)); }
+#line 1595 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 31:
-#line 178 "syntactic.y" /* yacc.c:1646  */
-    { (yyval.repInitVal) = new vector<InitVal*>(); (yyval.repInitVal)->push_back((yyvsp[0].initVal)); }
-#line 1600 "syntactic.cpp" /* yacc.c:1646  */
+#line 174 "syntactic.y" /* yacc.c:1646  */
+    { (yyval.repInitVal)->push_back((yyvsp[0].initVal)); }
+#line 1601 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 32:
-#line 179 "syntactic.y" /* yacc.c:1646  */
-    { (yyval.repInitVal)->push_back((yyvsp[0].initVal)); }
-#line 1606 "syntactic.cpp" /* yacc.c:1646  */
+#line 177 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.functionDef) = new FunctionDef((yyvsp[-5].typeDecl),new Ident(*(yyvsp[-4].string)),*(yyvsp[-2].funcFParams),(yyvsp[0].block));}
+#line 1607 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 33:
-#line 182 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.functionDef) = new FunctionDef((yyvsp[-5].typeDecl),new Ident(*(yyvsp[-4].string)),*(yyvsp[-2].funcFParams),(yyvsp[0].block));}
-#line 1612 "syntactic.cpp" /* yacc.c:1646  */
+#line 178 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.functionDef) = new FunctionDef(new TypeDecl("void"),new Ident(*(yyvsp[-4].string)),*(yyvsp[-2].funcFParams),(yyvsp[0].block));}
+#line 1613 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 34:
-#line 183 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.functionDef) = new FunctionDef(new TypeDecl("void"),new Ident(*(yyvsp[-4].string)),*(yyvsp[-2].funcFParams),(yyvsp[0].block));}
-#line 1618 "syntactic.cpp" /* yacc.c:1646  */
+#line 181 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.funcFParams) = new vector<FuncParam*>();}
+#line 1619 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 35:
-#line 186 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.funcFParams) = new vector<FuncParam*>();}
-#line 1624 "syntactic.cpp" /* yacc.c:1646  */
+#line 182 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.funcFParams) = new vector<FuncParam*>(); (yyval.funcFParams)->push_back((yyvsp[0].funcParam));}
+#line 1625 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 36:
-#line 187 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.funcFParams) = new vector<FuncParam*>(); (yyval.funcFParams)->push_back((yyvsp[0].funcParam));}
-#line 1630 "syntactic.cpp" /* yacc.c:1646  */
+#line 183 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.funcFParams)->push_back((yyvsp[0].funcParam));}
+#line 1631 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 37:
-#line 188 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.funcFParams)->push_back((yyvsp[0].funcParam));}
-#line 1636 "syntactic.cpp" /* yacc.c:1646  */
+#line 186 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.funcParam) = new FuncParam((yyvsp[-1].typeDecl),(yyvsp[0].lval));}
+#line 1637 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 38:
-#line 191 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.funcParam) = new FuncParam((yyvsp[-1].typeDecl),(yyvsp[0].lval));}
-#line 1642 "syntactic.cpp" /* yacc.c:1646  */
+#line 189 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.block) = new Block(*(yyvsp[-1].stmtList));}
+#line 1643 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 39:
-#line 194 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.block) = new Block(*(yyvsp[-1].stmtList));}
-#line 1648 "syntactic.cpp" /* yacc.c:1646  */
+#line 192 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.stmtList) = new vector<Statement*>();}
+#line 1649 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 40:
-#line 197 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.stmtList) = new vector<Statement*>();}
-#line 1654 "syntactic.cpp" /* yacc.c:1646  */
+#line 193 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.stmtList) = new vector<Statement*>(); (yyval.stmtList)->push_back((yyvsp[0].statement));}
+#line 1655 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 41:
-#line 198 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.stmtList) = new vector<Statement*>(); (yyval.stmtList)->push_back((yyvsp[0].statement));}
-#line 1660 "syntactic.cpp" /* yacc.c:1646  */
+#line 194 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.stmtList)->push_back((yyvsp[0].statement));}
+#line 1661 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 42:
-#line 199 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.stmtList)->push_back((yyvsp[0].statement));}
-#line 1666 "syntactic.cpp" /* yacc.c:1646  */
+#line 197 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = (yyvsp[0].varDecl);}
+#line 1667 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 43:
-#line 202 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = (yyvsp[0].varDecl);}
-#line 1672 "syntactic.cpp" /* yacc.c:1646  */
+#line 198 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = (yyvsp[0].constVarDecl);}
+#line 1673 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 44:
-#line 203 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = (yyvsp[0].constVarDecl);}
-#line 1678 "syntactic.cpp" /* yacc.c:1646  */
+#line 199 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = new Assignment((yyvsp[-3].lval),(yyvsp[-1].exp));}
+#line 1679 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
-  case 45:
-#line 204 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = new Assignment((yyvsp[-3].lval),(yyvsp[-1].exp));}
-#line 1684 "syntactic.cpp" /* yacc.c:1646  */
+  case 46:
+#line 201 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = new ExpressionStatement((yyvsp[-1].exp));}
+#line 1685 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 47:
-#line 206 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = new ExpressionStatement((yyvsp[-1].exp));}
-#line 1690 "syntactic.cpp" /* yacc.c:1646  */
+#line 202 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = new BlockStatement((yyvsp[0].block));}
+#line 1691 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 48:
-#line 207 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = new BlockStatement((yyvsp[0].block));}
-#line 1696 "syntactic.cpp" /* yacc.c:1646  */
+#line 203 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = (yyvsp[0].ifStatement);}
+#line 1697 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 49:
-#line 208 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = (yyvsp[0].ifStatement);}
-#line 1702 "syntactic.cpp" /* yacc.c:1646  */
+#line 204 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = (yyvsp[0].whileStatement);}
+#line 1703 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 50:
-#line 209 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = (yyvsp[0].whileStatement);}
-#line 1708 "syntactic.cpp" /* yacc.c:1646  */
+#line 205 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = new BREAKStatement();}
+#line 1709 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 51:
-#line 210 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = new BREAKStatement();}
-#line 1714 "syntactic.cpp" /* yacc.c:1646  */
+#line 206 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = new CONTINUEStatement();}
+#line 1715 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 52:
-#line 211 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = new CONTINUEStatement();}
-#line 1720 "syntactic.cpp" /* yacc.c:1646  */
+#line 207 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.statement) = (yyvsp[0].returnStatement);}
+#line 1721 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 53:
-#line 212 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.statement) = (yyvsp[0].returnStatement);}
-#line 1726 "syntactic.cpp" /* yacc.c:1646  */
+#line 211 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.ifStatement) = new IFStatement((yyvsp[-2].lorExp),(yyvsp[0].statement),NULL);}
+#line 1727 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 54:
-#line 216 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.ifStatement) = new IFStatement((yyvsp[-2].lorExp),(yyvsp[0].statement),NULL);}
-#line 1732 "syntactic.cpp" /* yacc.c:1646  */
+#line 212 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.ifStatement) = new IFStatement((yyvsp[-4].lorExp),(yyvsp[-2].statement),(yyvsp[0].statement));}
+#line 1733 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 55:
-#line 217 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.ifStatement) = new IFStatement((yyvsp[-4].lorExp),(yyvsp[-2].statement),(yyvsp[0].statement));}
-#line 1738 "syntactic.cpp" /* yacc.c:1646  */
+#line 215 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.whileStatement) = new WHILEStatement((yyvsp[-2].lorExp),(yyvsp[0].statement));}
+#line 1739 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
-  case 56:
-#line 220 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.whileStatement) = new WHILEStatement((yyvsp[-2].lorExp),(yyvsp[0].statement));}
-#line 1744 "syntactic.cpp" /* yacc.c:1646  */
+  case 58:
+#line 225 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.returnStatement) = new RETURNStatement(NULL);}
+#line 1745 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 59:
-#line 230 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.returnStatement) = new RETURNStatement(NULL);}
-#line 1750 "syntactic.cpp" /* yacc.c:1646  */
+#line 226 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.returnStatement) = new RETURNStatement((yyvsp[-1].exp));}
+#line 1751 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 60:
-#line 231 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.returnStatement) = new RETURNStatement((yyvsp[-1].exp));}
-#line 1756 "syntactic.cpp" /* yacc.c:1646  */
+#line 230 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.exp) = (yyvsp[0].addExp);}
+#line 1757 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 61:
-#line 235 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.exp) = (yyvsp[0].addExp);}
-#line 1762 "syntactic.cpp" /* yacc.c:1646  */
+#line 233 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.lorExp) = (yyvsp[0].lorExp);}
+#line 1763 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 62:
 #line 238 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.lorExp) = (yyvsp[0].lorExp);}
-#line 1768 "syntactic.cpp" /* yacc.c:1646  */
+    {(yyval.primaryExp) = new PrimaryExpression(*(yyvsp[0].string), NULL, NULL);}
+#line 1769 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 63:
-#line 243 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.primaryExp) = new PrimaryExpression(*(yyvsp[0].string), NULL, NULL);}
-#line 1774 "syntactic.cpp" /* yacc.c:1646  */
+#line 239 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.primaryExp) = new PrimaryExpression(*new string(), (yyvsp[0].lval), NULL);}
+#line 1775 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 64:
-#line 244 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.primaryExp) = new PrimaryExpression(*new string(), (yyvsp[0].lval), NULL);}
-#line 1780 "syntactic.cpp" /* yacc.c:1646  */
+#line 240 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.primaryExp) = new PrimaryExpression(*new string(), NULL, (yyvsp[-1].exp));}
+#line 1781 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 65:
-#line 245 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.primaryExp) = new PrimaryExpression(*new string(), NULL, (yyvsp[-1].exp));}
-#line 1786 "syntactic.cpp" /* yacc.c:1646  */
+#line 243 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.string) = (yyvsp[0].string);}
+#line 1787 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 66:
-#line 248 "syntactic.y" /* yacc.c:1646  */
+#line 246 "syntactic.y" /* yacc.c:1646  */
     {(yyval.string) = (yyvsp[0].string);}
-#line 1792 "syntactic.cpp" /* yacc.c:1646  */
+#line 1793 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 67:
-#line 251 "syntactic.y" /* yacc.c:1646  */
+#line 247 "syntactic.y" /* yacc.c:1646  */
     {(yyval.string) = (yyvsp[0].string);}
-#line 1798 "syntactic.cpp" /* yacc.c:1646  */
+#line 1799 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 68:
-#line 252 "syntactic.y" /* yacc.c:1646  */
+#line 248 "syntactic.y" /* yacc.c:1646  */
     {(yyval.string) = (yyvsp[0].string);}
-#line 1804 "syntactic.cpp" /* yacc.c:1646  */
+#line 1805 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 69:
-#line 253 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.string) = (yyvsp[0].string);}
-#line 1810 "syntactic.cpp" /* yacc.c:1646  */
+#line 251 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.unaryExp) = new UnaryExp((yyvsp[0].primaryExp), NULL, NULL, NULL);}
+#line 1811 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 70:
-#line 256 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.unaryExp) = new UnaryExp((yyvsp[0].primaryExp), NULL, NULL, NULL);}
-#line 1816 "syntactic.cpp" /* yacc.c:1646  */
+#line 252 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.unaryExp) = new UnaryExp(NULL, (yyvsp[0].funcCall), NULL, NULL);}
+#line 1817 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 71:
-#line 257 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.unaryExp) = new UnaryExp(NULL, (yyvsp[0].funcCall), NULL, NULL);}
-#line 1822 "syntactic.cpp" /* yacc.c:1646  */
+#line 253 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.unaryExp) = new UnaryExp(NULL, NULL, (yyvsp[-1].operation), (yyvsp[0].unaryExp));}
+#line 1823 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 72:
-#line 258 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.unaryExp) = new UnaryExp(NULL, NULL, (yyvsp[-1].operation), (yyvsp[0].unaryExp));}
-#line 1828 "syntactic.cpp" /* yacc.c:1646  */
+#line 256 "syntactic.y" /* yacc.c:1646  */
+    { (yyval.funcCall) = new FunctionCall(new Ident(*(yyvsp[-3].string)), *(yyvsp[-1].paramList));  delete (yyvsp[-3].string);}
+#line 1829 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 73:
-#line 261 "syntactic.y" /* yacc.c:1646  */
-    { (yyval.funcCall) = new FunctionCall(new Ident(*(yyvsp[-3].string)), *(yyvsp[-1].paramList));  delete (yyvsp[-3].string);}
-#line 1834 "syntactic.cpp" /* yacc.c:1646  */
+#line 259 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.paramList) = new vector<Expression*>();}
+#line 1835 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 74:
-#line 264 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.paramList) = new vector<Expression*>();}
-#line 1840 "syntactic.cpp" /* yacc.c:1646  */
+#line 260 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.paramList) = (yyvsp[0].paramList);}
+#line 1841 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 75:
-#line 265 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.paramList) = (yyvsp[0].paramList);}
-#line 1846 "syntactic.cpp" /* yacc.c:1646  */
+#line 263 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.paramList) = new vector<Expression*>(); (yyval.paramList)->push_back((yyvsp[0].exp));}
+#line 1847 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 76:
-#line 268 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.paramList) = new vector<Expression*>(); (yyval.paramList)->push_back((yyvsp[0].exp));}
-#line 1852 "syntactic.cpp" /* yacc.c:1646  */
+#line 264 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.paramList)->push_back((yyvsp[0].exp));}
+#line 1853 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 77:
-#line 269 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.paramList)->push_back((yyvsp[0].exp));}
-#line 1858 "syntactic.cpp" /* yacc.c:1646  */
+#line 267 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.operation) = new Operation(*(yyvsp[0].string));}
+#line 1859 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 78:
-#line 272 "syntactic.y" /* yacc.c:1646  */
+#line 268 "syntactic.y" /* yacc.c:1646  */
     {(yyval.operation) = new Operation(*(yyvsp[0].string));}
-#line 1864 "syntactic.cpp" /* yacc.c:1646  */
+#line 1865 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 79:
-#line 273 "syntactic.y" /* yacc.c:1646  */
+#line 269 "syntactic.y" /* yacc.c:1646  */
     {(yyval.operation) = new Operation(*(yyvsp[0].string));}
-#line 1870 "syntactic.cpp" /* yacc.c:1646  */
+#line 1871 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 80:
-#line 274 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.operation) = new Operation(*(yyvsp[0].string));}
-#line 1876 "syntactic.cpp" /* yacc.c:1646  */
+#line 272 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.mulExp) = new MulExpression((yyvsp[0].unaryExp));}
+#line 1877 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 81:
-#line 277 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.mulExp) = new MulExpression((yyvsp[0].unaryExp));}
-#line 1882 "syntactic.cpp" /* yacc.c:1646  */
+#line 273 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.mulExp) = new MulExpression((yyvsp[-2].mulExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].unaryExp));}
+#line 1883 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 82:
-#line 278 "syntactic.y" /* yacc.c:1646  */
+#line 274 "syntactic.y" /* yacc.c:1646  */
     {(yyval.mulExp) = new MulExpression((yyvsp[-2].mulExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].unaryExp));}
-#line 1888 "syntactic.cpp" /* yacc.c:1646  */
+#line 1889 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 83:
-#line 279 "syntactic.y" /* yacc.c:1646  */
+#line 275 "syntactic.y" /* yacc.c:1646  */
     {(yyval.mulExp) = new MulExpression((yyvsp[-2].mulExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].unaryExp));}
-#line 1894 "syntactic.cpp" /* yacc.c:1646  */
+#line 1895 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 84:
-#line 280 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.mulExp) = new MulExpression((yyvsp[-2].mulExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].unaryExp));}
-#line 1900 "syntactic.cpp" /* yacc.c:1646  */
+#line 278 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.addExp) = new AddExpression((yyvsp[0].mulExp));}
+#line 1901 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 85:
-#line 283 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.addExp) = new AddExpression((yyvsp[0].mulExp));}
-#line 1906 "syntactic.cpp" /* yacc.c:1646  */
+#line 279 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.addExp) = new AddExpression((yyvsp[-2].addExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].mulExp));}
+#line 1907 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 86:
-#line 284 "syntactic.y" /* yacc.c:1646  */
+#line 280 "syntactic.y" /* yacc.c:1646  */
     {(yyval.addExp) = new AddExpression((yyvsp[-2].addExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].mulExp));}
-#line 1912 "syntactic.cpp" /* yacc.c:1646  */
+#line 1913 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 87:
-#line 285 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.addExp) = new AddExpression((yyvsp[-2].addExp),new Operation(*(yyvsp[-1].string)),(yyvsp[0].mulExp));}
-#line 1918 "syntactic.cpp" /* yacc.c:1646  */
+#line 283 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.relExp) = new RelExpression((yyvsp[0].addExp));}
+#line 1919 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 88:
-#line 288 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.relExp) = new RelExpression((yyvsp[0].addExp));}
-#line 1924 "syntactic.cpp" /* yacc.c:1646  */
+#line 284 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.relExp) = new RelExpression((yyvsp[-2].relExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].addExp));}
+#line 1925 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 89:
-#line 289 "syntactic.y" /* yacc.c:1646  */
+#line 285 "syntactic.y" /* yacc.c:1646  */
     {(yyval.relExp) = new RelExpression((yyvsp[-2].relExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].addExp));}
-#line 1930 "syntactic.cpp" /* yacc.c:1646  */
+#line 1931 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 90:
-#line 290 "syntactic.y" /* yacc.c:1646  */
+#line 286 "syntactic.y" /* yacc.c:1646  */
     {(yyval.relExp) = new RelExpression((yyvsp[-2].relExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].addExp));}
-#line 1936 "syntactic.cpp" /* yacc.c:1646  */
+#line 1937 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 91:
-#line 291 "syntactic.y" /* yacc.c:1646  */
+#line 287 "syntactic.y" /* yacc.c:1646  */
     {(yyval.relExp) = new RelExpression((yyvsp[-2].relExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].addExp));}
-#line 1942 "syntactic.cpp" /* yacc.c:1646  */
+#line 1943 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 92:
-#line 292 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.relExp) = new RelExpression((yyvsp[-2].relExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].addExp));}
-#line 1948 "syntactic.cpp" /* yacc.c:1646  */
+#line 290 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.eqExp) = new EqExpression((yyvsp[0].relExp));}
+#line 1949 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 93:
-#line 295 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.eqExp) = new EqExpression((yyvsp[0].relExp));}
-#line 1954 "syntactic.cpp" /* yacc.c:1646  */
+#line 291 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.eqExp) = new EqExpression((yyvsp[-2].eqExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].relExp));}
+#line 1955 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 94:
-#line 296 "syntactic.y" /* yacc.c:1646  */
+#line 292 "syntactic.y" /* yacc.c:1646  */
     {(yyval.eqExp) = new EqExpression((yyvsp[-2].eqExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].relExp));}
-#line 1960 "syntactic.cpp" /* yacc.c:1646  */
+#line 1961 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 95:
-#line 297 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.eqExp) = new EqExpression((yyvsp[-2].eqExp), new Operation(*(yyvsp[-1].string)), (yyvsp[0].relExp));}
-#line 1966 "syntactic.cpp" /* yacc.c:1646  */
+#line 295 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.landExp) = new LAndExpression((yyvsp[0].eqExp));}
+#line 1967 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 96:
-#line 300 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.landExp) = new LAndExpression((yyvsp[0].eqExp));}
-#line 1972 "syntactic.cpp" /* yacc.c:1646  */
+#line 296 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.landExp) = new LAndExpression((yyvsp[-2].landExp), (yyvsp[0].eqExp));}
+#line 1973 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 97:
-#line 301 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.landExp) = new LAndExpression((yyvsp[-2].landExp), (yyvsp[0].eqExp));}
-#line 1978 "syntactic.cpp" /* yacc.c:1646  */
+#line 299 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.lorExp) = new LOrExpression((yyvsp[0].landExp));}
+#line 1979 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 98:
-#line 304 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.lorExp) = new LOrExpression((yyvsp[0].landExp));}
-#line 1984 "syntactic.cpp" /* yacc.c:1646  */
+#line 300 "syntactic.y" /* yacc.c:1646  */
+    {(yyval.lorExp) = new LOrExpression((yyvsp[-2].lorExp), (yyvsp[0].landExp));}
+#line 1985 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
   case 99:
-#line 305 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.lorExp) = new LOrExpression((yyvsp[-2].lorExp), (yyvsp[0].landExp));}
-#line 1990 "syntactic.cpp" /* yacc.c:1646  */
-    break;
-
-  case 100:
-#line 308 "syntactic.y" /* yacc.c:1646  */
+#line 303 "syntactic.y" /* yacc.c:1646  */
     {(yyval.addExp) = (yyvsp[0].addExp);}
-#line 1996 "syntactic.cpp" /* yacc.c:1646  */
+#line 1991 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
 
-#line 2000 "syntactic.cpp" /* yacc.c:1646  */
+#line 1995 "syntactic.cpp" /* yacc.c:1646  */
       default: break;
     }
   /* User semantic actions sometimes alter yychar, and that requires
@@ -2224,7 +2219,7 @@ yyreturn:
 #endif
   return yyresult;
 }
-#line 312 "syntactic.y" /* yacc.c:1906  */
+#line 307 "syntactic.y" /* yacc.c:1906  */
 
 
          

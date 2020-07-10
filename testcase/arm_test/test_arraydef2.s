@@ -11,8 +11,9 @@
 	.eabi_attribute 18, 4
 	.file	"test_arraydef2.c"
 	.text
-	.global	arr
 	.data
+
+	.global	arr
 	.align	2
 	.type	arr, %object
 	.size	arr, 16
@@ -21,6 +22,7 @@ arr:
 	.word	2
 	.word	3
 	.space	4
+
 	.global	arr2
 	.align	2
 	.type	arr2, %object
@@ -29,6 +31,7 @@ arr2:
 	.word	22
 	.word	33
 	.word	44
+	
 	.text
 	.align	2
 	.global	main
