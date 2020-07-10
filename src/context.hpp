@@ -16,58 +16,108 @@ typedef enum{
 } ctx_t;
 
 
-class Context{
+class Scope{
 private:
-    map<string,int> stack_offset;
     map<string,int> var_label;
-    int cur_offset;
-    int label_count;
 public:
-    ctx_t cur_type;
-    string cur_var_name;
-    Context(){
-        stack_offset.clear();
+    Scope* father;
+
+    Scope(){
         var_label.clear();
-        cur_offset = -4;
-        label_count = 3;
-    }
-    int get_offset(string& var){
-		if(!stack_offset.count(var)){
-			return -1;
-		}
-        return stack_offset[var];
+        father = NULL;
     }
 
-    bool set_offset(string& var){
-    	if(stack_offset.count(var)) return false;
-        stack_offset[var] = cur_offset;
-        cur_offset -= WORD_SIZE;
-        return true;
-    }
-
-    int get_label(string& var){
+    int get_label(string var){
 		if(!var_label.count(var)){
-			fprintf(stderr,"label: %s not exist\n", var.c_str());
-            exit(-1);
+			return -1;
 		}
         return var_label[var];
     }
 
-    bool set_label(string& var){
+    bool set_label(string var, int &label_count){
     	if(var_label.count(var)) return false;
         var_label[var] = label_count;
         label_count++;
         return true;
     }
 
-
-    ~Context(){
-    	stack_offset.clear();
+    ~Scope(){
         var_label.clear();
-	}
+    }
 
 };
 
+class Context{
+private:
+    map<string,int> stack_offset;
+    Scope* scope;
+    int cur_offset;
+    int label_count;
+    int scopeID;
+public:
+    ctx_t cur_type;
+    string cur_var_name;
+
+    Context(){
+        stack_offset.clear();
+        cur_offset = -4;
+        label_count = 3;
+        scope = NULL;
+        scopeID = 1;
+    }
+
+    int get_offset(string var){
+        var = var + to_string(scopeID);
+		if(!stack_offset.count(var)){
+			return -1;
+		}
+        return stack_offset[var];
+    }
+
+    bool set_offset(string var){
+        var = var + to_string(scopeID);
+    	if(stack_offset.count(var)) return false;
+        stack_offset[var] = cur_offset;
+        cur_offset -= WORD_SIZE;
+        return true;
+    }
+
+    int get_label(string var){
+        Scope* now = scope;
+        while(now != NULL){
+            int ll = now->get_label(var);
+			if(ll != -1){
+                return ll;
+            }
+            now = now->father;
+        }
+        return -1;
+    }
+
+    bool set_label(string var){
+        if(scope == NULL) return false;
+    	return scope->set_label(var,label_count);
+    }
+
+    void new_scope(){
+        Scope* new_scope = new Scope();
+        new_scope->father = scope;
+        scope = new_scope;
+        scopeID++;
+    }
+
+    void delete_scope(){
+        Scope* now = scope;
+        scope = scope->father;
+        delete now;
+    }
+
+    ~Context(){
+    	stack_offset.clear();
+        delete scope;
+	}
+
+};
 class GobalContext{
 
 private: 

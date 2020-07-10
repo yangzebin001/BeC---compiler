@@ -198,6 +198,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
             emit_text();
         }
         Context* funcxt = new Context();
+        funcxt->new_scope();
         funcDefs[i]->codeGen(*funcxt);
         delete funcxt;
     }
