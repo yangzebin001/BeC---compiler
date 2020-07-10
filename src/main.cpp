@@ -61,6 +61,7 @@ int main(int argc, char *argv[])
 
 	// printf("%d\n",program->funcDefs.size());
 
+
 	program->codeGen(in_file_name, out_file_name);
 	printf("code generation is done\n");
 	// printf("%d\n",program->funcDefs[0]->block->statementList.size());

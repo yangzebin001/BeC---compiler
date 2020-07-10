@@ -19,12 +19,29 @@ typedef enum{
 class Scope{
 private:
     map<string,int> var_label;
+    map<string,int> stack_offset;
 public:
     Scope* father;
 
     Scope(){
         var_label.clear();
         father = NULL;
+    }
+
+    int get_offset(string var){
+
+		if(!stack_offset.count(var)){
+			return 0;
+		}
+        return stack_offset[var];
+    }
+
+    bool set_offset(string var, int &cur_offset){
+
+    	if(stack_offset.count(var)) return false;
+        stack_offset[var] = cur_offset;
+        cur_offset -= WORD_SIZE;
+        return true;
     }
 
     int get_label(string var){
@@ -42,6 +59,7 @@ public:
     }
 
     ~Scope(){
+        stack_offset.clear();
         var_label.clear();
     }
 
@@ -49,7 +67,7 @@ public:
 
 class Context{
 private:
-    map<string,int> stack_offset;
+    
     Scope* scope;
     int cur_offset;
     int label_count;
@@ -59,7 +77,6 @@ public:
     string cur_var_name;
 
     Context(){
-        stack_offset.clear();
         cur_offset = -4;
         label_count = 3;
         scope = NULL;
@@ -67,19 +84,21 @@ public:
     }
 
     int get_offset(string var){
-        var = var + to_string(scopeID);
-		if(!stack_offset.count(var)){
-			return -1;
-		}
-        return stack_offset[var];
+        Scope* now = scope;
+        while(now != NULL){
+            int ll = now->get_offset(var);
+			if(ll != 0){
+                return ll;
+            }
+            now = now->father;
+        }
+        return 0;
     }
+		
 
     bool set_offset(string var){
-        var = var + to_string(scopeID);
-    	if(stack_offset.count(var)) return false;
-        stack_offset[var] = cur_offset;
-        cur_offset -= WORD_SIZE;
-        return true;
+
+    	return scope->set_offset(var,cur_offset);
     }
 
     int get_label(string var){
@@ -113,7 +132,7 @@ public:
     }
 
     ~Context(){
-    	stack_offset.clear();
+
         delete scope;
 	}
 
