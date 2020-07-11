@@ -284,7 +284,7 @@ void BinaryOpExpression::codeGen(Context &ctx){
 void RETURNStatement::codeGen(Context &ctx){
     printf("gen returnstatement\n");
     if(exp != NULL){
-        ctx.cur_type = RETURN;
+        ctx.cur_type = CRETURN;
         exp->codeGen(ctx);
         emit_instr_format("mov","r0, r3");
     }
