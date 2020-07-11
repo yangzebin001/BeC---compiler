@@ -10,6 +10,10 @@ gobal var 's result store -> r2
 
 local var 's result store -> r3
 
+array decl -> r2
+assign array base -> r1
+array scale -> r8
+
 
 look up var:
 local scope -> local const -> fathers scope -> fathers const -> gobal var -> gobal const

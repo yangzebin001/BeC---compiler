@@ -8,6 +8,8 @@
 
 static GobalContext* gobal_ctx = new GobalContext();
 
+static const int WORD_SIZE_WIDTH = 2;
+
 string get_gobal_label(int label){
     return ".L" + to_string(label);
 }
@@ -62,6 +64,36 @@ int get_array_element_number(ArrayDecl* nowarray){
         get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
     }
 
+    for(int i = 0; i < array_layer.size(); i++){
+        number = number * array_layer[i];
+    }
+    
+    return number;
+}
+
+int get_array_element_number_vec(ArrayDecl* nowarray, vector<int> &array_layer){
+    ArrayElement* ae = (ArrayElement*)nowarray->arrayElement;
+    int number = 1;
+    array_layer.resize(0);
+
+    //decl
+    while(ae->type != IDENT){
+        if(ae->index != NULL){
+            string cur_ele_number = get_var_value((AddExpression*)ae->index);
+            array_layer.push_back(stoi(cur_ele_number));
+        }else{
+            array_layer.push_back(0);
+        }
+        ae = (ArrayElement*)ae->array;
+    }
+    // because array decl is back to front
+    reverse(array_layer.begin(),array_layer.end());
+
+    // //def
+    if(nowarray->initVal != NULL){
+        get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
+    }
+    
     for(int i = 0; i < array_layer.size(); i++){
         number = number * array_layer[i];
     }
@@ -182,6 +214,10 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 int ele_number = get_array_element_number(now_arrDecls);
                 string array_name = get_array_name(now_arrDecls->arrayElement);
                 
+
+                vector<int> array_layers;
+                get_array_element_number_vec(now_arrDecls,array_layers);
+                gobal_ctx->set_array_layers(array_name, array_layers);
                 // cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
 
                 if(now_arrDecls->initVal != NULL){
@@ -248,6 +284,7 @@ void BinaryOpExpression::codeGen(Context &ctx){
 void RETURNStatement::codeGen(Context &ctx){
     printf("gen returnstatement\n");
     if(exp != NULL){
+        ctx.cur_type = RETURN;
         exp->codeGen(ctx);
         emit_instr_format("mov","r0, r3");
     }
@@ -275,7 +312,25 @@ void MulExpression::codeGen(Context &ctx){
 void PrimaryExpression::codeGen(Context &ctx){
     printf("gen PrimaryExpression\n");
     if(lval != NULL){
+        ctx.cur_type = CLVAL;
         lval->codeGen(ctx);
+        // cout << ctx.cur_type << endl;
+        if(ctx.cur_type == CARRAY_ELE){
+            string lval_name = ctx.cur_var_name;
+            int array_offset = ctx.get_offset(lval_name);
+            if(array_offset != 0){
+                emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+            }else{
+            //gobal array
+                emit_instr_format("ldr", "r1, %s", get_gobal_label(gobal_ctx->get_label(lval_name)).c_str());
+            }
+            if(ctx.cur_var_disload == false){
+                emit_instr_format("ldr", "r3, [r1, r8]");
+            }
+        }
+
+        
+
     }else if(exp != NULL){
         exp->codeGen(ctx);
     }else{
@@ -346,6 +401,7 @@ void VarDef::codeGen(Context &ctx){
 void DirectDecl::codeGen(Context &ctx){
     printf("gen DirectDecl\n");
     assert(ident != NULL);
+    ctx.cur_type = CDIRECTDECL;
     bool offset_result = ctx.set_offset(ident->id);
     if(offset_result) {
         emit_instr_format("sub", "sp, sp, #4");
@@ -362,11 +418,17 @@ void ArrayDecl::codeGen(Context &ctx){
     int number = get_array_element_number(this);
     string array_name = get_array_name(arrayElement);
     cout << "array size is:" <<number << endl;
-    bool offset_result = ctx.set_offset(array_name);
+    bool offset_result = ctx.set_assign_offset(array_name,number);
+
+    vector<int> array_layers;
+    get_array_element_number_vec(this,array_layers);
+    ctx.set_array_layers(array_name, array_layers);
+
+
     if(offset_result) {
         emit_instr_format("sub", "sp, sp, #%d", number*WORD_SIZE);
     }
-    emit_instr_format("sub", "r2, fp, #%d", number*WORD_SIZE);
+    emit_instr_format("sub", "r2, fp, #%d", -ctx.get_offset(array_name));
     emit_instr_format("mov", "r3, #0");
     for(int i = 0; i < number; i++){
         emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
@@ -391,9 +453,10 @@ void Ident::codeGen(Context &ctx){
 
     int offset = ctx.get_offset(id);
     //local var
-    if(offset != -1){
+    if(offset != 0){
+        if(ctx.cur_var_disload == false)
+            emit_instr_format("ldr", "r3, [fp, #%d]", offset);
         ctx.cur_type = CLOCAL_VAR;
-        emit_instr_format("ldr", "r3, [fp, #%d]", offset);
     }else{
         int label = gobal_ctx->get_label(id);
         
@@ -413,27 +476,92 @@ void Ident::codeGen(Context &ctx){
 }
 
 void ArrayElement::codeGen(Context &ctx){
+    // array direct needn't reach here
+    if(ctx.cur_type != CLVAL) return;
     printf("gen arrayElement\n");
-    if(ctx.cur_type == CARRAY_DECL) return;
 
+    string array_name = get_array_name(this);
+    cout << "assign array name is " << array_name << endl;
+    if(ctx.cur_array_layers.size() == 0){
+        ctx.cur_var_name = array_name;
+        ctx.get_array_layers(array_name, ctx.cur_array_layers);
+
+        if(ctx.cur_array_layers.size() == 0){
+            gobal_ctx->get_array_layers(array_name, ctx.cur_array_layers);
+        }
+
+        ctx.cur_array_index = ctx.cur_array_layers.size()-1;
+        cout << "array size is " << ctx.cur_array_layers.size() << endl;
+        index->codeGen(ctx);
+        // ctx.cur_type = CLVAL;
+        emit_instr_format("mov","r8, r3");
+        emit_instr_format("lsl","r8, r8, #%d", WORD_SIZE_WIDTH);
+        // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
+    }else{
+        index->codeGen(ctx);
+        // ctx.cur_type = CLVAL;
+        emit_instr_format("mov","r9, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
+        emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
+        emit_instr_format("mul","r3, r9");
+        emit_instr_format("add","r8, r3");
+        
+        // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
+        ctx.cur_array_index--;
+    }
+    
+    // out this type ArrayElement node
+    if(ctx.cur_array_index == 0){
+        ctx.cur_array_layers.resize(0);
+    }
+
+
+    //get scale
+    if(array->type == IDENT) {
+        ctx.cur_type = CARRAY_ELE;
+        return;
+    }
+    array->codeGen(ctx);
+    ctx.cur_type = CARRAY_ELE;
 }
 
 void Assignment::codeGen(Context &ctx){
     printf("gen Assignment\n");
-    exp->codeGen(ctx);  //in r3
-    ctx_t exp_type = ctx.cur_type;
+    // exp after lval gen if type is arrayElement
 
-    lval->codeGen(ctx); //in r2
+    if(lval->type != ARRAYELEMENT){
+        exp->codeGen(ctx);  //in r3
+    }
+
+
+    ctx.cur_type = CLVAL;
+    ctx.cur_var_disload = true;
+    lval->codeGen(ctx); //in r2 or arrayElement scale in r1
+    ctx.cur_var_disload = false;
     ctx_t lval_type = ctx.cur_type;
     string lval_name = ctx.cur_var_name;
 
-
+    cout << ctx.cur_type << endl;
 
     if(lval_type == CGOBAL_VAR){
+
         emit_instr_format("str", "r3, [r2]");
     }else if(lval_type == CLOCAL_VAR){
+
         // str        r3, [fp, #-4]
         emit_instr_format("str", "r3, [fp, #%d]",  ctx.get_offset(lval_name));
+    }else if(lval_type == CARRAY_ELE){
+
+        exp->codeGen(ctx);
+        int array_offset = ctx.get_offset(lval_name);
+
+        if(array_offset != 0){
+            emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+            emit_instr_format("str", "r3, [r1, r8]");
+        }else{
+        //gobal array
+            emit_instr_format("ldr", "r1, %s", get_gobal_label(gobal_ctx->get_label(lval_name)).c_str());
+            emit_instr_format("str", "r3, [r1, r8]");
+        }
     }
 }
 

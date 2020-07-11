@@ -1,6 +1,7 @@
 #include<map>
 #include<cstdio>
 #include<string>
+#include<vector>
 
 using namespace std;
 
@@ -9,11 +10,16 @@ const int WORD_SIZE = 4;
 typedef enum{
     CGOBAL_VAR,
     CGOBAL_CONST_VAR,
+    CGOBAL_ARRAY,
     CARRAY,
     CLOCAL_VAR,
     CLOCAL_CONST_VAR,
     CFUNCTIONCALL,
-    CARRAY_DECL
+    CARRAY_DECL,
+    CLVAL,
+    CARRAY_ELE,
+    CDIRECTDECL,
+    RETURN
 } ctx_t;
 
 
@@ -21,6 +27,7 @@ class Scope{
 private:
     map<string,int> var_label;
     map<string,int> stack_offset;
+    map<string,vector<int> > array_layers;
 public:
     Scope* father;
 
@@ -40,8 +47,8 @@ public:
     bool set_offset(string var, int &cur_offset, int size){
 
     	if(stack_offset.count(var)) return false;
-        stack_offset[var] = cur_offset;
         cur_offset -= WORD_SIZE*size;
+        stack_offset[var] = cur_offset+WORD_SIZE;
         return true;
     }
 
@@ -56,6 +63,18 @@ public:
     	if(var_label.count(var)) return false;
         var_label[var] = label_count;
         label_count++;
+        return true;
+    }
+
+    bool set_array_layers(string name, vector<int> vec){
+    	if(array_layers.count(name)) return false;
+        array_layers[name] = vec;
+        return true;
+	}
+	
+	bool get_array_layers(string name, vector<int> &vec){
+        if(!array_layers.count(name)) return false;
+    	vec = array_layers[name];
         return true;
     }
 
@@ -76,12 +95,17 @@ private:
 public:
     ctx_t cur_type;
     string cur_var_name;
+    vector<int> cur_array_layers;
+    int cur_array_index;
+    bool cur_var_disload;
 
     Context(){
         cur_offset = -4;
         label_count = 3;
         scope = NULL;
         scopeID = 1;
+        cur_array_index = 0;
+        cur_var_disload = false;
     }
 
     int get_offset(string var){
@@ -135,6 +159,24 @@ public:
         delete now;
     }
 
+
+    bool set_array_layers(string name, vector<int> vec){
+    	if(scope == NULL) return false;
+    	return scope->set_array_layers(name,vec);
+	}
+	
+	bool get_array_layers(string name, vector<int> &vec){
+        Scope* now = scope;
+        while(now != NULL){
+            bool ll = now->get_array_layers(name,vec);
+			if(ll){
+                return ll;
+            }
+            now = now->father;
+        }
+        return false;
+	}
+
     ~Context(){
 
         delete scope;
@@ -146,6 +188,7 @@ class GobalContext{
 private: 
     map<string, string> const_value;
     map<string, int> var_label;
+    map<string,vector<int> > array_layers;
     map<string, int>::iterator it;
     int label_count;
 
@@ -196,6 +239,18 @@ public:
         ++(this->it);
         return true;
     }
+
+    bool set_array_layers(string name, vector<int> vec){
+        if(array_layers.count(name)) return false;
+    	array_layers[name] = vec;
+        return true;
+	}
+	
+	bool get_array_layers(string name, vector<int> &vec){
+        if(!array_layers.count(name)) return false;
+        vec = array_layers[name];
+        return true;
+	}
 
     ~GobalContext(){
     	const_value.clear();

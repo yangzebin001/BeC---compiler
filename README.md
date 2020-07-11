@@ -29,7 +29,7 @@ make clean
 
 ### Todo
 
-- local array --> ArrayEle
+- local const array
 - binaryop
 - if
 - while
