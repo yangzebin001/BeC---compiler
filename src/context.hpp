@@ -147,15 +147,7 @@ public:
         return -1;
     }
 
-    int set_if_label(string var){
-        int t = label_count;
-        set_label(var+to_string(label_count));
-        return label_count;
-    }
-
-    string get_if_label(string var, int label){
-        return var+to_string(label);
-    }
+    
 
     bool set_label(string var){
         if(scope == NULL) return false;
@@ -217,7 +209,7 @@ public:
         const_value.clear();
         this->label_count = 3;
     }
-    string get_const_value(string& var){
+    string get_const_value(string var){
 		if(!const_value.count(var)){
 			fprintf(stderr,"const value: %s not exist\n", var.c_str());
             return "";
@@ -225,25 +217,35 @@ public:
         return const_value[var];
     }
 
-    bool set_const_value(string& name, string& value){
+    bool set_const_value(string name, string value){
     	if(const_value.count(name)) return false;
         const_value[name] = value;
         return true;
     }
 
 
-    int get_label(string& var){
+    int get_label(string var){
 		if(!var_label.count(var)){
 			return -1;
 		}
         return var_label[var];
     }
 
-    bool set_label(string& var){
+    bool set_label(string var){
     	if(var_label.count(var)) return false;
         var_label[var] = label_count;
         label_count++;
         return true;
+    }
+
+    int set_if_label(string var){
+        int t = label_count;
+        set_label(var+to_string(label_count));
+        return label_count;
+    }
+
+    string get_if_label(string var, int label){
+        return var+to_string(label);
     }
 
     void init_label_for(){

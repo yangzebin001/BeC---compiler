@@ -299,7 +299,8 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 	int label_idx = 1;
 	gobal_ctx->init_label_for();
 	while(gobal_ctx->get_next_label(tmp,label_idx)){
-		emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+        if(tmp.find("label_") != 0)
+		    emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
 	}
 }
 
@@ -307,7 +308,8 @@ void FunctionDef::codeGen(Context &ctx){
     
     emit_function_prologue2(id->id.c_str());
     block->codeGen(ctx);
-    emit_label("RETURN");
+    int end_label = gobal_ctx->set_if_label("label_RETURN");
+    emit_label(gobal_ctx->get_if_label("label_RETURN", end_label).c_str());
     emit_function_epilogue2(id->id.c_str());
 }
 
@@ -332,7 +334,7 @@ void RETURNStatement::codeGen(Context &ctx){
         exp->codeGen(ctx);
         emit_instr_format("mov","r0, r3");
     }
-    emit_instr_format("b","RETURN");
+    
 
 }
 
@@ -719,11 +721,11 @@ void IFStatement::codeGen(Context &ctx){
     printf("gen IFStatement\n");
     exp->codeGen(ctx);
     if(FALSEStmt == NULL){
-        int end_label = ctx.set_if_label("IFEND");
-        write_rel_instr(ctx.cur_type, ctx.get_if_label("IFEND", end_label));
+        int end_label = gobal_ctx->set_if_label("label_IFEND");
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
         
         TRUEStmt->codeGen(ctx);
-        emit_label(ctx.get_if_label("IFEND", end_label).c_str());
+        emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     }
     // if false 
     // to  lable false 
