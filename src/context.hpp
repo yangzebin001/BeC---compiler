@@ -19,7 +19,13 @@ typedef enum{
     CLVAL,
     CARRAY_ELE,
     CDIRECTDECL,
-    CRETURN
+    CRETURN,
+    CGT,
+    CLT,
+    CGE,
+    CLE,
+    CEQ,
+    CNE
 } ctx_t;
 
 
@@ -139,6 +145,16 @@ public:
             now = now->father;
         }
         return -1;
+    }
+
+    int set_if_label(string var){
+        int t = label_count;
+        set_label(var+to_string(label_count));
+        return label_count;
+    }
+
+    string get_if_label(string var, int label){
+        return var+to_string(label);
     }
 
     bool set_label(string var){

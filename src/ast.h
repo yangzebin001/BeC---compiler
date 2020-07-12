@@ -361,7 +361,7 @@ public:
 		this->block = block;
 		this->type = BLOCKSTATEMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 
@@ -528,7 +528,7 @@ public:
 		this->FALSEStmt = FALSEStmt;
 		this->type = IFSTATEMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 

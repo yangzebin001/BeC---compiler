@@ -152,6 +152,24 @@ void get_gobal_array_initval(InitVal* initVal, vector<Expression*> &array_eles, 
 
 
 
+void write_rel_instr(ctx_t type, string label){
+    if(type == CGT){
+        emit_instr_format("ble", "%s", label.c_str());
+    }else if(type == CLT){
+        emit_instr_format("bge", "%s", label.c_str());
+    }else if(type == CGE){
+        emit_instr_format("blt", "%s", label.c_str());
+    }else if(type == CLE){
+        emit_instr_format("bgt", "%s", label.c_str());
+    }else if(type == CEQ){
+        emit_instr_format("bne", "%s", label.c_str());
+    }else if(type == CNE){
+        emit_instr_format("beq", "%s", label.c_str());
+    }
+}
+
+
+
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
     
@@ -271,6 +289,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         Context* funcxt = new Context();
         funcxt->new_scope();
         funcDefs[i]->codeGen(*funcxt);
+        funcxt->delete_scope();
         delete funcxt;
     }
 
@@ -285,9 +304,10 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 }
 
 void FunctionDef::codeGen(Context &ctx){
+    
     emit_function_prologue2(id->id.c_str());
     block->codeGen(ctx);
-
+    emit_label("RETURN");
     emit_function_epilogue2(id->id.c_str());
 }
 
@@ -312,6 +332,7 @@ void RETURNStatement::codeGen(Context &ctx){
         exp->codeGen(ctx);
         emit_instr_format("mov","r0, r3");
     }
+    emit_instr_format("b","RETURN");
 
 }
 
@@ -435,6 +456,25 @@ void RelExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+    }else{
+        lhs->codeGen(ctx);
+        string new_tmp = ctx.get_unique_temp_stack_name("mul");
+        int offset = ctx.set_offset(new_tmp);
+        emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
+        emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(new_tmp));
+        rhs->codeGen(ctx);
+        emit_instr_format("ldr", "r7, [fp, #%d]", ctx.get_offset(new_tmp));
+        emit_instr_format("cmp", "r7, r3");
+        if(op->op == ">"){
+            ctx.cur_type = CGT;
+        }else if(op->op == "<"){
+            ctx.cur_type = CLT;
+        }else if(op->op == ">="){
+            ctx.cur_type = CGE;
+        }else if(op->op == "<="){
+            ctx.cur_type = CLE;
+        }
+        
     }
 }
 
@@ -442,6 +482,20 @@ void EqExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+    }else{
+        lhs->codeGen(ctx);
+        string new_tmp = ctx.get_unique_temp_stack_name("mul");
+        int offset = ctx.set_offset(new_tmp);
+        emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
+        emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(new_tmp));
+        rhs->codeGen(ctx);
+        emit_instr_format("ldr", "r7, [fp, #%d]", ctx.get_offset(new_tmp));
+        emit_instr_format("cmp", "r7, r3");
+        if(op->op == "=="){
+            ctx.cur_type = CEQ;
+        }else if(op->op == "!="){
+            ctx.cur_type = CNE;
+        }
     }
 }
 
@@ -456,6 +510,8 @@ void LOrExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+    }else{
+        
     }
 }
 
@@ -659,3 +715,28 @@ void Assignment::codeGen(Context &ctx){
     }
 }
 
+void IFStatement::codeGen(Context &ctx){
+    printf("gen IFStatement\n");
+    exp->codeGen(ctx);
+    if(FALSEStmt == NULL){
+        int end_label = ctx.set_if_label("IFEND");
+        write_rel_instr(ctx.cur_type, ctx.get_if_label("IFEND", end_label));
+        
+        TRUEStmt->codeGen(ctx);
+        emit_label(ctx.get_if_label("IFEND", end_label).c_str());
+    }
+    // if false 
+    // to  lable false 
+    // true->gen
+    // to lable ifend
+    // lable false
+    // false->gen
+    // lable ifend
+}
+
+void BlockStatement::codeGen(Context &ctx){
+    printf("gen BlockStatement\n");
+    ctx.new_scope();
+    block->codeGen(ctx);
+    ctx.delete_scope();
+}

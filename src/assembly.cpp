@@ -60,12 +60,12 @@ void emit_instr_format(char *instr, char *operands_format, ...) {
 }
 
 
-void emit_lable(const char* name){
+void emit_label(const char* name){
     fprintf(outfile,"%s:\n",name);
 }
 
 void emit_gobal_var_lable(const char* name, const char* val){
-    emit_lable(name);
+    emit_label(name);
     fprintf(outfile,"	.word	%s\n", val);
 }
 
@@ -81,7 +81,7 @@ void emit_function_prologue2(const char* name) {
     fprintf(outfile, "	.arch armv7-a\n");
     fprintf(outfile, "	.arm\n");
     fprintf(outfile, "	.type	%s, %%function\n", name);
-    emit_lable(name);
+    emit_label(name);
     emit_instr("push", "{fp, lr}");
     emit_instr("add", "fp, sp, #4");
 }

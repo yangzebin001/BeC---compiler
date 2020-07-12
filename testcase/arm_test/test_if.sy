@@ -1,0 +1,10 @@
+int a;
+int b;
+int main(){
+	a = 10;
+	b = 2;
+	if( a>b ){
+		return 1;
+	}
+	return 0;
+}
