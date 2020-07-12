@@ -177,6 +177,10 @@ public:
         return false;
 	}
 
+    string get_unique_temp_stack_name(string name){
+        return name + to_string(label_count);
+    }
+
     ~Context(){
 
         delete scope;

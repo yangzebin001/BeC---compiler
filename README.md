@@ -29,7 +29,6 @@ make clean
 
 ### Todo
 
-- local const array
 - binaryop
 - if
 - while

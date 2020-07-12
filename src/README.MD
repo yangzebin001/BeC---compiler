@@ -15,5 +15,8 @@ assign array base -> r1
 array scale -> r9
 
 
+
+
+
 look up var:
 local scope -> local const -> fathers scope -> fathers const -> gobal var -> gobal const

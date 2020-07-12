@@ -323,6 +323,19 @@ void AddExpression::codeGen(Context &ctx){
     printf("gen AddExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+    }else{
+        lhs->codeGen(ctx);
+        string new_tmp = ctx.get_unique_temp_stack_name("add");
+        int offset = ctx.set_offset(new_tmp);
+        emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
+        emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(new_tmp));
+        rhs->codeGen(ctx);
+        emit_instr_format("ldr", "r7, [fp, #%d]", ctx.get_offset(new_tmp));
+        if(op->op == "+"){
+            emit_instr_format("add", "r3, r7");
+        }else if(op->op == "-"){
+            emit_instr_format("sub", "r3, r7, r3");
+        }
     }
 }
 
@@ -330,6 +343,28 @@ void MulExpression::codeGen(Context &ctx){
     printf("gen MulExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+    }else{
+        lhs->codeGen(ctx);
+        string new_tmp = ctx.get_unique_temp_stack_name("mul");
+        int offset = ctx.set_offset(new_tmp);
+        emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
+        emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(new_tmp));
+        rhs->codeGen(ctx);
+        emit_instr_format("ldr", "r7, [fp, #%d]", ctx.get_offset(new_tmp));
+        if(op->op == "*"){
+            emit_instr_format("mul", "r3, r7");
+        }
+        else if(op->op == "/"){
+            emit_instr_format("mov", "r1, r3");
+            emit_instr_format("mov", "r0, r7");
+            emit_instr_format("bl", "__aeabi_idiv");
+            emit_instr_format("mov", "r3, r0");
+        }else if(op->op == "%"){
+            emit_instr_format("mov", "r1, r3");
+            emit_instr_format("mov", "r0, r7");
+            emit_instr_format("bl", "__aeabi_idivmod");
+            emit_instr_format("mov", "r3, r1");
+        }
     }
 }
 
@@ -376,6 +411,16 @@ void UnaryExp::codeGen(Context &ctx){
         primaryExp->codeGen(ctx);
     }else if(funcCall != NULL){
         funcCall->codeGen(ctx);
+    }else if(unaryOp != NULL){
+        unaryExp->codeGen(ctx);
+        if(unaryOp->op == "-"){
+            emit_instr_format("rsb", "r3, r3, #0");
+        }else if(unaryOp->op == "!"){
+            emit_instr_format("cmp", "r3, #0");
+            emit_instr_format("moveq", "r3, #1");
+            emit_instr_format("movne", "r3, #0");
+            emit_instr_format("uxtb", "r3, r3");
+        }
     }
 }
 
@@ -437,7 +482,7 @@ void DirectDecl::codeGen(Context &ctx){
     ctx.cur_type = CDIRECTDECL;
     bool offset_result = ctx.set_offset(ident->id);
     if(offset_result) {
-        emit_instr_format("sub", "sp, sp, #4");
+        emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
     }
     if(exp != NULL){
         exp->codeGen(ctx);
@@ -510,11 +555,14 @@ void Ident::codeGen(Context &ctx){
             emit_instr_format("ldr", "r3, [fp, #%d]", offset);
         ctx.cur_type = CLOCAL_VAR;
     }else{
+    //gobal var
         int label = gobal_ctx->get_label(id);
         
         if(label != -1){
             ctx.cur_type = CGOBAL_VAR;
             emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
+            if(ctx.cur_var_disload == false)
+                emit_instr_format("ldr", "r3, [r2]");
         }else{
             string gobal_const_var = gobal_ctx->get_const_value(id);
             if(gobal_const_var != ""){

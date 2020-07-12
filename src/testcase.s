@@ -1,16 +1,8 @@
-	.file	"../testcase/functional_test/05_const_array_defn.sy"
+	.file	"../testcase/functional_test/05_add.sy"
 	.text
 	.data
-	.global a
-	.align	2
-	.type	a, %object
-	.size	a, 20
-a:
-	.word	0
-	.word	1
-	.word	2
-	.word	3
-	.word	4
+	.comm	a,4,4
+	.comm	b,4,4
 	.text
 	.align	2
 	.global	main
@@ -20,25 +12,32 @@ a:
 main:
     push       {fp, lr}
     add        fp, sp, #4
-    mov        r3, #1
-    mov        r9, r3
-    lsl        r9, r9, #2
-    ldr        r1, .L3
-    ldr        r3, [r1, r9]
+    mov        r3, #10
     mov        r8, r3
-    mov        r3, #2
-    mov        r9, r3
-    lsl        r9, r9, #2
-    ldr        r1, .L3
-    str        r8, [r1, r9]
-    mov        r3, #2
-    mov        r9, r3
-    lsl        r9, r9, #2
-    ldr        r1, .L3
-    ldr        r3, [r1, r9]
+    ldr        r2, .L3
+    str        r8, [r2]
+    mov        r3, #20
+    mov        r8, r3
+    ldr        r2, .L4
+    str        r8, [r2]
+    sub        sp, sp, #4
+    ldr        r2, .L3
+    ldr        r3, [r2]
+    sub        sp, sp, #4
+    str        r3, [fp, #-8]
+    ldr        r2, .L4
+    ldr        r3, [r2]
+    ldr        r7, [fp, #-8]
+    add        r3, r7
+    rsb        r3, r3, #0
+    mov        r8, r3
+    str        r8, [fp, #-4]
+    ldr        r3, [fp, #-4]
     mov        r0, r3
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
 .L3:
 	.word	a
+.L4:
+	.word	b
