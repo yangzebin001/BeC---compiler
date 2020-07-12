@@ -166,21 +166,41 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 gobal_ctx->set_const_value(var_name, var_val);
 
             }else{
-            //const array
+            //const array treat as gobal array
                 cout << "111" << endl;
-                ArrayElement* now_arr = (ArrayElement*)constVarDecls[i]->constVarDefList[j]->lval;
+                ArrayElement* now_arr_ele = (ArrayElement*)constVarDecls[i]->constVarDefList[j]->lval;
                 InitVal* initVal = (InitVal*)constVarDecls[i]->constVarDefList[j]->initVal;
-                string array_name = get_array_name(now_arr);
+                // string array_name = get_array_name(now_arr);
 
-                cout << array_name << endl;
+                // cout << array_name << endl;
+                
+                // vector<string> flat_array_eles;
+                // get_gobal_array_initval_from_vec(initVal, flat_array_eles, 0);
+                // for(int i = 0; i < flat_array_eles.size(); i++){
+                //     string array_ele_name = make_array_ele_name(array_name,i);
+                //     cout << array_ele_name << " : " << flat_array_eles[i] << endl;
+                //     gobal_ctx->set_const_value(array_ele_name, flat_array_eles[i]);
+                // }
+
+                ArrayDecl* now_arrDecls = new ArrayDecl(now_arr_ele, initVal);
+
+                int ele_number = get_array_element_number(now_arrDecls);
+                string array_name = get_array_name(now_arrDecls->arrayElement);
+                
+
+                vector<int> array_layers;
+                get_array_element_number_vec(now_arrDecls,array_layers);
+                gobal_ctx->set_array_layers(array_name, array_layers);
+                // cout << "ele number is: " << ele_number  << " name is :" << array_name<< endl; 
+                
+                emit_part_gobal_var_def(array_name.c_str(), ele_number*WORD_SIZE);
                 
                 vector<string> flat_array_eles;
-                get_gobal_array_initval_from_vec(initVal, flat_array_eles, 0);
+                get_gobal_array_initval_from_vec(now_arrDecls->initVal, flat_array_eles, 0);
                 for(int i = 0; i < flat_array_eles.size(); i++){
-                    string array_ele_name = make_array_ele_name(array_name,i);
-                    cout << array_ele_name << " : " << flat_array_eles[i] << endl;
-                    gobal_ctx->set_const_value(array_ele_name, flat_array_eles[i]);
+                    emit_word(flat_array_eles[i].c_str());
                 }
+                gobal_ctx->set_label(array_name);
             }
         }
     }
@@ -316,15 +336,23 @@ void PrimaryExpression::codeGen(Context &ctx){
         lval->codeGen(ctx);
         // cout << ctx.cur_type << endl;
         if(ctx.cur_type == CARRAY_ELE){
+            bool is_const_array = false;
             string lval_name = ctx.cur_var_name;
             int array_offset = ctx.get_offset(lval_name);
             if(array_offset != 0){
                 emit_instr_format("sub", "r1, fp, #%d", -array_offset);
             }else{
-            //gobal array
-                emit_instr_format("ldr", "r1, %s", get_gobal_label(gobal_ctx->get_label(lval_name)).c_str());
+                int label  = gobal_ctx->get_label(lval_name);
+                //gobal array
+                if(label != -1){
+                    emit_instr_format("ldr", "r1, %s", get_gobal_label(label).c_str());
+                }else{
+                //gobal const array
+                    // is_const_array = true;
+                    // emit_instr_format("mov", "r1, %s", get_gobal_label().c_str());
+                }
             }
-            if(ctx.cur_var_disload == false){
+            if(ctx.cur_var_disload == false && is_const_array == false){
                 emit_instr_format("ldr", "r3, [r1, r8]");
             }
         }
@@ -394,6 +422,7 @@ void VarDecl::codeGen(Context &ctx){
     }
 }
 
+
 void VarDef::codeGen(Context &ctx){
     printf("gen VarDef\n");
 }
@@ -441,6 +470,25 @@ void ArrayDecl::codeGen(Context &ctx){
         emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
     }
 }
+
+void ConstVarDecl::codeGen(Context &ctx){
+    printf("gen ConstVarDecl\n");
+    for(int i = 0; i < constVarDefList.size(); i++){
+        constVarDefList[i]->codeGen(ctx);
+    }
+}
+
+
+void ConstVarDef::codeGen(Context &ctx){
+    printf("gen ConstVarDef\n");
+    if(lval->type == ARRAYELEMENT){
+        ArrayDecl* constArrayDecl = new ArrayDecl((ArrayElement*)lval, initVal);
+        constArrayDecl->codeGen(ctx);
+    }else{
+
+    }
+}
+
 
 void Lval::codeGen(Context &ctx){
     printf("gen Lval\n");

@@ -161,7 +161,7 @@ public:
 		this->type = CONSTVARDECL;
 	}
 
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 
@@ -189,7 +189,7 @@ public:
 		this->initVal = initVal;
 		this->type = CONSTVARDEF;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class Lval: public Expression {
