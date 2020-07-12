@@ -104,6 +104,7 @@ public:
     vector<int> cur_array_layers;
     int cur_array_index;
     bool cur_var_disload;
+    int cur_return_label;
 
     Context(){
         cur_offset = -4;
@@ -112,6 +113,7 @@ public:
         scopeID = 1;
         cur_array_index = 0;
         cur_var_disload = false;
+        cur_return_label = 0;
     }
 
     int get_offset(string var){

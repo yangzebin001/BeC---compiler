@@ -307,8 +307,9 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 void FunctionDef::codeGen(Context &ctx){
     
     emit_function_prologue2(id->id.c_str());
-    block->codeGen(ctx);
     int end_label = gobal_ctx->set_if_label("label_RETURN");
+    ctx.cur_return_label = end_label;
+    block->codeGen(ctx);
     emit_label(gobal_ctx->get_if_label("label_RETURN", end_label).c_str());
     emit_function_epilogue2(id->id.c_str());
 }
@@ -335,7 +336,7 @@ void RETURNStatement::codeGen(Context &ctx){
         emit_instr_format("mov","r0, r3");
     }
     
-
+    emit_instr_format("b","%s", gobal_ctx->get_if_label("label_RETURN", ctx.cur_return_label).c_str());
 }
 
 void Statement::codeGen(Context &ctx){
@@ -721,11 +722,14 @@ void IFStatement::codeGen(Context &ctx){
     printf("gen IFStatement\n");
     exp->codeGen(ctx);
     if(FALSEStmt == NULL){
+        cout << "aaaaa" << endl;
         int end_label = gobal_ctx->set_if_label("label_IFEND");
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
         
         TRUEStmt->codeGen(ctx);
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
+    }else if(FALSEStmt != NULL) {
+        cout << "bbb" << endl;
     }
     // if false 
     // to  lable false 
