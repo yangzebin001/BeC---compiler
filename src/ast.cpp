@@ -167,6 +167,10 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 
             }else{
             //const array treat as gobal array
+                if(i == 0 && j == 0){
+                    emit_text();
+                    emit_data();
+                }
                 cout << "111" << endl;
                 ArrayElement* now_arr_ele = (ArrayElement*)constVarDecls[i]->constVarDefList[j]->lval;
                 InitVal* initVal = (InitVal*)constVarDecls[i]->constVarDefList[j]->initVal;
@@ -353,7 +357,7 @@ void PrimaryExpression::codeGen(Context &ctx){
                 }
             }
             if(ctx.cur_var_disload == false && is_const_array == false){
-                emit_instr_format("ldr", "r3, [r1, r8]");
+                emit_instr_format("ldr", "r3, [r1, r9]");
             }
         }
 
@@ -542,16 +546,16 @@ void ArrayElement::codeGen(Context &ctx){
         cout << "array size is " << ctx.cur_array_layers.size() << endl;
         index->codeGen(ctx);
         // ctx.cur_type = CLVAL;
-        emit_instr_format("mov","r8, r3");
-        emit_instr_format("lsl","r8, r8, #%d", WORD_SIZE_WIDTH);
+        emit_instr_format("mov","r9, r3");
+        emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
     }else{
         index->codeGen(ctx);
         // ctx.cur_type = CLVAL;
-        emit_instr_format("mov","r9, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
-        emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
-        emit_instr_format("mul","r3, r9");
-        emit_instr_format("add","r8, r3");
+        emit_instr_format("mov","r7, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
+        emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
+        emit_instr_format("mul","r6, r7");
+        emit_instr_format("add","r9, r6");
         
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
         ctx.cur_array_index--;
@@ -576,10 +580,9 @@ void Assignment::codeGen(Context &ctx){
     printf("gen Assignment\n");
     // exp after lval gen if type is arrayElement
 
-    if(lval->type != ARRAYELEMENT){
-        exp->codeGen(ctx);  //in r3
-    }
+    exp->codeGen(ctx);  //in r3
 
+    emit_instr_format("mov", "r8, r3");
 
     ctx.cur_type = CLVAL;
     ctx.cur_var_disload = true;
@@ -591,24 +594,19 @@ void Assignment::codeGen(Context &ctx){
     cout << ctx.cur_type << endl;
 
     if(lval_type == CGOBAL_VAR){
-
-        emit_instr_format("str", "r3, [r2]");
+        emit_instr_format("str", "r8, [r2]");
     }else if(lval_type == CLOCAL_VAR){
-
-        // str        r3, [fp, #-4]
-        emit_instr_format("str", "r3, [fp, #%d]",  ctx.get_offset(lval_name));
+        emit_instr_format("str", "r8, [fp, #%d]",  ctx.get_offset(lval_name));
     }else if(lval_type == CARRAY_ELE){
-
-        exp->codeGen(ctx);
         int array_offset = ctx.get_offset(lval_name);
 
         if(array_offset != 0){
             emit_instr_format("sub", "r1, fp, #%d", -array_offset);
-            emit_instr_format("str", "r3, [r1, r8]");
+            emit_instr_format("str", "r8, [r1, r9]");
         }else{
         //gobal array
             emit_instr_format("ldr", "r1, %s", get_gobal_label(gobal_ctx->get_label(lval_name)).c_str());
-            emit_instr_format("str", "r3, [r1, r8]");
+            emit_instr_format("str", "r8, [r1, r9]");
         }
     }
 }

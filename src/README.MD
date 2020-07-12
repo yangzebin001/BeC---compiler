@@ -8,11 +8,11 @@ Functioncall's result store r0 -> r3
 
 gobal var 's result store -> r2
 
-local var 's result store -> r3
+local var 's result store -> r3 and r8
 
 array decl -> r2
 assign array base -> r1
-array scale -> r8
+array scale -> r9
 
 
 look up var:

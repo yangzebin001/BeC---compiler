@@ -20,11 +20,22 @@ a:
 main:
     push       {fp, lr}
     add        fp, sp, #4
-    mov        r3, #4
-    mov        r8, r3
-    lsl        r8, r8, #2
+    mov        r3, #1
+    mov        r9, r3
+    lsl        r9, r9, #2
     ldr        r1, .L3
-    ldr        r3, [r1, r8]
+    ldr        r3, [r1, r9]
+    mov        r8, r3
+    mov        r3, #2
+    mov        r9, r3
+    lsl        r9, r9, #2
+    ldr        r1, .L3
+    str        r8, [r1, r9]
+    mov        r3, #2
+    mov        r9, r3
+    lsl        r9, r9, #2
+    ldr        r1, .L3
+    ldr        r3, [r1, r9]
     mov        r0, r3
     sub        sp, fp, #4
     pop        {fp, pc}
