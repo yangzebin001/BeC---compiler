@@ -536,9 +536,15 @@ void LAndExpression::codeGen(Context &ctx){
         int end_label = (gobal_ctx->if_false_labels).back().second;
         lhs->codeGen(ctx);
         //will print many time when LAndExpression's son also is LAndExpression
+        if(ctx.cur_type == CSINGLE)
+            emit_instr_format("cmp", "r3, #0");
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        
         rhs->codeGen(ctx);
+        if(ctx.cur_type == CSINGLE)
+            emit_instr_format("cmp", "r3, #0");
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        ctx.cur_type = CAND;
     }
 }
 
@@ -553,17 +559,16 @@ void LOrExpression::codeGen(Context &ctx){
         string end_label_name = gobal_ctx->if_false_labels.back().first;
         int end_label = gobal_ctx->if_false_labels.back().second;
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
-        // string end_label_name = gobal_ctx->if_false_labels.back()->first;
-        // int end_label = gobal_ctx->if_false_labels.back()->second;
-        // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFFALSE", false_label));
+
     }else{
         string end_label_name =(gobal_ctx->if_false_labels).back().first;
         int end_label = (gobal_ctx->if_false_labels).back().second;
         string true_label_name =(gobal_ctx->if_true_labels).back().first;
         int true_label = (gobal_ctx->if_true_labels).back().second;
-        lhs->codeGen(ctx);
         
+        lhs->codeGen(ctx);
         write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
+        
         rhs->codeGen(ctx);
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
 

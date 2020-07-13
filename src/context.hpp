@@ -26,7 +26,9 @@ typedef enum{
     CGE,
     CLE,
     CEQ,
-    CNE
+    CNE,
+    CAND,
+    COR
 } ctx_t;
 
 
