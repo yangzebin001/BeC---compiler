@@ -3,6 +3,7 @@
 #include <cstring>
 #include <assert.h>
 #include <algorithm>
+#include <map>
 #include "ast.h"
 #include "assembly.hpp"
 
@@ -164,6 +165,8 @@ void write_rel_instr(ctx_t type, string label){
     }else if(type == CEQ){
         emit_instr_format("bne", "%s", label.c_str());
     }else if(type == CNE){
+        emit_instr_format("beq", "%s", label.c_str());
+    }else if(type == CSINGLE){
         emit_instr_format("beq", "%s", label.c_str());
     }
 }
@@ -459,6 +462,8 @@ void RelExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+        emit_instr_format("cmp", "r3, #0");
+        ctx.cur_type = CSINGLE;
     }else{
         lhs->codeGen(ctx);
         string new_tmp = ctx.get_unique_temp_stack_name("mul");
@@ -482,7 +487,7 @@ void RelExpression::codeGen(Context &ctx){
 }
 
 void EqExpression::codeGen(Context &ctx){
-    printf("gen RelExpression\n");
+    printf("gen EqExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
     }else{
@@ -503,9 +508,22 @@ void EqExpression::codeGen(Context &ctx){
 }
 
 void LAndExpression::codeGen(Context &ctx){
-    printf("gen RelExpression\n");
+    printf("gen LAndExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+
+        string end_label_name = gobal_ctx->if_false_labels.back().first;
+        int end_label = gobal_ctx->if_false_labels.back().second;
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        
+    }else{
+        string end_label_name =(gobal_ctx->if_false_labels).back().first;
+        int end_label = (gobal_ctx->if_false_labels).back().second;
+        lhs->codeGen(ctx);
+        //will print many time when LAndExpression's son also is LAndExpression
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        rhs->codeGen(ctx);
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
     }
 }
 
@@ -513,6 +531,9 @@ void LOrExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+        // string end_label_name = gobal_ctx->if_false_labels.back()->first;
+        // int end_label = gobal_ctx->if_false_labels.back()->second;
+        // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFFALSE", false_label));
     }else{
         
     }
@@ -720,25 +741,42 @@ void Assignment::codeGen(Context &ctx){
 
 void IFStatement::codeGen(Context &ctx){
     printf("gen IFStatement\n");
-    exp->codeGen(ctx);
+    
     if(FALSEStmt == NULL){
         int end_label = gobal_ctx->set_if_label("label_IFEND");
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
+        
+        (gobal_ctx->if_false_labels).push_back(make_pair("label_IFEND",end_label));
+
+        exp->codeGen(ctx);
+        
+        // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
         
         TRUEStmt->codeGen(ctx);
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
+
+        (gobal_ctx->if_false_labels).pop_back();
+
     }else if(FALSEStmt != NULL) {
         int false_label = gobal_ctx->set_if_label("label_IFFALSE");
         int end_label = gobal_ctx->set_if_label("label_IFEND");
-
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFFALSE", false_label));
+        
+        //store false label
+        (gobal_ctx->if_false_labels).push_back(make_pair("label_IFFALSE",false_label));
+        
+        //cond
+        exp->codeGen(ctx);
         
         TRUEStmt->codeGen(ctx);
+
+        // skip false area
         emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
         emit_label(gobal_ctx->get_if_label("label_IFFALSE", false_label).c_str());
+        
         FALSEStmt->codeGen(ctx);
         
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
+    
+        (gobal_ctx->if_false_labels).pop_back();
     }
     // if false 
     // to  lable false 

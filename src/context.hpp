@@ -20,6 +20,7 @@ typedef enum{
     CARRAY_ELE,
     CDIRECTDECL,
     CRETURN,
+    CSINGLE,
     CGT,
     CLT,
     CGE,
@@ -207,10 +208,16 @@ private:
     int label_count;
 
 public:
+
+    vector<pair<string, int>> if_false_labels;
+
     GobalContext(){
         const_value.clear();
         this->label_count = 3;
+        if_false_labels.clear();
     }
+
+
     string get_const_value(string var){
 		if(!const_value.count(var)){
 			fprintf(stderr,"const value: %s not exist\n", var.c_str());
