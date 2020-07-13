@@ -108,7 +108,7 @@ public:
     int cur_return_label;
 
     Context(){
-        cur_offset = -4;
+        cur_offset = -8;
         label_count = 3;
         scope = NULL;
         scopeID = 1;
@@ -210,11 +210,13 @@ private:
 public:
 
     vector<pair<string, int>> if_false_labels;
+    vector<pair<string, int>> if_true_labels;
 
     GobalContext(){
         const_value.clear();
         this->label_count = 3;
         if_false_labels.clear();
+        if_true_labels.clear();
     }
 
 

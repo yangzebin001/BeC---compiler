@@ -1968,7 +1968,7 @@ yyreduce:
 
   case 96:
 #line 296 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.landExp) = new LAndExpression((yyvsp[-2].landExp), (yyvsp[0].eqExp));}
+    {(yyval.landExp) = new LAndExpression((yyvsp[0].eqExp), (yyvsp[-2].landExp));}
 #line 1973 "syntactic.cpp" /* yacc.c:1646  */
     break;
 
@@ -1980,7 +1980,7 @@ yyreduce:
 
   case 98:
 #line 300 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.lorExp) = new LOrExpression((yyvsp[-2].lorExp), (yyvsp[0].landExp));}
+    {(yyval.lorExp) = new LOrExpression((yyvsp[0].landExp), (yyvsp[-2].lorExp));}
 #line 1985 "syntactic.cpp" /* yacc.c:1646  */
     break;
 

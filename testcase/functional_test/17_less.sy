@@ -3,7 +3,7 @@ int b;
 int main(){
 	a = getint();
 	b = getint();
-	if ( a < b ){
+	if ( a){
 		return 1;
 	}
 	else{

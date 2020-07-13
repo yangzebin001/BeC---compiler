@@ -293,11 +293,11 @@ EqExp: RelExp {$$ = new EqExpression($1);}
 	;
 
 LAndExp: EqExp {$$ = new LAndExpression($1);}
-	| LAndExp AND EqExp {$$ = new LAndExpression($1, $3);}
+	| LAndExp AND EqExp {$$ = new LAndExpression($3, $1);}
 	;
 
 LOrExp: LAndExp {$$ = new LOrExpression($1);}
-	| LOrExp OR LAndExp {$$ = new LOrExpression($1, $3);}
+	| LOrExp OR LAndExp {$$ = new LOrExpression($3, $1);}
 	;
 
 ConstExp: AddExp {$$ = $1;}

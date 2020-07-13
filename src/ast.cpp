@@ -172,6 +172,25 @@ void write_rel_instr(ctx_t type, string label){
 }
 
 
+void write_rel_instr_forward(ctx_t type, string label){
+    if(type == CGT){
+    }else if(type == CLT){
+        emit_instr_format("blt", "%s", label.c_str());
+    }else if(type == CGE){
+        emit_instr_format("bgt", "%s", label.c_str());
+        emit_instr_format("bge", "%s", label.c_str());
+    }else if(type == CLE){
+        emit_instr_format("ble", "%s", label.c_str());
+    }else if(type == CEQ){
+        emit_instr_format("beq", "%s", label.c_str());
+    }else if(type == CNE){
+        emit_instr_format("bne", "%s", label.c_str());
+    }else if(type == CSINGLE){
+        emit_instr_format("bne", "%s", label.c_str());
+    }
+}
+
+
 
 void Program::codeGen(const char* in_file_name, const char* out_file_name){
     init_assembly(in_file_name, out_file_name);
@@ -462,7 +481,6 @@ void RelExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
-        emit_instr_format("cmp", "r3, #0");
         ctx.cur_type = CSINGLE;
     }else{
         lhs->codeGen(ctx);
@@ -512,9 +530,6 @@ void LAndExpression::codeGen(Context &ctx){
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
 
-        string end_label_name = gobal_ctx->if_false_labels.back().first;
-        int end_label = gobal_ctx->if_false_labels.back().second;
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
         
     }else{
         string end_label_name =(gobal_ctx->if_false_labels).back().first;
@@ -527,15 +542,31 @@ void LAndExpression::codeGen(Context &ctx){
     }
 }
 
+
 void LOrExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
+        if(ctx.cur_type == CSINGLE){
+            emit_instr_format("cmp", "r3, #0");
+        }
+        string end_label_name = gobal_ctx->if_false_labels.back().first;
+        int end_label = gobal_ctx->if_false_labels.back().second;
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
         // string end_label_name = gobal_ctx->if_false_labels.back()->first;
         // int end_label = gobal_ctx->if_false_labels.back()->second;
         // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFFALSE", false_label));
     }else{
+        string end_label_name =(gobal_ctx->if_false_labels).back().first;
+        int end_label = (gobal_ctx->if_false_labels).back().second;
+        string true_label_name =(gobal_ctx->if_true_labels).back().first;
+        int true_label = (gobal_ctx->if_true_labels).back().second;
+        lhs->codeGen(ctx);
         
+        write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
+        rhs->codeGen(ctx);
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+
     }
 }
 
@@ -750,41 +781,52 @@ void IFStatement::codeGen(Context &ctx){
         exp->codeGen(ctx);
         
         // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
-        
+        ctx.new_scope();
         TRUEStmt->codeGen(ctx);
+        ctx.delete_scope();
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
 
         (gobal_ctx->if_false_labels).pop_back();
 
     }else if(FALSEStmt != NULL) {
         int false_label = gobal_ctx->set_if_label("label_IFFALSE");
+        int true_label = gobal_ctx->set_if_label("label_IFTRUE");
         int end_label = gobal_ctx->set_if_label("label_IFEND");
         
         //store false label
         (gobal_ctx->if_false_labels).push_back(make_pair("label_IFFALSE",false_label));
+        //store true label
+        (gobal_ctx->if_true_labels).push_back(make_pair("label_IFTRUE",false_label));
         
         //cond
         exp->codeGen(ctx);
+        emit_label(gobal_ctx->get_if_label("label_IFTRUE", false_label).c_str());
         
+        ctx.new_scope();
         TRUEStmt->codeGen(ctx);
+        ctx.delete_scope();
 
         // skip false area
         emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
         emit_label(gobal_ctx->get_if_label("label_IFFALSE", false_label).c_str());
         
+        ctx.new_scope();
         FALSEStmt->codeGen(ctx);
+        ctx.delete_scope();
         
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     
         (gobal_ctx->if_false_labels).pop_back();
+        (gobal_ctx->if_true_labels).pop_back();
     }
     // if false 
-    // to  lable false 
+    // to  label false
+    // label true
     // true->gen
-    // to lable ifend
-    // lable false
+    // to label ifend
+    // label false
     // false->gen
-    // lable ifend
+    // label ifend
 }
 
 void BlockStatement::codeGen(Context &ctx){
