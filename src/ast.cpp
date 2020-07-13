@@ -661,8 +661,8 @@ void ArrayElement::codeGen(Context &ctx){
         // ctx.cur_type = CLVAL;
         emit_instr_format("mov","r7, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
         emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
-        emit_instr_format("mul","r6, r7");
-        emit_instr_format("add","r9, r6");
+        emit_instr_format("mul","r3, r7");
+        emit_instr_format("add","r9, r3");
         
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
         ctx.cur_array_index--;
