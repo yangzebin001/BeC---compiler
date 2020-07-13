@@ -722,14 +722,23 @@ void IFStatement::codeGen(Context &ctx){
     printf("gen IFStatement\n");
     exp->codeGen(ctx);
     if(FALSEStmt == NULL){
-        cout << "aaaaa" << endl;
         int end_label = gobal_ctx->set_if_label("label_IFEND");
         write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
         
         TRUEStmt->codeGen(ctx);
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     }else if(FALSEStmt != NULL) {
-        cout << "bbb" << endl;
+        int false_label = gobal_ctx->set_if_label("label_IFFALSE");
+        int end_label = gobal_ctx->set_if_label("label_IFEND");
+
+        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFFALSE", false_label));
+        
+        TRUEStmt->codeGen(ctx);
+        emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
+        emit_label(gobal_ctx->get_if_label("label_IFFALSE", false_label).c_str());
+        FALSEStmt->codeGen(ctx);
+        
+        emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     }
     // if false 
     // to  lable false 
