@@ -424,6 +424,7 @@ void PrimaryExpression::codeGen(Context &ctx){
             bool is_const_array = false;
             string lval_name = ctx.cur_var_name;
             int array_offset = ctx.get_offset(lval_name);
+            // cout << "AAAAAAAAAAAA" <<lval_name << ":"<< array_offset << endl;
             if(array_offset != 0){
                 emit_instr_format("sub", "r1, fp, #%d", -array_offset);
             }else{
@@ -527,50 +528,91 @@ void EqExpression::codeGen(Context &ctx){
 
 void LAndExpression::codeGen(Context &ctx){
     printf("gen LAndExpression\n");
+    ctx_t cur_type = ctx.cur_type;
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
 
         
     }else{
-        string end_label_name =(gobal_ctx->if_false_labels).back().first;
-        int end_label = (gobal_ctx->if_false_labels).back().second;
-        lhs->codeGen(ctx);
-        //will print many time when LAndExpression's son also is LAndExpression
-        if(ctx.cur_type == CSINGLE)
-            emit_instr_format("cmp", "r3, #0");
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
-        
-        rhs->codeGen(ctx);
-        if(ctx.cur_type == CSINGLE)
-            emit_instr_format("cmp", "r3, #0");
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
-        ctx.cur_type = CAND;
+        if(cur_type == CIF){
+
+            string end_label_name =(gobal_ctx->if_false_labels).back().first;
+            int end_label = (gobal_ctx->if_false_labels).back().second;
+            lhs->codeGen(ctx);
+            //will print many time when LAndExpression's son also is LAndExpression
+            if(ctx.cur_type == CSINGLE)
+                emit_instr_format("cmp", "r3, #0");
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+            
+            rhs->codeGen(ctx);
+            if(ctx.cur_type == CSINGLE)
+                emit_instr_format("cmp", "r3, #0");
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+            ctx.cur_type = CAND;
+        }else if(cur_type == CWHILE){
+            string end_label_name =(gobal_ctx->while_false_labels).back().first;
+            int end_label = (gobal_ctx->while_false_labels).back().second;
+            lhs->codeGen(ctx);
+            //will print many time when LAndExpression's son also is LAndExpression
+            if(ctx.cur_type == CSINGLE)
+                emit_instr_format("cmp", "r3, #0");
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+            
+            rhs->codeGen(ctx);
+            if(ctx.cur_type == CSINGLE)
+                emit_instr_format("cmp", "r3, #0");
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+            ctx.cur_type = CAND;
+        }
     }
 }
 
 
 void LOrExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");
+    ctx_t cur_type = ctx.cur_type;
+
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
         if(ctx.cur_type == CSINGLE){
             emit_instr_format("cmp", "r3, #0");
         }
-        string end_label_name = gobal_ctx->if_false_labels.back().first;
-        int end_label = gobal_ctx->if_false_labels.back().second;
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+
+        if(cur_type == CIF){
+            string end_label_name = gobal_ctx->if_false_labels.back().first;
+            int end_label = gobal_ctx->if_false_labels.back().second;
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        }else if(cur_type == CWHILE){
+            string end_label_name = gobal_ctx->while_false_labels.back().first;
+            int end_label = gobal_ctx->while_false_labels.back().second;
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        }
 
     }else{
-        string end_label_name =(gobal_ctx->if_false_labels).back().first;
-        int end_label = (gobal_ctx->if_false_labels).back().second;
-        string true_label_name =(gobal_ctx->if_true_labels).back().first;
-        int true_label = (gobal_ctx->if_true_labels).back().second;
-        
-        lhs->codeGen(ctx);
-        write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
-        
-        rhs->codeGen(ctx);
-        write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        if(cur_type == CIF){
+
+            string end_label_name =(gobal_ctx->if_false_labels).back().first;
+            int end_label = (gobal_ctx->if_false_labels).back().second;
+            string true_label_name =(gobal_ctx->if_true_labels).back().first;
+            int true_label = (gobal_ctx->if_true_labels).back().second;
+            
+            lhs->codeGen(ctx);
+            write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
+            
+            rhs->codeGen(ctx);
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        }else if(cur_type == CWHILE){
+            string end_label_name =(gobal_ctx->while_false_labels).back().first;
+            int end_label = (gobal_ctx->while_false_labels).back().second;
+            string true_label_name =(gobal_ctx->while_start_labels).back().first;
+            int true_label = (gobal_ctx->while_start_labels).back().second;
+            
+            lhs->codeGen(ctx);
+            write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
+            
+            rhs->codeGen(ctx);
+            write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
+        }
 
     }
 }
@@ -709,12 +751,16 @@ void ArrayElement::codeGen(Context &ctx){
         ctx.cur_array_index = ctx.cur_array_layers.size()-1;
         cout << "array size is " << ctx.cur_array_layers.size() << endl;
         index->codeGen(ctx);
+
+        ctx.cur_var_name = array_name;
         // ctx.cur_type = CLVAL;
         emit_instr_format("mov","r9, r3");
         emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
     }else{
+        ctx.cur_var_name = array_name;
         index->codeGen(ctx);
+        ctx.cur_var_name = array_name;
         // ctx.cur_type = CLVAL;
         emit_instr_format("mov","r7, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
         emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
@@ -783,12 +829,19 @@ void IFStatement::codeGen(Context &ctx){
         
         (gobal_ctx->if_false_labels).push_back(make_pair("label_IFEND",end_label));
 
+        ctx_t pre_type = ctx.cur_type;
+        ctx.cur_type = CIF;
         exp->codeGen(ctx);
-        
+        ctx.cur_type = pre_type;
+
         // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
+        pre_type = ctx.cur_type;
+        ctx.cur_type = CIF;
         ctx.new_scope();
         TRUEStmt->codeGen(ctx);
         ctx.delete_scope();
+        ctx.cur_type = pre_type;
+        
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
 
         (gobal_ctx->if_false_labels).pop_back();
@@ -804,20 +857,30 @@ void IFStatement::codeGen(Context &ctx){
         (gobal_ctx->if_true_labels).push_back(make_pair("label_IFTRUE",false_label));
         
         //cond
+        ctx_t pre_type = ctx.cur_type;
+        ctx.cur_type = CIF;
         exp->codeGen(ctx);
+        ctx.cur_type = pre_type;
+
         emit_label(gobal_ctx->get_if_label("label_IFTRUE", false_label).c_str());
         
+        pre_type = ctx.cur_type;
+        ctx.cur_type = CIF;
         ctx.new_scope();
         TRUEStmt->codeGen(ctx);
         ctx.delete_scope();
+        ctx.cur_type = pre_type;
 
         // skip false area
         emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
         emit_label(gobal_ctx->get_if_label("label_IFFALSE", false_label).c_str());
         
+        pre_type = ctx.cur_type;
+        ctx.cur_type = CIF;
         ctx.new_scope();
         FALSEStmt->codeGen(ctx);
         ctx.delete_scope();
+        ctx.cur_type = pre_type;
         
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     
@@ -839,4 +902,59 @@ void BlockStatement::codeGen(Context &ctx){
     ctx.new_scope();
     block->codeGen(ctx);
     ctx.delete_scope();
+}
+
+void WHILEStatement::codeGen(Context &ctx){
+    printf("gen WHILEStatement\n");
+    // while_start
+    // if false
+    // to  label end
+    // block 
+    // b while_start
+    int while_start = gobal_ctx->set_if_label("label_WHILESTART");
+    int end_label = gobal_ctx->set_if_label("label_WHILEEND");
+    //store label_WHILESTART
+    (gobal_ctx->while_start_labels).push_back(make_pair("label_WHILESTART",while_start));
+    //store label_WHILEEND
+    (gobal_ctx->while_false_labels).push_back(make_pair("label_WHILEEND",end_label));
+    //while_start
+    emit_label(gobal_ctx->get_if_label("label_WHILESTART", while_start).c_str());
+    
+    
+    //cond
+    ctx_t pre_type = ctx.cur_type;
+    ctx.cur_type = CWHILE;
+    exp->codeGen(ctx);
+    ctx.cur_type = pre_type;
+    
+    pre_type = ctx.cur_type;
+    ctx.cur_type = CWHILE;
+    ctx.new_scope();
+    stmt->codeGen(ctx);
+    ctx.delete_scope();
+    ctx.cur_type = pre_type;
+
+    // b label_WHILESTART
+    emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_WHILESTART", while_start).c_str());
+    // label_WHILEEND
+    emit_label(gobal_ctx->get_if_label("label_WHILEEND", end_label).c_str());
+    
+
+    (gobal_ctx->while_start_labels).pop_back();
+    (gobal_ctx->while_false_labels).pop_back();
+}
+
+
+void BREAKStatement::codeGen(Context &ctx){
+    printf("gen BREAKStatement\n");
+    string end_label_name =(gobal_ctx->while_false_labels).back().first;
+    int end_label = (gobal_ctx->while_false_labels).back().second;
+    emit_instr_format("b", "%s", gobal_ctx->get_if_label(end_label_name, end_label).c_str());
+}
+
+void CONTINUEStatement::codeGen(Context &ctx){
+    printf("gen CONTINUEStatement\n");
+    string start_label_name =(gobal_ctx->while_start_labels).back().first;
+    int start_label = (gobal_ctx->while_start_labels).back().second;
+    emit_instr_format("b", "%s", gobal_ctx->get_if_label(start_label_name, start_label).c_str());
 }

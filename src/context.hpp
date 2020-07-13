@@ -28,7 +28,9 @@ typedef enum{
     CEQ,
     CNE,
     CAND,
-    COR
+    COR,
+    CIF,
+    CWHILE
 } ctx_t;
 
 
@@ -213,6 +215,8 @@ public:
 
     vector<pair<string, int>> if_false_labels;
     vector<pair<string, int>> if_true_labels;
+    vector<pair<string, int>> while_start_labels;
+    vector<pair<string, int>> while_false_labels;
 
     GobalContext(){
         const_value.clear();

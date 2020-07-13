@@ -541,7 +541,7 @@ public:
 		this->stmt = stmt;
 		this->type = WHILESTATEMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class RETURNStatement: public Statement {
@@ -559,7 +559,7 @@ public:
 	BREAKStatement(){
 		this->type = BREAKSTATEMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class CONTINUEStatement: public Statement {
@@ -567,5 +567,5 @@ public:
 	CONTINUEStatement(){
 		this->type = CONTINUESTATEMENT;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
