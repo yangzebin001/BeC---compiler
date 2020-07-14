@@ -385,11 +385,13 @@ void Statement::codeGen(Context &ctx){
 
 void AddExpression::codeGen(Context &ctx){
     printf("gen AddExpression\n");
+
     if(unaryExp != NULL){
         unaryExp->codeGen(ctx);
     }else{
         lhs->codeGen(ctx);
         string new_tmp = ctx.get_unique_temp_stack_name("add");
+
         int offset = ctx.set_offset(new_tmp);
         emit_instr_format("sub", "sp, sp, #%d", WORD_SIZE);
         emit_instr_format("str", "r3, [fp, #%d]", ctx.get_offset(new_tmp));
@@ -768,6 +770,9 @@ void ArrayElement::codeGen(Context &ctx){
     if(ctx.cur_type != CLVAL) return;
     printf("gen arrayElement\n");
 
+    bool cur_var_disload = ctx.cur_var_disload;
+    ctx.cur_var_disload = false;
+
     string array_name = get_array_name(this);
     cout << "assign array name is " << array_name << endl;
     if(ctx.cur_array_layers.size() == 0){
@@ -780,10 +785,12 @@ void ArrayElement::codeGen(Context &ctx){
 
         ctx.cur_array_index = ctx.cur_array_layers.size()-1;
         cout << "array size is " << ctx.cur_array_layers.size() << endl;
+        
+        
         index->codeGen(ctx);
 
         ctx.cur_var_name = array_name;
-        // ctx.cur_type = CLVAL;
+        ctx.cur_type = CLVAL;
         emit_instr_format("mov","r9, r3");
         emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
@@ -791,7 +798,7 @@ void ArrayElement::codeGen(Context &ctx){
         ctx.cur_var_name = array_name;
         index->codeGen(ctx);
         ctx.cur_var_name = array_name;
-        // ctx.cur_type = CLVAL;
+        ctx.cur_type = CLVAL;
         emit_instr_format("mov","r7, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
         emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
         emit_instr_format("mul","r3, r7");
@@ -804,6 +811,7 @@ void ArrayElement::codeGen(Context &ctx){
     // out this type ArrayElement node
     if(ctx.cur_array_index == 0){
         ctx.cur_array_layers.resize(0);
+        ctx.cur_var_disload = cur_var_disload;
     }
 
 
@@ -825,9 +833,11 @@ void Assignment::codeGen(Context &ctx){
     emit_instr_format("mov", "r8, r3");
 
     ctx.cur_type = CLVAL;
+
     ctx.cur_var_disload = true;
     lval->codeGen(ctx); //in r2 or arrayElement scale in r1
     ctx.cur_var_disload = false;
+
     ctx_t lval_type = ctx.cur_type;
     string lval_name = ctx.cur_var_name;
 

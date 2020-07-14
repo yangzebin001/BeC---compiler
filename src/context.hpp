@@ -193,7 +193,7 @@ public:
 	}
 
     string get_unique_temp_stack_name(string name){
-        return name + to_string(label_count);
+        return name + to_string(cur_offset);
     }
 
     ~Context(){

@@ -385,6 +385,9 @@ public:
 	BinaryOpExpression(){}
 	BinaryOpExpression(Expression *unaryExp){
 		this->unaryExp = unaryExp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = BINARYOPEXPRESSION;
 	}
 	BinaryOpExpression(Expression *lhs, Operation* op, Expression *rhs){
@@ -400,6 +403,9 @@ class LOrExpression: public BinaryOpExpression {
 public:
 	LOrExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = LOREXPRESSION;
 	}
 	LOrExpression(Expression *lhs, Expression *rhs){
@@ -415,6 +421,9 @@ class LAndExpression: public BinaryOpExpression {
 public:
 	LAndExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = LANDEXPRESSION;
 	}
 	LAndExpression(Expression *lhs, Expression *rhs){
@@ -431,6 +440,9 @@ class EqExpression: public BinaryOpExpression {
 public:
 	EqExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = EQEXPRESSION;
 	}
 	EqExpression(Expression *lhs, Operation* op, Expression *rhs){
@@ -446,6 +458,9 @@ class RelExpression: public BinaryOpExpression {
 public:
 	RelExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = RELEXPRESSION;
 	}
 	RelExpression(Expression *lhs, Operation* op, Expression *rhs){
@@ -461,6 +476,9 @@ class AddExpression: public BinaryOpExpression {
 public:
 	AddExpression(Expression* exp){
 		this->unaryExp = exp;
+		this->lhs = NULL;
+		this->op = NULL;
+		this->rhs = NULL;
 		this->type = ADDEXPRESSION;
 	}
 	AddExpression(Expression *lhs, Operation* op, Expression *rhs){
