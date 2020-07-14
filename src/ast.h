@@ -295,7 +295,7 @@ public:
 		this->lval = lval;
 		this->type = FUNCPARAM;
 	}
-	virtual void codeGen(Context &ctx){}
+	virtual void codeGen(Context &ctx);
 };
 
 class FunctionDef: public Node {

@@ -15,6 +15,8 @@ assign array base -> r1
 array scale -> r9
 
 
+funcparam {r0, r3}
+
 
 
 

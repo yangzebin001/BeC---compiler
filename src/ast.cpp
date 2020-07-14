@@ -21,9 +21,11 @@ string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
 
-string get_lval_name(Lval* lval){
+string get_lval_name(Expression* lval){
     if(lval->type == IDENT){
         return ((Ident*)lval)->id;
+    }else if(lval->type == DIRECTDECL){
+        return get_lval_name(((DirectDecl*)lval)->ident);
     }
 }
 
@@ -327,11 +329,27 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 }
 
 void FunctionDef::codeGen(Context &ctx){
-    
+    printf("gen FunctionDef\n");
     emit_function_prologue2(id->id.c_str());
     int end_label = gobal_ctx->set_if_label("label_RETURN");
     ctx.cur_return_label = end_label;
+
+    // support 4 param at most
+    for(int i = 0; i < ParamList.size() && i < 4; i++){
+        if(ParamList[i]->lval->type == IDENT){
+            DirectDecl *d = new DirectDecl((Ident*)ParamList[i]->lval, NULL);
+            string ident = get_lval_name(ParamList[i]->lval);
+
+            d->codeGen(ctx);
+
+            emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+
+        }
+    }
+
     block->codeGen(ctx);
+    
+    
     emit_label(gobal_ctx->get_if_label("label_RETURN", end_label).c_str());
     emit_function_epilogue2(id->id.c_str());
 }
@@ -481,6 +499,14 @@ void FunctionCall::codeGen(Context &ctx){
     emit_instr_format("bl","%s",id->id.c_str());
     emit_instr_format("mov", "r3, r0");
 }
+
+
+// void FuncParam::codeGen(Context &ctx){
+//     printf("gen FuncParam\n");
+//     if(lval->type == DIRECTDECL){
+
+//     }
+// }
 
 void RelExpression::codeGen(Context &ctx){
     printf("gen RelExpression\n");

@@ -13,7 +13,7 @@ lexical.cpp: lexical.l syntactic.hpp
 	flex -o $@ $^
 
 %.o: %.cpp
-	clang++ -c $(CPPFLAGS) -o $@ $<
+	clang++ -c $(CPPFLAGS) -o $@ $< -w
 
 compiler: $(OBJS)
 	clang++ -o $@ $(OBJS) 
