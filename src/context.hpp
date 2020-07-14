@@ -2,6 +2,7 @@
 #include<cstdio>
 #include<string>
 #include<vector>
+#include<set>
 
 using namespace std;
 
@@ -39,6 +40,7 @@ private:
     map<string,int> var_label;
     map<string,int> stack_offset;
     map<string,vector<int> > array_layers;
+    set<string> is_def_array;
 public:
     Scope* father;
 
@@ -89,6 +91,17 @@ public:
         return true;
     }
 
+    bool set_def_array(string name){
+        if(is_def_array.count(name)) return false;
+        is_def_array.insert(name);
+        return true;
+    }
+
+    bool get_def_array(string name){
+        if(!is_def_array.count(name)) return false;
+        return true;
+    }
+
     ~Scope(){
         stack_offset.clear();
         var_label.clear();
@@ -110,6 +123,7 @@ public:
     int cur_array_index;
     bool cur_var_disload;
     int cur_return_label;
+    set<string> param_array;
 
     Context(){
         cur_offset = -8;
@@ -119,6 +133,7 @@ public:
         cur_array_index = 0;
         cur_var_disload = false;
         cur_return_label = 0;
+        param_array.clear();
     }
 
     int get_offset(string var){
@@ -136,6 +151,25 @@ public:
 
     bool set_offset(string var){
     	return scope->set_offset(var, cur_offset, 1);
+    }
+
+
+    bool set_def_array(string name){
+        return scope->set_def_array(name);
+    }
+
+    bool get_def_array(string name){
+        Scope* now = scope;
+        while(now != NULL){
+            bool ll = now->get_def_array(name);
+            if(ll) return true;
+			else{
+                int ls = now->get_offset(name);
+                if(ls != 0) return false;
+            }
+            now = now->father;
+        }
+        return false;
     }
 
     bool set_assign_offset(string var, int size){

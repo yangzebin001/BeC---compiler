@@ -21,11 +21,22 @@ string get_var_value(AddExpression* top){
     return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
 } 
 
+
+string get_array_name(ArrayElement* ae){
+    int number = 1;
+    while(ae->type != IDENT){
+        ae = (ArrayElement*)ae->array;
+    }
+    return ((Ident*)ae)->id;
+}
+
 string get_lval_name(Expression* lval){
     if(lval->type == IDENT){
         return ((Ident*)lval)->id;
     }else if(lval->type == DIRECTDECL){
         return get_lval_name(((DirectDecl*)lval)->ident);
+    }else if(lval->type == ARRAYELEMENT){
+        return get_array_name((ArrayElement*) lval);
     }
 }
 
@@ -105,13 +116,6 @@ int get_array_element_number_vec(ArrayDecl* nowarray, vector<int> &array_layer){
 }
 
 
-string get_array_name(ArrayElement* ae){
-    int number = 1;
-    while(ae->type != IDENT){
-        ae = (ArrayElement*)ae->array;
-    }
-    return ((Ident*)ae)->id;
-}
 
 void get_array_initval_from_index_1(InitVal* initVal, vector<int> &array_eles, int cur_layer){
     int cur_number = initVal->initValList.size();
@@ -345,6 +349,12 @@ void FunctionDef::codeGen(Context &ctx){
             emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
 
         }
+        else{
+            string ident = get_lval_name(ParamList[i]->lval);
+            ctx.set_offset(ident);
+            ctx.param_array.insert(ident);
+            emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+        }
     }
 
     block->codeGen(ctx);
@@ -444,9 +454,15 @@ void PrimaryExpression::codeGen(Context &ctx){
             bool is_const_array = false;
             string lval_name = ctx.cur_var_name;
             int array_offset = ctx.get_offset(lval_name);
-            // cout << "AAAAAAAAAAAA" <<lval_name << ":"<< array_offset << endl;
+            
             if(array_offset != 0){
-                emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+                bool is_def_arr = ctx.get_def_array(lval_name);
+                if(is_def_arr){
+                    emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+                }else{
+                    emit_instr_format("ldr", "r1, [fp, #%d]", array_offset);
+                }
+
             }else{
                 int label  = gobal_ctx->get_label(lval_name);
                 //gobal array
@@ -656,6 +672,7 @@ void ExpressionStatement::codeGen(Context &ctx){
 }
 
 void VarDecl::codeGen(Context &ctx){
+    printf("gen VarDecl\n");
     for(int i = 0; i < VarDefList.size(); i++){
         VarDefList[i]->codeGen(ctx);
     }
@@ -685,6 +702,9 @@ void ArrayDecl::codeGen(Context &ctx){
 
     int number = get_array_element_number(this);
     string array_name = get_array_name(arrayElement);
+
+    ctx.set_def_array(array_name);
+
     cout << "array size is:" <<number << endl;
     bool offset_result = ctx.set_assign_offset(array_name,number);
 
@@ -701,12 +721,14 @@ void ArrayDecl::codeGen(Context &ctx){
     for(int i = 0; i < number; i++){
         emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
     }
+    if(initVal != NULL){
 
-    vector<Expression*> expList;
-    get_gobal_array_initval(initVal, expList, 0);
-    for(int i = 0; i < expList.size(); i++){
-        expList[i]->codeGen(ctx);
-        emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
+        vector<Expression*> expList;
+        get_gobal_array_initval(initVal, expList, 0);
+        for(int i = 0; i < expList.size(); i++){
+            expList[i]->codeGen(ctx);
+            emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
+        }
     }
 }
 
@@ -741,13 +763,18 @@ void Ident::codeGen(Context &ctx){
     int offset = ctx.get_offset(id);
     //local var
     if(offset != 0){
-        if(ctx.cur_var_disload == false)
-            emit_instr_format("ldr", "r3, [fp, #%d]", offset);
+        if(ctx.cur_var_disload == false){
+            if(ctx.get_def_array(id)){
+                emit_instr_format("sub", "r3, fp, #%d", -offset);
+            }else{
+
+                emit_instr_format("ldr", "r3, [fp, #%d]", offset);
+            }
+        }
         ctx.cur_type = CLOCAL_VAR;
     }else{
     //gobal var
         int label = gobal_ctx->get_label(id);
-        
         if(label != -1){
             ctx.cur_type = CGOBAL_VAR;
             emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
@@ -767,8 +794,8 @@ void Ident::codeGen(Context &ctx){
 
 void ArrayElement::codeGen(Context &ctx){
     // array direct needn't reach here
-    if(ctx.cur_type != CLVAL) return;
     printf("gen arrayElement\n");
+    if(ctx.cur_type != CLVAL) return;
 
     bool cur_var_disload = ctx.cur_var_disload;
     ctx.cur_var_disload = false;

@@ -1,0 +1,10 @@
+int def(int arr[]){
+	arr[1] = 25;
+	return 1;
+
+}
+int main(){
+	int arr[4] = {11,22,33,44};
+	def(arr);
+	return 0;
+}
