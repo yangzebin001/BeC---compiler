@@ -124,7 +124,7 @@ private:
 public:
     ctx_t cur_type;
     string cur_var_name;
-    vector<int> cur_array_layers;
+    vector<vector<int> > cur_array_layers;
     int cur_array_index;
     bool cur_var_disload;
     int cur_return_label;
@@ -137,6 +137,7 @@ public:
         cur_array_index = 0;
         cur_var_disload = false;
         cur_return_label = 0;
+        cur_array_layers.clear();
     }
 
     int get_offset(string var){
@@ -234,7 +235,7 @@ public:
     }
 
     ~Context(){
-
+        cur_array_layers.clear();
         delete scope;
 	}
 

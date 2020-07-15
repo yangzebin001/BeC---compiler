@@ -826,31 +826,36 @@ void Ident::codeGen(Context &ctx){
 }
 
 void ArrayElement::codeGen(Context &ctx){
+
     // array direct needn't reach here
     printf("gen arrayElement\n");
-    if(ctx.cur_type != CLVAL) return;
+    if(ctx.cur_type != CLVAL && ctx.cur_type != CARRAY_ELE) return;
 
     bool cur_var_disload = ctx.cur_var_disload;
     ctx.cur_var_disload = false;
 
     string array_name = get_array_name(this);
     cout << "assign array name is " << array_name << endl;
-    if(ctx.cur_array_layers.size() == 0){
-        ctx.cur_var_name = array_name;
-        ctx.get_array_layers(array_name, ctx.cur_array_layers);
+    if(ctx.cur_type == CLVAL){
+        
+        
+        ctx.cur_array_layers.push_back(vector<int>());
 
-        if(ctx.cur_array_layers.size() == 0){
-            gobal_ctx->get_array_layers(array_name, ctx.cur_array_layers);
+        ctx.cur_var_name = array_name;
+        ctx.get_array_layers(array_name, ctx.cur_array_layers.back());
+
+        if(ctx.cur_array_layers.back().size() == 0){
+            gobal_ctx->get_array_layers(array_name, ctx.cur_array_layers.back());
         }
 
-        ctx.cur_array_index = ctx.cur_array_layers.size()-1;
-        cout << "array size is " << ctx.cur_array_layers.size() << endl;
+        ctx.cur_array_index = ctx.cur_array_layers.back().size()-1;
+        cout << "array size is " << ctx.cur_array_layers.back().size() << endl;
         
         
         index->codeGen(ctx);
 
         ctx.cur_var_name = array_name;
-        ctx.cur_type = CLVAL;
+        ctx.cur_type = CARRAY_ELE;
         emit_instr_format("mov","r9, r3");
         emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
         // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
@@ -858,8 +863,8 @@ void ArrayElement::codeGen(Context &ctx){
         ctx.cur_var_name = array_name;
         index->codeGen(ctx);
         ctx.cur_var_name = array_name;
-        ctx.cur_type = CLVAL;
-        emit_instr_format("mov","r7, #%d",ctx.cur_array_layers[ctx.cur_array_index]);
+        ctx.cur_type = CARRAY_ELE;
+        emit_instr_format("mov","r7, #%d",ctx.cur_array_layers.back()[ctx.cur_array_index]);
         emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
         emit_instr_format("mul","r3, r7");
         emit_instr_format("add","r9, r3");
@@ -870,7 +875,8 @@ void ArrayElement::codeGen(Context &ctx){
     
     // out this type ArrayElement node
     if(ctx.cur_array_index == 0){
-        ctx.cur_array_layers.resize(0);
+        
+        ctx.cur_array_layers.pop_back();
         ctx.cur_var_disload = cur_var_disload;
     }
 
