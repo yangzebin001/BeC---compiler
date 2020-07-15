@@ -2,11 +2,11 @@
 #include <cstdlib>
 #include <cstring>
 #include <assert.h>
+#include <cmath>
 #include <algorithm>
 #include <map>
 #include "ast.h"
 #include "assembly.hpp"
-
 static GobalContext* gobal_ctx = new GobalContext();
 
 static const int WORD_SIZE_WIDTH = 2;
@@ -469,7 +469,13 @@ void PrimaryExpression::codeGen(Context &ctx){
                 bool is_def_arr = ctx.get_def_array(lval_name);
                 if(is_def_arr){
                     // emit_instr_format("111", "r1, fp, #%d", -array_offset);
-                    emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+                    if(abs(array_offset) > 255){
+                        emit_instr_format("ldr", "r6, =%d", -array_offset);
+                        emit_instr_format("sub", "r1, fp, r6");
+                    }else{
+                        emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+
+                    }
                 }else{
                     // emit_instr_format("222", "r1, fp, #%d", -array_offset);
                     emit_instr_format("ldr", "r1, [fp, #%d]", array_offset);
@@ -728,7 +734,14 @@ void ArrayDecl::codeGen(Context &ctx){
     if(offset_result) {
         emit_instr_format("sub", "sp, sp, #%d", number*WORD_SIZE);
     }
-    emit_instr_format("sub", "r2, fp, #%d", -ctx.get_offset(array_name));
+    if(abs(-ctx.get_offset(array_name)) > 255){
+        emit_instr_format("ldr", "r6, =%d", -ctx.get_offset(array_name));
+        emit_instr_format("sub", "r2, fp, r6");
+    }else{
+        emit_instr_format("sub", "r2, fp, #%d", -ctx.get_offset(array_name));
+
+    }
+    // emit_instr_format("sub", "r2, fp, #%d", );
     emit_instr_format("mov", "r3, #0");
     for(int i = 0; i < number; i++){
         emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
@@ -777,7 +790,14 @@ void Ident::codeGen(Context &ctx){
     if(offset != 0){
         if(ctx.cur_var_disload == false){
             if(ctx.get_def_array(id)){
-                emit_instr_format("sub", "r3, fp, #%d", -offset);
+                if(abs(offset) > 255){
+                    emit_instr_format("ldr", "r6, =%d", -offset);
+                    emit_instr_format("sub", "r3, fp, r6");
+                }else{
+                    emit_instr_format("sub", "r3, fp, #%d", -offset);
+
+                }
+                // emit_instr_format("sub", "r3, fp, #%d", -offset);
             }else{
                 emit_instr_format("ldr", "r3, [fp, #%d]", offset);
                 // emit_instr_format("111", "r3, fp, #%d", -offset);
@@ -894,7 +914,14 @@ void Assignment::codeGen(Context &ctx){
             bool is_def_arr = ctx.get_def_array(lval_name);
                 if(is_def_arr){
                     // emit_instr_format("111", "r1, [fp, #%d]", array_offset);
-                    emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+                    if(abs(array_offset) > 255){
+                        emit_instr_format("ldr", "r6, =%d", -array_offset);
+                        emit_instr_format("sub", "r1, fp, r6");
+                    }else{
+                        emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+
+                    }
+                    // emit_instr_format("sub", "r1, fp, #%d", -array_offset);
                 }else{
                     // emit_instr_format("222", "r1, [fp, #%d]", array_offset);
                     emit_instr_format("ldr", "r1, [fp, #%d]", array_offset);
