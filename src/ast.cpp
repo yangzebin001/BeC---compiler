@@ -15,13 +15,6 @@ string get_gobal_label(int label){
     return ".L" + to_string(label);
 }
 
-
-/*just support immediate number*/
-string get_var_value(AddExpression* top){
-    return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp->number;
-} 
-
-
 string get_array_name(ArrayElement* ae){
     int number = 1;
     while(ae->type != IDENT){
@@ -39,6 +32,19 @@ string get_lval_name(Expression* lval){
         return get_array_name((ArrayElement*) lval);
     }
 }
+
+/*just support immediate number and gobal const var*/
+string get_var_value(AddExpression* top){
+    PrimaryExpression* pe = ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp;
+    if(pe->lval != NULL){
+        cout << "const var is : " << gobal_ctx->get_const_value(get_lval_name(pe->lval)) << endl;
+        return gobal_ctx->get_const_value(get_lval_name(pe->lval));
+    }
+    return pe->number;
+} 
+
+
+
 
 string make_array_ele_name(string array,int index){
     return array + "__" + to_string(index);
@@ -350,9 +356,13 @@ void FunctionDef::codeGen(Context &ctx){
 
         }
         else{
+            vector<int> array_layers;
             string ident = get_lval_name(ParamList[i]->lval);
+            ArrayDecl* now_arrDecls = new ArrayDecl((ArrayElement*)ParamList[i]->lval, NULL);
+            get_array_element_number_vec(now_arrDecls,array_layers);
+            ctx.set_array_layers(ident, array_layers);
             ctx.set_offset(ident);
-            ctx.param_array.insert(ident);
+            // ctx.set_def_array(ident);
             emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
         }
     }
@@ -458,8 +468,10 @@ void PrimaryExpression::codeGen(Context &ctx){
             if(array_offset != 0){
                 bool is_def_arr = ctx.get_def_array(lval_name);
                 if(is_def_arr){
+                    // emit_instr_format("111", "r1, fp, #%d", -array_offset);
                     emit_instr_format("sub", "r1, fp, #%d", -array_offset);
                 }else{
+                    // emit_instr_format("222", "r1, fp, #%d", -array_offset);
                     emit_instr_format("ldr", "r1, [fp, #%d]", array_offset);
                 }
 
@@ -767,8 +779,9 @@ void Ident::codeGen(Context &ctx){
             if(ctx.get_def_array(id)){
                 emit_instr_format("sub", "r3, fp, #%d", -offset);
             }else{
-
                 emit_instr_format("ldr", "r3, [fp, #%d]", offset);
+                // emit_instr_format("111", "r3, fp, #%d", -offset);
+                //
             }
         }
         ctx.cur_type = CLOCAL_VAR;
@@ -878,7 +891,14 @@ void Assignment::codeGen(Context &ctx){
         int array_offset = ctx.get_offset(lval_name);
 
         if(array_offset != 0){
-            emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+            bool is_def_arr = ctx.get_def_array(lval_name);
+                if(is_def_arr){
+                    // emit_instr_format("111", "r1, [fp, #%d]", array_offset);
+                    emit_instr_format("sub", "r1, fp, #%d", -array_offset);
+                }else{
+                    // emit_instr_format("222", "r1, [fp, #%d]", array_offset);
+                    emit_instr_format("ldr", "r1, [fp, #%d]", array_offset);
+                }
             emit_instr_format("str", "r8, [r1, r9]");
         }else{
         //gobal array

@@ -46,6 +46,9 @@ public:
 
     Scope(){
         var_label.clear();
+        stack_offset.clear();
+        array_layers.clear();
+        is_def_array.clear();
         father = NULL;
     }
 
@@ -103,8 +106,10 @@ public:
     }
 
     ~Scope(){
-        stack_offset.clear();
         var_label.clear();
+        stack_offset.clear();
+        array_layers.clear();
+        is_def_array.clear();
     }
 
 };
@@ -123,7 +128,6 @@ public:
     int cur_array_index;
     bool cur_var_disload;
     int cur_return_label;
-    set<string> param_array;
 
     Context(){
         cur_offset = -8;
@@ -133,7 +137,6 @@ public:
         cur_array_index = 0;
         cur_var_disload = false;
         cur_return_label = 0;
-        param_array.clear();
     }
 
     int get_offset(string var){
