@@ -496,7 +496,7 @@ void PrimaryExpression::codeGen(Context &ctx){
     }else if(exp != NULL){
         exp->codeGen(ctx);
     }else{
-        emit_instr_format("mov","r3, #%s",number.c_str());
+        emit_instr_format("ldr","r3, =%s",number.c_str());
     }
 }
 
@@ -796,7 +796,7 @@ void Ident::codeGen(Context &ctx){
         }else{
             string gobal_const_var = gobal_ctx->get_const_value(id);
             if(gobal_const_var != ""){
-                emit_instr_format("mov","r3, #%s",gobal_const_var.c_str());
+                emit_instr_format("ldr","r3, =%s",gobal_const_var.c_str());
             }else {
                 fprintf(stderr,"cannot find : %s not def\n", id.c_str());
                 exit(-1);

@@ -29,13 +29,11 @@ make clean
 
 ### Todo
 
-- binaryop
-- if
-- while
-- break
-- continue
-- getint()
-- funcparam var, array
+- gobal array func param
+- many gobal const var
+- secondhand array as funcparam
+- or expression
+- large number to register
 
 
 ### Reference
