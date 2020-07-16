@@ -247,6 +247,7 @@ private:
     map<string, int> var_label;
     map<string,vector<int> > array_layers;
     map<string, int>::iterator it;
+    set<string> is_def_gobal_array;
     int label_count;
 
 public:
@@ -328,6 +329,17 @@ public:
         vec = array_layers[name];
         return true;
 	}
+
+    bool set_def_gobal_array(string name){
+        if(is_def_gobal_array.count(name)) return false;
+        is_def_gobal_array.insert(name);
+        return true;
+    }
+
+    bool get_def_gobal_array(string name){
+        if(!is_def_gobal_array.count(name)) return false;
+        return true;
+    }
 
     ~GobalContext(){
     	const_value.clear();

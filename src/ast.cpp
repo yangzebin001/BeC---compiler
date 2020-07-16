@@ -257,6 +257,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     emit_word(flat_array_eles[i].c_str());
                 }
                 gobal_ctx->set_label(array_name);
+                gobal_ctx->set_def_gobal_array(array_name);
             }
         }
     }
@@ -310,7 +311,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     emit_gobal_var_decl(array_name.c_str(), ele_number*WORD_SIZE);
                 }
                 gobal_ctx->set_label(array_name);
-
+                gobal_ctx->set_def_gobal_array(array_name);
             }
         }
     }
@@ -809,10 +810,15 @@ void Ident::codeGen(Context &ctx){
     //gobal var
         int label = gobal_ctx->get_label(id);
         if(label != -1){
-            ctx.cur_type = CGOBAL_VAR;
             emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
-            if(ctx.cur_var_disload == false)
-                emit_instr_format("ldr", "r3, [r2]");
+            if(ctx.cur_var_disload == false){
+                if(gobal_ctx->get_def_gobal_array(id)){
+                    emit_instr_format("mov", "r3, r2");
+                }else{
+                    emit_instr_format("ldr", "r3, [r2]");
+                }
+            }
+            ctx.cur_type = CGOBAL_VAR;
         }else{
             string gobal_const_var = gobal_ctx->get_const_value(id);
             if(gobal_const_var != ""){
