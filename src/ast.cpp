@@ -605,6 +605,7 @@ void LAndExpression::codeGen(Context &ctx){
 
             string end_label_name =(gobal_ctx->if_false_labels).back().first;
             int end_label = (gobal_ctx->if_false_labels).back().second;
+            
             lhs->codeGen(ctx);
             //will print many time when LAndExpression's son also is LAndExpression
             if(ctx.cur_type == CSINGLE)
@@ -636,7 +637,7 @@ void LAndExpression::codeGen(Context &ctx){
 
 
 void LOrExpression::codeGen(Context &ctx){
-    printf("gen RelExpression\n");
+    printf("gen LOrExpression\n");
     ctx_t cur_type = ctx.cur_type;
 
     if(unaryExp != NULL){
@@ -648,6 +649,7 @@ void LOrExpression::codeGen(Context &ctx){
         if(cur_type == CIF){
             string end_label_name = gobal_ctx->if_false_labels.back().first;
             int end_label = gobal_ctx->if_false_labels.back().second;
+            
             write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
         }else if(cur_type == CWHILE){
             string end_label_name = gobal_ctx->while_false_labels.back().first;
@@ -657,12 +659,12 @@ void LOrExpression::codeGen(Context &ctx){
 
     }else{
         if(cur_type == CIF){
-
             string end_label_name =(gobal_ctx->if_false_labels).back().first;
             int end_label = (gobal_ctx->if_false_labels).back().second;
+            cout << "AAA" << endl;
             string true_label_name =(gobal_ctx->if_true_labels).back().first;
             int true_label = (gobal_ctx->if_true_labels).back().second;
-            
+            cout << "BBB" << endl;
             lhs->codeGen(ctx);
             write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
             
@@ -961,16 +963,22 @@ void IFStatement::codeGen(Context &ctx){
     printf("gen IFStatement\n");
     
     if(FALSEStmt == NULL){
+        // add label
         int end_label = gobal_ctx->set_if_label("label_IFEND");
-        
+        int true_label = gobal_ctx->set_if_label("label_IFTRUE");
         (gobal_ctx->if_false_labels).push_back(make_pair("label_IFEND",end_label));
-
+        (gobal_ctx->if_true_labels).push_back(make_pair("label_IFTRUE",true_label));
+        
+        // gen cond 
         ctx_t pre_type = ctx.cur_type;
         ctx.cur_type = CIF;
         exp->codeGen(ctx);
         ctx.cur_type = pre_type;
 
-        // write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label("label_IFEND", end_label));
+        // gen label_IFTRUE
+        emit_label(gobal_ctx->get_if_label("label_IFTRUE", true_label).c_str());
+
+        // gen true statement 
         pre_type = ctx.cur_type;
         ctx.cur_type = CIF;
         ctx.new_scope();
@@ -978,11 +986,17 @@ void IFStatement::codeGen(Context &ctx){
         ctx.delete_scope();
         ctx.cur_type = pre_type;
         
+        // gen label_IFEND
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
 
+
+        // delete label
         (gobal_ctx->if_false_labels).pop_back();
+        (gobal_ctx->if_true_labels).pop_back();
 
     }else if(FALSEStmt != NULL) {
+
+        // add labels
         int false_label = gobal_ctx->set_if_label("label_IFFALSE");
         int true_label = gobal_ctx->set_if_label("label_IFTRUE");
         int end_label = gobal_ctx->set_if_label("label_IFEND");
@@ -997,9 +1011,11 @@ void IFStatement::codeGen(Context &ctx){
         ctx.cur_type = CIF;
         exp->codeGen(ctx);
         ctx.cur_type = pre_type;
-
-        emit_label(gobal_ctx->get_if_label("label_IFTRUE", false_label).c_str());
         
+        // gen label_IFTRUE
+        emit_label(gobal_ctx->get_if_label("label_IFTRUE", true_label).c_str());
+        
+        //gen true statement
         pre_type = ctx.cur_type;
         ctx.cur_type = CIF;
         ctx.new_scope();
@@ -1011,6 +1027,7 @@ void IFStatement::codeGen(Context &ctx){
         emit_instr_format("b", "%s", gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
         emit_label(gobal_ctx->get_if_label("label_IFFALSE", false_label).c_str());
         
+        //gen false statement
         pre_type = ctx.cur_type;
         ctx.cur_type = CIF;
         ctx.new_scope();
@@ -1018,8 +1035,10 @@ void IFStatement::codeGen(Context &ctx){
         ctx.delete_scope();
         ctx.cur_type = pre_type;
         
+        // gen label_IFEND
         emit_label(gobal_ctx->get_if_label("label_IFEND", end_label).c_str());
     
+        // delete labels
         (gobal_ctx->if_false_labels).pop_back();
         (gobal_ctx->if_true_labels).pop_back();
     }

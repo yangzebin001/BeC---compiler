@@ -1,11 +1,11 @@
 const int b[3] = {10,11,12};
-int e[2] = {44,45};
+int e[][2] = {44,{45,46}};
 int main(){
 	const int c = 10;
 	const int g[2] = {55,56};
 	int a = b[1];
 	int d = c;
-	int f = e[1];
+	int f = e[1][1];
 	int h = g[0];
-	return h;
+	return f;
 }
