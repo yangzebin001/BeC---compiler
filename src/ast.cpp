@@ -489,8 +489,8 @@ void PrimaryExpression::codeGen(Context &ctx){
                     emit_instr_format("ldr", "r1, %s", get_gobal_label(label).c_str());
                 }else{
                 //gobal const array
-                    // is_const_array = true;
-                    // emit_instr_format("mov", "r1, %s", get_gobal_label().c_str());
+                    is_const_array = true;
+                    emit_instr_format("ldr", "r1, =%s", gobal_ctx->get_const_value(lval_name).c_str());
                 }
             }
             if(ctx.cur_var_disload == false && is_const_array == false){
@@ -771,8 +771,11 @@ void ConstVarDef::codeGen(Context &ctx){
     if(lval->type == ARRAYELEMENT){
         ArrayDecl* constArrayDecl = new ArrayDecl((ArrayElement*)lval, initVal);
         constArrayDecl->codeGen(ctx);
-    }else{
-
+    }else if(lval->type == IDENT){
+        string var_name = get_lval_name(lval);
+        string var_val = get_var_value((AddExpression*)initVal->exp);
+        cout <<"AAAA" <<var_name << ":" << var_val << endl;
+        ctx.set_const_value(var_name, var_val);
     }
 }
 
@@ -790,42 +793,49 @@ void Ident::codeGen(Context &ctx){
     //local var
     if(offset != 0){
         if(ctx.cur_var_disload == false){
+            //local array
             if(ctx.get_def_array(id)){
                 if(abs(offset) > 255){
                     emit_instr_format("ldr", "r6, =%d", -offset);
                     emit_instr_format("sub", "r3, fp, r6");
                 }else{
                     emit_instr_format("sub", "r3, fp, #%d", -offset);
-
                 }
                 // emit_instr_format("sub", "r3, fp, #%d", -offset);
             }else{
+                //local var
                 emit_instr_format("ldr", "r3, [fp, #%d]", offset);
-                // emit_instr_format("111", "r3, fp, #%d", -offset);
-                //
+
             }
         }
         ctx.cur_type = CLOCAL_VAR;
     }else{
-    //gobal var
-        int label = gobal_ctx->get_label(id);
-        if(label != -1){
-            emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
-            if(ctx.cur_var_disload == false){
-                if(gobal_ctx->get_def_gobal_array(id)){
-                    emit_instr_format("mov", "r3, r2");
-                }else{
-                    emit_instr_format("ldr", "r3, [r2]");
-                }
-            }
-            ctx.cur_type = CGOBAL_VAR;
+        string const_val = ctx.get_const_value(id);
+        //local const var
+        if(const_val != ""){
+            emit_instr_format("ldr", "r3, =%s", const_val.c_str());
         }else{
-            string gobal_const_var = gobal_ctx->get_const_value(id);
-            if(gobal_const_var != ""){
-                emit_instr_format("ldr","r3, =%s",gobal_const_var.c_str());
-            }else {
-                fprintf(stderr,"cannot find : %s not def\n", id.c_str());
-                exit(-1);
+        //gobal var
+            int label = gobal_ctx->get_label(id);
+            if(label != -1){
+                emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
+                if(ctx.cur_var_disload == false){
+                    if(gobal_ctx->get_def_gobal_array(id)){
+                        emit_instr_format("mov", "r3, r2");
+                    }else{
+                        emit_instr_format("ldr", "r3, [r2]");
+                    }
+                }
+                ctx.cur_type = CGOBAL_VAR;
+            }else{
+        //gobal const var
+                string gobal_const_var = gobal_ctx->get_const_value(id);
+                if(gobal_const_var != ""){
+                    emit_instr_format("ldr","r3, =%s",gobal_const_var.c_str());
+                }else {
+                    fprintf(stderr,"cannot find : %s not def\n", id.c_str());
+                    exit(-1);
+                }
             }
         }
     }

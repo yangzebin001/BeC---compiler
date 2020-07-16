@@ -39,6 +39,7 @@ class Scope{
 private:
     map<string,int> var_label;
     map<string,int> stack_offset;
+    map<string, string> const_value;
     map<string,vector<int> > array_layers;
     set<string> is_def_array;
 public:
@@ -51,6 +52,20 @@ public:
         is_def_array.clear();
         father = NULL;
     }
+
+    string get_const_value(string var){
+		if(!const_value.count(var)){
+            return "";
+		}
+        return const_value[var];
+    }
+
+    bool set_const_value(string name, string value){
+    	if(const_value.count(name)) return false;
+        const_value[name] = value;
+        return true;
+    }
+
 
     int get_offset(string var){
 
@@ -232,6 +247,24 @@ public:
 
     string get_unique_temp_stack_name(string name){
         return name + to_string(cur_offset);
+    }
+
+
+    string get_const_value(string var){
+		Scope* now = scope;
+        while(now != NULL){
+            string ll = now->get_const_value(var);
+			if(ll != ""){
+                return ll;
+            }
+            now = now->father;
+        }
+        return "";
+    }
+
+    bool set_const_value(string name, string value){
+    	if(scope == NULL) return false;
+    	return scope->set_const_value(name,value);
     }
 
     ~Context(){
