@@ -29,11 +29,8 @@ make clean
 
 ### Todo
 
-- gobal array func param
 - many gobal const var
 - secondhand array as funcparam
-- or expression
-- large number to register
 - stackoverflow
 
 

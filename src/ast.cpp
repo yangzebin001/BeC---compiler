@@ -529,7 +529,7 @@ void UnaryExp::codeGen(Context &ctx){
 void FunctionCall::codeGen(Context &ctx){
     printf("gen FunctionCall\n");
     ctx.cur_type = CFUNCTIONCALL;
-    for(int i = 0; i < ParamList.size() && i < 3; i++){
+    for(int i = 0; i < ParamList.size() && i < 4; i++){
         ParamList[i]->codeGen(ctx);
         emit_instr_format("mov", "r%d, r3",i);
     }
