@@ -316,10 +316,21 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         }
     }
 
+
+    //gen var and array lable
+    emit_text();
+    string tmp = "";
+	int label_idx = 1;
+	gobal_ctx->init_label_for();
+	while(gobal_ctx->get_next_label(tmp,label_idx)){
+        if(tmp.find("label_") != 0)
+		    emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+	}
+
     // gen function
     for(int i = 0; i < funcDefs.size(); i++){
         if(i == 0){
-            emit_text();
+           emit_text();
         }
         Context* funcxt = new Context();
         funcxt->new_scope();
@@ -329,14 +340,6 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
     }
 
 
-    //gen var and array lable
-    string tmp = "";
-	int label_idx = 1;
-	gobal_ctx->init_label_for();
-	while(gobal_ctx->get_next_label(tmp,label_idx)){
-        if(tmp.find("label_") != 0)
-		    emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
-	}
 }
 
 void FunctionDef::codeGen(Context &ctx){
@@ -792,6 +795,12 @@ void ArrayDecl::codeGen(Context &ctx){
     get_array_element_number_vec(this,array_layers);
     ctx.set_array_layers(array_name, array_layers);
 
+    //call memset
+    emit_instr_format("ldr", "r6, =%d", -ctx.get_offset(array_name));
+    emit_instr_format("sub", "r0, fp, r6");
+    emit_instr_format("mov", "r1, #0");
+    emit_instr_format("ldr", "r2, =%d", number*WORD_SIZE);
+    emit_instr_format("bl", "memset");
 
     if(offset_result) {
         emit_instr_format("sub", "sp, sp, #%d", number*WORD_SIZE);
@@ -804,10 +813,14 @@ void ArrayDecl::codeGen(Context &ctx){
 
     }
     // emit_instr_format("sub", "r2, fp, #%d", );
-    emit_instr_format("mov", "r3, #0");
-    for(int i = 0; i < number; i++){
-        emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
-    }
+
+    // emit_instr_format("mov", "r3, #0");
+    // for(int i = 0; i < number; i++){
+    //     emit_instr_format("str", "r3, [r2, #%d]", i*WORD_SIZE);
+    // }
+
+
+
     if(initVal != NULL){
 
         vector<Expression*> expList;

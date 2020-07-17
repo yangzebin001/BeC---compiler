@@ -80,6 +80,7 @@ void emit_function_prologue2(const char* name) {
     fprintf(outfile, "	.global	%s\n", name);
     fprintf(outfile, "	.arch armv7-a\n");
     fprintf(outfile, "	.arm\n");
+    fprintf(outfile, "	.ltorg\n");
     fprintf(outfile, "	.type	%s, %%function\n", name);
     emit_label(name);
     emit_instr("push", "{fp, lr}");
