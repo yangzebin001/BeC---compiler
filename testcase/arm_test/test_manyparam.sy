@@ -1,0 +1,16 @@
+int func1(int a, int b, int c, int d,int e,int arr[]){
+	a = 1;
+	b = 2;
+	c = 3;
+	d = 4;
+	e = 5;
+	arr[1] = 22;
+
+	return 0;
+}
+int main(){
+	int arr[4] = {10,11,12,13};
+	int a = 3,b=4,c=5,d=6,e=7;
+	func1(a,e,b,c,d,arr);
+	return arr[1];
+}

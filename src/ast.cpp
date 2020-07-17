@@ -345,26 +345,41 @@ void FunctionDef::codeGen(Context &ctx){
     int end_label = gobal_ctx->set_if_label("label_RETURN");
     ctx.cur_return_label = end_label;
 
+    int stack_point = 4;
+
     // support 4 param at most
-    for(int i = 0; i < ParamList.size() && i < 4; i++){
+    for(int i = 0; i < ParamList.size(); i++){
         if(ParamList[i]->lval->type == IDENT){
             DirectDecl *d = new DirectDecl((Ident*)ParamList[i]->lval, NULL);
             string ident = get_lval_name(ParamList[i]->lval);
 
             d->codeGen(ctx);
 
-            emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+            if(i < 4){
+                emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+            }else{
+                emit_instr_format("ldr", "r6, [fp, #%d]", stack_point);
+                emit_instr_format("str", "r6, [fp, #%d]", ctx.get_offset(ident));
+                stack_point += WORD_SIZE;
+            }
 
-        }
-        else{
+
+        }else{
             vector<int> array_layers;
             string ident = get_lval_name(ParamList[i]->lval);
             ArrayDecl* now_arrDecls = new ArrayDecl((ArrayElement*)ParamList[i]->lval, NULL);
             get_array_element_number_vec(now_arrDecls,array_layers);
             ctx.set_array_layers(ident, array_layers);
             ctx.set_offset(ident);
-            // ctx.set_def_array(ident);
-            emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+
+
+            if(i < 4){
+                emit_instr_format("str", "r%d, [fp, #%d]", i, ctx.get_offset(ident));
+            }else{
+                emit_instr_format("ldr", "r6, [fp, #%d]", stack_point);
+                emit_instr_format("str", "r6, [fp, #%d]", ctx.get_offset(ident));
+                stack_point += WORD_SIZE;
+            }
         }
     }
 
@@ -529,9 +544,22 @@ void UnaryExp::codeGen(Context &ctx){
 void FunctionCall::codeGen(Context &ctx){
     printf("gen FunctionCall\n");
     ctx.cur_type = CFUNCTIONCALL;
+    
+    int stack_point = 0;    
+    if(ParamList.size() > 4){
+        emit_instr_format("sub", "sp, sp, #%d", (ParamList.size()-4)*WORD_SIZE);
+    }
+
+    
+    for(int i = 4 ; i < ParamList.size(); i++){
+        ParamList[i]->codeGen(ctx);
+        emit_instr_format("str", "r3, [sp, #%d]", stack_point);
+        stack_point += WORD_SIZE;
+    }
+
     for(int i = 0; i < ParamList.size() && i < 4; i++){
         ParamList[i]->codeGen(ctx);
-        emit_instr_format("mov", "r%d, r3",i);
+        emit_instr_format("mov", "r%d, r3",i);  
     }
     emit_instr_format("bl","%s",id->id.c_str());
     emit_instr_format("mov", "r3, r0");

@@ -17,6 +17,8 @@ array scale -> r9
 
 funcparam {r0, r3}
 
+r6 temp register
+
 
 
 
