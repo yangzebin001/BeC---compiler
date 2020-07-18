@@ -1,11 +1,16 @@
 const int b[3] = {10,11,12};
-int e[][2] = {44,{45,46}};
 int main(){
-	const int c = 10;
-	const int g[2] = {55,56};
-	int a = b[1];
-	int d = c;
-	int f = e[1][1];
-	int h = g[0];
-	return f;
+int e[3][3][2] = {1,2,3,4,5,6,7,8};
+	int i = 0;
+	putint(e[0][0][0]); putch(10);
+	putint(e[0][0][1]); putch(10);
+	putint(e[0][1][0]); putch(10);
+	putint(e[0][1][1]); putch(10);
+	putint(e[0][2][0]); putch(10);
+	putint(e[0][2][1]); putch(10);
+	putint(e[1][0][0]); putch(10);
+	putint(e[1][0][1]); putch(10);
+	putint(e[1][1][0]); putch(10);
+	putint(e[1][1][1]); putch(10);
+	return 0;
 }

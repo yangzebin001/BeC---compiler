@@ -1,0 +1,6 @@
+const int b[3] = {10,11,12};
+const int e[3][3][2] = {44,{45,46}, {{89,99},21}};
+int main(){
+	int f = e[1][0][0];
+	return f;
+}

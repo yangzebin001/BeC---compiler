@@ -30,8 +30,15 @@ make clean
 ### Todo
 
 - many gobal const var
-- secondhand array as funcparam
-- stackoverflow
+- while and or
+
+
+- merge sub stack instr
+- reduce str and ldr instr
+- delete funcation call after instr
+- b return_label
+- replace array index calculate instr
+- eliminate temp instr
 
 
 ### Reference

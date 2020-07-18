@@ -163,6 +163,29 @@ void get_gobal_array_initval(InitVal* initVal, vector<Expression*> &array_eles, 
     }
 }
 
+int cal_array_flat_index(vector<int> &array_layers, vector<int> &array_indexs){
+	int ans = 0;
+	for(int i = 0; i < array_indexs.size()-1; i++){
+		ans = ans + array_indexs[i];
+		ans = ans * array_layers[i+1];
+	}
+	ans += array_indexs[array_indexs.size()-1];
+	return ans;
+}
+
+void flat_array_elements(InitVal* initVal, vector<int> &ans, vector<int> &array_layers, vector<int> cur_indexs, int index){
+    int cur_number = initVal->initValList.size();
+    if(initVal->exp != NULL){
+        int cur_idx = cal_array_flat_index(array_layers, cur_indexs);
+        string cur_ele_number = get_var_value((AddExpression*)initVal->exp);
+        ans[cur_idx] = stoi(cur_ele_number);
+    }
+
+    for(int i = 0; i < cur_number; i++){
+        cur_indexs[index] = i;
+        flat_array_elements(initVal->initValList[i], ans, array_layers, cur_indexs, index+1);
+    }
+}
 
 
 void write_rel_instr(ctx_t type, string label){
@@ -256,6 +279,16 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 for(int i = 0; i < flat_array_eles.size(); i++){
                     emit_word(flat_array_eles[i].c_str());
                 }
+
+                // vector<int> ans(ele_number);
+                // vector<int> cur_indexs(array_layers.size());
+                
+                // flat_array_elements(now_arrDecls->initVal, ans, array_layers, cur_indexs, 0);
+
+                // for(int i = 0; i < ans.size(); i++){
+                //     emit_word(to_string(ans[i]).c_str());
+                // }
+
                 gobal_ctx->set_label(array_name);
                 gobal_ctx->set_def_gobal_array(array_name);
             }
@@ -307,9 +340,24 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                         emit_word(flat_array_eles[i].c_str());
                     }
 
+                    // vector<int> ans(ele_number);
+                    // vector<int> cur_indexs(array_layers.size());
+                    // flat_array_elements(now_arrDecls->initVal, ans, array_layers, cur_indexs, 0);
+                    
+                    // // for(int i = 0; i < array_layers.size(); i++){
+                    // //     cout << ans[i] << endl;
+                    // // }
+                    
+                    // for(int i = 0; i < ans.size(); i++){
+                    //     emit_word(to_string(ans[i]).c_str());
+                    // }
+
                 }else{
                     emit_gobal_var_decl(array_name.c_str(), ele_number*WORD_SIZE);
                 }
+
+
+
                 gobal_ctx->set_label(array_name);
                 gobal_ctx->set_def_gobal_array(array_name);
             }
@@ -919,6 +967,8 @@ void ArrayElement::codeGen(Context &ctx){
 
     // array direct needn't reach here
     printf("gen arrayElement\n");
+
+
     if(ctx.cur_type != CLVAL && ctx.cur_type != CARRAY_ELE) return;
 
     bool cur_var_disload = ctx.cur_var_disload;
@@ -926,7 +976,9 @@ void ArrayElement::codeGen(Context &ctx){
 
     string array_name = get_array_name(this);
     cout << "assign array name is " << array_name << endl;
-    if(ctx.cur_type == CLVAL){
+
+
+    if(array->type == IDENT){
         
         
         ctx.cur_array_layers.push_back(vector<int>());
@@ -938,46 +990,41 @@ void ArrayElement::codeGen(Context &ctx){
             gobal_ctx->get_array_layers(array_name, ctx.cur_array_layers.back());
         }
 
-        ctx.cur_array_index = ctx.cur_array_layers.back().size()-1;
+        ctx.cur_array_index = 1;
         cout << "array size is " << ctx.cur_array_layers.back().size() << endl;
-        
-        
         index->codeGen(ctx);
 
         ctx.cur_var_name = array_name;
         ctx.cur_type = CARRAY_ELE;
         emit_instr_format("mov","r9, r3");
-        emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
-        // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
+        return;
+        
     }else{
+
+
+        array->codeGen(ctx);
+
         ctx.cur_var_name = array_name;
         index->codeGen(ctx);
         ctx.cur_var_name = array_name;
         ctx.cur_type = CARRAY_ELE;
         emit_instr_format("mov","r7, #%d",ctx.cur_array_layers.back()[ctx.cur_array_index]);
-        emit_instr_format("lsl","r7, r7, #%d", WORD_SIZE_WIDTH);
-        emit_instr_format("mul","r3, r7");
+        emit_instr_format("mul","r9, r7");
         emit_instr_format("add","r9, r3");
         
-        // cout << "now layer is" << ctx.cur_array_layers[ctx.cur_array_index] << endl;
-        ctx.cur_array_index--;
+
+        ctx.cur_array_index++;
     }
     
     // out this type ArrayElement node
-    if(ctx.cur_array_index == 0){
-        
+    if(ctx.cur_array_index == ctx.cur_array_layers.back().size()){
+        emit_instr_format("lsl","r9, r9, #%d", WORD_SIZE_WIDTH);
         ctx.cur_array_layers.pop_back();
         ctx.cur_var_disload = cur_var_disload;
     }
 
 
-    //get scale
-    if(array->type == IDENT) {
-        ctx.cur_type = CARRAY_ELE;
-        return;
-    }
-    array->codeGen(ctx);
-    ctx.cur_type = CARRAY_ELE;
+    
 }
 
 void Assignment::codeGen(Context &ctx){

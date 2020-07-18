@@ -16,5 +16,5 @@ int func(int a[][5]){
 
 int main(){
     putint(func(a));
-    return 0;
+    return 9;
 }

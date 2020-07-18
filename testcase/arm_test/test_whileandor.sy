@@ -1,0 +1,10 @@
+int main(){
+    int a = 0,b = 0;
+    int sum = 0;
+    while(a <= 10 || b <= 5){
+        sum = sum + a;
+        b = b + 1;
+        a = a + 1;
+    }
+    return sum;
+}
