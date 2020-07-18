@@ -997,7 +997,7 @@ void ArrayElement::codeGen(Context &ctx){
         ctx.cur_var_name = array_name;
         ctx.cur_type = CARRAY_ELE;
         emit_instr_format("mov","r9, r3");
-        return;
+        
         
     }else{
 
