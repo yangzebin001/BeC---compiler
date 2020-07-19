@@ -292,6 +292,7 @@ public:
     vector<pair<string, int>> if_true_labels;
     vector<pair<string, int>> while_start_labels;
     vector<pair<string, int>> while_false_labels;
+    map<string, vector<string> > array_initvals;
 
     GobalContext(){
         const_value.clear();

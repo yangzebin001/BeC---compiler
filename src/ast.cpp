@@ -11,6 +11,9 @@ static GobalContext* gobal_ctx = new GobalContext();
 
 static const int WORD_SIZE_WIDTH = 2;
 
+
+string get_var_value(AddExpression* top);
+
 string get_gobal_label(int label){
     return ".L" + to_string(label);
 }
@@ -33,12 +36,52 @@ string get_lval_name(Expression* lval){
     }
 }
 
+int cal_array_flat_index(vector<int> &array_layers, vector<int> &array_indexs){
+	int ans = 0;
+	for(int i = 0; i < array_indexs.size()-1; i++){
+		ans = ans + array_indexs[i];
+		ans = ans * array_layers[i+1];
+	}
+	ans += array_indexs[array_indexs.size()-1];
+	return ans;
+}
+
+string get_gobal_array_element(ArrayElement* ae){
+    
+    vector<int> array_layers;
+    string array_name = get_array_name(ae);
+    gobal_ctx->get_array_layers(array_name,array_layers);
+
+    vector<int> array_indexs;
+    //decl
+    while(ae->type != IDENT){
+        if(ae->index != NULL){
+            string cur_ele_number = get_var_value((AddExpression*)ae->index);
+            array_indexs.push_back(stoi(cur_ele_number));
+        }
+        ae = (ArrayElement*)ae->array;
+    }
+
+    reverse(array_indexs.begin(),array_indexs.end());
+
+    int idx = cal_array_flat_index(array_layers, array_indexs);
+
+    vector<string> flat_array_eles = gobal_ctx->array_initvals[array_name];
+
+    return flat_array_eles[idx];
+}
+
 /*just support immediate number and gobal const var*/
 string get_var_value(AddExpression* top){
     PrimaryExpression* pe = ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp;
-    if(pe->lval != NULL){
+    if(pe->lval != NULL && pe->lval->type == IDENT){
         cout << "const var is : " << gobal_ctx->get_const_value(get_lval_name(pe->lval)) << endl;
         return gobal_ctx->get_const_value(get_lval_name(pe->lval));
+    }
+    else if(pe->lval != NULL &&  pe->lval->type == ARRAYELEMENT){
+        string array_ele = get_gobal_array_element((ArrayElement*)pe->lval);
+        cout << "array ele is" << array_ele << endl;
+        return array_ele;
     }
     return pe->number;
 } 
@@ -163,15 +206,7 @@ void get_gobal_array_initval(InitVal* initVal, vector<Expression*> &array_eles, 
     }
 }
 
-int cal_array_flat_index(vector<int> &array_layers, vector<int> &array_indexs){
-	int ans = 0;
-	for(int i = 0; i < array_indexs.size()-1; i++){
-		ans = ans + array_indexs[i];
-		ans = ans * array_layers[i+1];
-	}
-	ans += array_indexs[array_indexs.size()-1];
-	return ans;
-}
+
 
 void flat_array_elements(InitVal* initVal, vector<int> &ans, vector<int> &array_layers, vector<int> cur_indexs, int index){
     int cur_number = initVal->initValList.size();
@@ -246,7 +281,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     emit_text();
                     emit_data();
                 }
-                cout << "111" << endl;
+
                 ArrayElement* now_arr_ele = (ArrayElement*)constVarDecls[i]->constVarDefList[j]->lval;
                 InitVal* initVal = (InitVal*)constVarDecls[i]->constVarDefList[j]->initVal;
                 // string array_name = get_array_name(now_arr);
@@ -276,6 +311,9 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                 
                 vector<string> flat_array_eles;
                 get_gobal_array_initval_from_vec(now_arrDecls->initVal, flat_array_eles, 0);
+                
+                gobal_ctx->array_initvals[array_name] = flat_array_eles;
+                
                 for(int i = 0; i < flat_array_eles.size(); i++){
                     emit_word(flat_array_eles[i].c_str());
                 }
@@ -336,6 +374,9 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     
                     vector<string> flat_array_eles;
                     get_gobal_array_initval_from_vec(now_arrDecls->initVal, flat_array_eles, 0);
+                    
+                    gobal_ctx->array_initvals[array_name] = flat_array_eles;
+                    
                     for(int i = 0; i < flat_array_eles.size(); i++){
                         emit_word(flat_array_eles[i].c_str());
                     }
