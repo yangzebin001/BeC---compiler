@@ -25,6 +25,10 @@ void emit_word(const char* data){
     fprintf(outfile, "	.word	%s\n",data);
 }
 
+void emit_space(int number){
+    fprintf(outfile, "	.space	%d\n",number);
+}
+
 void emit_instr(char *instr, char *operands) {
     // TODO: fix duplication with emit_instr_format.
     // The assembler requires at least 4 spaces for indentation.

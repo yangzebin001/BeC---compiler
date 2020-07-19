@@ -5,6 +5,7 @@ void init_assembly(const char* in_file_name, const char* out_file_name);
 void emit_header(const char* name);
 void emit_data();
 void emit_text();
+void emit_space(int number);
 void emit_word(const char* data);
 void emit_instr(char *instr, char *operands);
 void emit_instr_format(char *instr, char *operands_format, ...);

@@ -40,6 +40,22 @@ c:
 	.word	6
 	.word	7
 	.word	8
+	.global cc
+	.align	2
+	.type	cc, %object
+	.size	cc, 40000
+cc:
+	.word	0
+	.word	1
+	.word	2
+	.word	3
+	.space	39984
+	.global e
+	.align	2
+	.type	e, %object
+	.size	e, 4
+e:
+	.word	4
 	.text
 .L3:
 	.word	a
@@ -47,6 +63,10 @@ c:
 	.word	b
 .L5:
 	.word	c
+.L6:
+	.word	cc
+.L7:
+	.word	e
 	.text
 	.align	2
 	.global	main
@@ -58,14 +78,10 @@ main:
     push       {fp, lr}
     add        fp, sp, #4
     sub        sp, sp, #4
-    ldr        r3, =0
+    ldr        r3, =9999
     mov        r9, r3
-    ldr        r3, =1
-    mov        r7, #2
-    mul        r9, r7
-    add        r9, r3
     lsl        r9, r9, #2
-    ldr        r1, .L5
+    ldr        r1, .L6
     ldr        r3, [r1, r9]
     sub        sp, sp, #4
     str        r3, [fp, #-12]
@@ -75,8 +91,8 @@ main:
     str        r3, [fp, #-8]
     ldr        r3, [fp, #-8]
     mov        r0, r3
-    b          label_RETURN7
-label_RETURN7:
+    b          label_RETURN9
+label_RETURN9:
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main

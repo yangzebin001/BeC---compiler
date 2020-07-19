@@ -318,6 +318,13 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     emit_word(flat_array_eles[i].c_str());
                 }
 
+                cout << "array size is : " << ele_number <<endl;
+                cout << "array ele number is : " << flat_array_eles.size() <<endl;
+
+                if(ele_number - flat_array_eles.size() != 0){
+                    emit_space((ele_number- flat_array_eles.size())*WORD_SIZE);
+                }
+
                 // vector<int> ans(ele_number);
                 // vector<int> cur_indexs(array_layers.size());
                 
@@ -381,6 +388,13 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                         emit_word(flat_array_eles[i].c_str());
                     }
 
+
+                    cout << "array size is : " << ele_number <<endl;
+                    cout << "array ele number is : " << flat_array_eles.size() <<endl;
+
+                    if(ele_number - flat_array_eles.size() != 0){
+                        emit_space((ele_number- flat_array_eles.size())*WORD_SIZE);
+                    }
                     // vector<int> ans(ele_number);
                     // vector<int> cur_indexs(array_layers.size());
                     // flat_array_elements(now_arrDecls->initVal, ans, array_layers, cur_indexs, 0);
