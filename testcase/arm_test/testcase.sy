@@ -1,4 +1,5 @@
-/* const int f = 10;
+/* 
+const int f = 10;
 int a1 = 3;
 int a2 = 1;
 int a3 = 1;
@@ -47,11 +48,28 @@ int main(){
 }
 
 */
+
+/*
 int a[4][2]={1,2,3,4,5,6,7,8};
-int cc[10000] = {0,1,2,3};
+int c[10000] = {0,1,2,3};
 const int e = (1+5) / 3;
+int aa,bb,cc,dd,ee,ff,gg,hh,ii,jj,kk;
+int arr[10000];
+int c = 
 int main(){
-    int d = cc[9999] + 2;
+    int d = c[9999] + 2;
     int f = e;
-    return f;
+    int dd = 22;
+    return dd+cc+e+arr[1000];
+}
+
+*/
+
+int a = 0;
+int b = 0x1234;
+int c = 0123;
+int main(){
+    int b = 0x14;
+    int c = 0123;
+    return c;
 }
