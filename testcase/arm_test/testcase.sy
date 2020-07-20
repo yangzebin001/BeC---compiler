@@ -68,8 +68,9 @@ int main(){
 int a = 0;
 int b = 0x1234;
 int c = 0123;
+int arr[2][8/2][1*3]={1,2,3,4,5,6,7,8};
 int main(){
     int b = 0x14;
     int c = 0123;
-    return c;
+    return arr[0][0+1][1-1];
 }

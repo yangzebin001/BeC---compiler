@@ -902,14 +902,30 @@ void LOrExpression::codeGen(Context &ctx){
             
 
         }else if(cur_type == CWHILE){
+
+
             string end_label_name =(gobal_ctx->while_false_labels).back().first;
             int end_label = (gobal_ctx->while_false_labels).back().second;
-            string true_label_name =(gobal_ctx->while_start_labels).back().first;
-            int true_label = (gobal_ctx->while_start_labels).back().second;
+            string true_label_name =(gobal_ctx->while_true_labels).back().first;
+            int true_label = (gobal_ctx->while_true_labels).back().second;
             
+
+            // add labels
+            int or_false_label = gobal_ctx->set_if_label("label_ORFALSE");
+            (gobal_ctx->while_false_labels).push_back(make_pair("label_ORFALSE",or_false_label));
+            int or_end_label = gobal_ctx->set_if_label("label_OREND");
+            (gobal_ctx->while_true_labels).push_back(make_pair("label_OREND",or_end_label));
+
+
             lhs->codeGen(ctx);
             write_rel_instr_forward(ctx.cur_type, gobal_ctx->get_if_label(true_label_name, true_label));
             
+
+            emit_instr_format("b", "%s", gobal_ctx->get_if_label(true_label_name, true_label).c_str());
+            
+            emit_label(gobal_ctx->get_if_label("label_ORFALSE", or_false_label).c_str());
+            (gobal_ctx->while_false_labels).pop_back();
+
             cur_type = CWHILE;
             rhs->codeGen(ctx);
             write_rel_instr(ctx.cur_type, gobal_ctx->get_if_label(end_label_name, end_label));
@@ -1306,12 +1322,16 @@ void WHILEStatement::codeGen(Context &ctx){
     // while_start
     // if false
     // to  label end
+    // label while true
     // block 
     // b while_start
     int while_start = gobal_ctx->set_if_label("label_WHILESTART");
+    int while_true = gobal_ctx->set_if_label("label_WHILETRUE");
     int end_label = gobal_ctx->set_if_label("label_WHILEEND");
     //store label_WHILESTART
     (gobal_ctx->while_start_labels).push_back(make_pair("label_WHILESTART",while_start));
+    //store label_WHILETRUE
+    (gobal_ctx->while_true_labels).push_back(make_pair("label_WHILETRUE",while_true));
     //store label_WHILEEND
     (gobal_ctx->while_false_labels).push_back(make_pair("label_WHILEEND",end_label));
     //while_start
@@ -1323,6 +1343,9 @@ void WHILEStatement::codeGen(Context &ctx){
     ctx.cur_type = CWHILE;
     exp->codeGen(ctx);
     ctx.cur_type = pre_type;
+
+
+    emit_label(gobal_ctx->get_if_label("label_WHILETRUE", while_true).c_str());
     
     pre_type = ctx.cur_type;
     ctx.cur_type = CWHILE;

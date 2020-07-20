@@ -1,31 +1,5 @@
-	.file	"../testcase/arm_test/testcase.sy"
+	.file	"../testcase/arm_test/test_whileandor.sy"
 	.text
-	.data
-	.global a
-	.align	2
-	.type	a, %object
-	.size	a, 4
-a:
-	.word	0
-	.global b
-	.align	2
-	.type	b, %object
-	.size	b, 4
-b:
-	.word	4660
-	.global c
-	.align	2
-	.type	c, %object
-	.size	c, 4
-c:
-	.word	83
-	.text
-.L3:
-	.word	a
-.L4:
-	.word	b
-.L5:
-	.word	c
 	.text
 	.align	2
 	.global	main
@@ -37,15 +11,60 @@ main:
     push       {fp, lr}
     add        fp, sp, #4
     sub        sp, sp, #4
-    ldr        r3, =0x14
+    ldr        r3, =0
     str        r3, [fp, #-8]
     sub        sp, sp, #4
-    ldr        r3, =0123
+    ldr        r3, =0
     str        r3, [fp, #-12]
+    sub        sp, sp, #4
+    ldr        r3, =0
+    str        r3, [fp, #-16]
+label_WHILESTART5:
+    ldr        r3, [fp, #-8]
+    sub        sp, sp, #4
+    str        r3, [fp, #-20]
+    ldr        r3, =10
+    ldr        r7, [fp, #-20]
+    cmp        r7, r3
+    bgt        label_WHILEEND7
     ldr        r3, [fp, #-12]
+    sub        sp, sp, #4
+    str        r3, [fp, #-24]
+    ldr        r3, =5
+    ldr        r7, [fp, #-24]
+    cmp        r7, r3
+    bgt        label_WHILEEND7
+label_WHILETRUE6:
+    ldr        r3, [fp, #-16]
+    sub        sp, sp, #4
+    str        r3, [fp, #-28]
+    ldr        r3, [fp, #-8]
+    ldr        r7, [fp, #-28]
+    add        r3, r7
+    mov        r8, r3
+    str        r8, [fp, #-16]
+    ldr        r3, [fp, #-12]
+    sub        sp, sp, #4
+    str        r3, [fp, #-32]
+    ldr        r3, =1
+    ldr        r7, [fp, #-32]
+    add        r3, r7
+    mov        r8, r3
+    str        r8, [fp, #-12]
+    ldr        r3, [fp, #-8]
+    sub        sp, sp, #4
+    str        r3, [fp, #-36]
+    ldr        r3, =1
+    ldr        r7, [fp, #-36]
+    add        r3, r7
+    mov        r8, r3
+    str        r8, [fp, #-8]
+    b          label_WHILESTART5
+label_WHILEEND7:
+    ldr        r3, [fp, #-16]
     mov        r0, r3
-    b          label_RETURN7
-label_RETURN7:
+    b          label_RETURN4
+label_RETURN4:
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
