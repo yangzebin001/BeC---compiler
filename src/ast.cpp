@@ -71,9 +71,71 @@ string get_gobal_array_element(ArrayElement* ae){
     return flat_array_eles[idx];
 }
 
-/*just support immediate number and gobal const var*/
+int cal_addexpression(Expression* exp){
+    if(exp->type == ADDEXPRESSION){
+        AddExpression* exp1 = (AddExpression*)exp;
+        if(exp1->op != NULL){
+            int l = cal_addexpression(exp1->lhs);
+            int r = cal_addexpression(exp1->rhs);
+            if(exp1->op->op == "+"){
+                return l+r;
+            }else if(exp1->op->op == "-"){
+                return l-r;
+            }
+        }else{
+            return cal_addexpression(exp1->unaryExp);
+        }
+    }else if(exp->type == MULEXPRESSION){
+        MulExpression* exp1 = (MulExpression*)exp;
+        if(exp1->op != NULL){
+            int l = cal_addexpression(exp1->lhs);
+            int r = cal_addexpression(exp1->rhs);
+            if(exp1->op->op == "*"){
+                return l*r;
+            }else if(exp1->op->op == "/"){
+                return l/r;
+            }else if(exp1->op->op == "%"){
+                return l%r;
+            }
+        }else{
+            return cal_addexpression(exp1->unaryExp);
+        }
+    }else if(exp->type == UNARYEXP){
+        UnaryExp* exp1 = (UnaryExp*)exp;
+        if(exp1->primaryExp != NULL){
+            return cal_addexpression(exp1->primaryExp);
+            
+        }else if(exp1->unaryOp != NULL){
+            int t = cal_addexpression(exp1->unaryExp);
+            if(exp1->unaryOp->op == "-"){
+                t = -t;
+            }else if(exp1->unaryOp->op == "!"){
+                t = !t;
+            }
+            return t;
+        }
+    }else if(exp->type == PRIMARYEXPRESSION){
+        PrimaryExpression* exp1 = (PrimaryExpression*)exp;
+        if(exp1->exp != NULL){
+            return cal_addexpression(exp1->exp);
+        }else if(exp1->number != ""){
+            return stoi(exp1->number);
+        }
+    }
+    return -1;
+}
+
+PrimaryExpression* check_Lval(AddExpression* top){
+    if(top->unaryExp == NULL) return NULL;
+    if(((MulExpression*)top->unaryExp)->unaryExp == NULL) return NULL;
+    return ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp;
+}
+
+/* support constant Expression and gobal const var*/
 string get_var_value(AddExpression* top){
-    PrimaryExpression* pe = ((UnaryExp*)((MulExpression*)top->unaryExp)->unaryExp)->primaryExp;
+    int ans = cal_addexpression(top);
+    PrimaryExpression* pe = check_Lval(top);
+    if(pe == NULL) return to_string(ans);
     if(pe->lval != NULL && pe->lval->type == IDENT){
         cout << "const var is : " << gobal_ctx->get_const_value(get_lval_name(pe->lval)) << endl;
         return gobal_ctx->get_const_value(get_lval_name(pe->lval));
@@ -83,10 +145,8 @@ string get_var_value(AddExpression* top){
         cout << "array ele is" << array_ele << endl;
         return array_ele;
     }
-    return pe->number;
+    return to_string(ans);
 } 
-
-
 
 
 string make_array_ele_name(string array,int index){

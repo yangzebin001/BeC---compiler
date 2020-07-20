@@ -14,32 +14,6 @@ a:
 	.word	6
 	.word	7
 	.word	8
-	.global b
-	.align	2
-	.type	b, %object
-	.size	b, 32
-b:
-	.word	1
-	.word	2
-	.word	3
-	.word	4
-	.word	5
-	.word	6
-	.word	7
-	.word	8
-	.global c
-	.align	2
-	.type	c, %object
-	.size	c, 32
-c:
-	.word	1
-	.word	2
-	.word	3
-	.word	4
-	.word	5
-	.word	6
-	.word	7
-	.word	8
 	.global cc
 	.align	2
 	.type	cc, %object
@@ -50,23 +24,11 @@ cc:
 	.word	2
 	.word	3
 	.space	39984
-	.global e
-	.align	2
-	.type	e, %object
-	.size	e, 4
-e:
-	.word	4
 	.text
 .L3:
 	.word	a
 .L4:
-	.word	b
-.L5:
-	.word	c
-.L6:
 	.word	cc
-.L7:
-	.word	e
 	.text
 	.align	2
 	.global	main
@@ -81,7 +43,7 @@ main:
     ldr        r3, =9999
     mov        r9, r3
     lsl        r9, r9, #2
-    ldr        r1, .L6
+    ldr        r1, .L4
     ldr        r3, [r1, r9]
     sub        sp, sp, #4
     str        r3, [fp, #-12]
@@ -89,10 +51,13 @@ main:
     ldr        r7, [fp, #-12]
     add        r3, r7
     str        r3, [fp, #-8]
-    ldr        r3, [fp, #-8]
+    sub        sp, sp, #4
+    ldr        r3, =2
+    str        r3, [fp, #-16]
+    ldr        r3, [fp, #-16]
     mov        r0, r3
-    b          label_RETURN9
-label_RETURN9:
+    b          label_RETURN6
+label_RETURN6:
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
