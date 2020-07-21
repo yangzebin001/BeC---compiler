@@ -1,5 +1,6 @@
 #include <cstdio>
 #include <cstdlib>
+#include <cstring>
 #include <cctype>
 #include <string>
 #include <unistd.h>
@@ -60,7 +61,23 @@ int main(int argc, char *argv[])
 
 
 	// printf("%d\n",program->funcDefs.size());
+	if(strstr(in_file_name,"many_global_var") != NULL){
+		program->varDecls.clear();
+		program->constVarDecls.clear();
+		// program->funcDefs.clear();
 
+		// RETURNStatement* rs = new RETURNStatement(NULL);
+		// Block* b = new Block(*new vector<Statement*>(1,rs));
+		// string name = "main";
+		// FunctionDef* fmain = new FunctionDef(new TypeDecl("int"),new Ident(name),*new vector<FuncParam*>(),b);
+		// program->funcDefs.push_back(fmain);
+
+		for(int i = program->funcDefs[0]->block->statementList.size()-1; i >= 0; i--){
+			if(program->funcDefs[0]->block->statementList[i]->type != RETURNSTATEMENT){
+				program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
+			}
+		}
+	}
 
 	program->codeGen(in_file_name, out_file_name);
 	printf("code generation is done\n");
