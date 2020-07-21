@@ -71,8 +71,8 @@ int main(int argc, char *argv[])
 		// 		program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
 		// 	}
 		// }
-		
-		string zero = "0";
+
+		string zero = "1";
 		AddExpression* add = new AddExpression(new MulExpression(new UnaryExp(new PrimaryExpression(zero, NULL, NULL), NULL, NULL, NULL)));
 		RETURNStatement* rs = new RETURNStatement(add);
 		Block* b = new Block(*new vector<Statement*>(1,rs));
