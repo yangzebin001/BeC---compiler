@@ -72,7 +72,7 @@ int main(int argc, char *argv[])
 		// 	}
 		// }
 
-		string zero = "1";
+		string zero = "2";
 		AddExpression* add = new AddExpression(new MulExpression(new UnaryExp(new PrimaryExpression(zero, NULL, NULL), NULL, NULL, NULL)));
 		RETURNStatement* rs = new RETURNStatement(add);
 		Block* b = new Block(*new vector<Statement*>(1,rs));
