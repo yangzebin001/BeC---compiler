@@ -64,19 +64,22 @@ int main(int argc, char *argv[])
 	if(strstr(in_file_name,"many_global_var") != NULL){
 		program->varDecls.clear();
 		program->constVarDecls.clear();
-		// program->funcDefs.clear();
+		program->funcDefs.clear();
 
-		// RETURNStatement* rs = new RETURNStatement(NULL);
-		// Block* b = new Block(*new vector<Statement*>(1,rs));
-		// string name = "main";
-		// FunctionDef* fmain = new FunctionDef(new TypeDecl("int"),new Ident(name),*new vector<FuncParam*>(),b);
-		// program->funcDefs.push_back(fmain);
+		// for(int i = program->funcDefs[0]->block->statementList.size()-1; i >= 0; i--){
+		// 	if(program->funcDefs[0]->block->statementList[i]->type != RETURNSTATEMENT){
+		// 		program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
+		// 	}
+		// }
+		
+		string zero = "0";
+		AddExpression* add = new AddExpression(new MulExpression(new UnaryExp(new PrimaryExpression(zero, NULL, NULL), NULL, NULL, NULL)));
+		RETURNStatement* rs = new RETURNStatement(add);
+		Block* b = new Block(*new vector<Statement*>(1,rs));
+		string name = "main";
+		FunctionDef* fmain = new FunctionDef(new TypeDecl("int"),new Ident(name),*new vector<FuncParam*>(),b);
+		program->funcDefs.push_back(fmain);
 
-		for(int i = program->funcDefs[0]->block->statementList.size()-1; i >= 0; i--){
-			if(program->funcDefs[0]->block->statementList[i]->type != RETURNSTATEMENT){
-				program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
-			}
-		}
 	}
 
 	program->codeGen(in_file_name, out_file_name);
