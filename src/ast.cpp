@@ -12,6 +12,8 @@ static GobalContext* gobal_ctx = new GobalContext();
 static const int WORD_SIZE_WIDTH = 2;
 
 
+extern bool is_many_global_var;
+
 string get_var_value(AddExpression* top);
 
 string get_gobal_label(int label){
@@ -118,7 +120,7 @@ int cal_addexpression(Expression* exp){
         PrimaryExpression* exp1 = (PrimaryExpression*)exp;
         if(exp1->exp != NULL){
             return cal_addexpression(exp1->exp);
-        }else if(exp1->number != ""){
+        }else if(exp1->number.size() != 0){
             if(exp1->number.size() > 1 && exp1->number[0] == '0'){
                 if(exp1->number[1] == 'x' || exp1->number[1] == 'X'){
                     return stoi(exp1->number,0,16);
@@ -127,6 +129,10 @@ int cal_addexpression(Expression* exp){
                 }
             }
             return stoi(exp1->number);
+        }else if(exp1->lval->type == IDENT){
+            return stoi(gobal_ctx->get_const_value(get_lval_name(exp1->lval)));
+        }else if(exp1->lval->type == ARRAYELEMENT){
+            return stoi(get_gobal_array_element((ArrayElement*)exp1->lval));
         }
     }
     return -1;
@@ -141,17 +147,7 @@ PrimaryExpression* check_Lval(AddExpression* top){
 /* support constant Expression and gobal const var*/
 string get_var_value(AddExpression* top){
     int ans = cal_addexpression(top);
-    PrimaryExpression* pe = check_Lval(top);
-    if(pe == NULL) return to_string(ans);
-    if(pe->lval != NULL && pe->lval->type == IDENT){
-        cout << "const var is : " << gobal_ctx->get_const_value(get_lval_name(pe->lval)) << endl;
-        return gobal_ctx->get_const_value(get_lval_name(pe->lval));
-    }
-    else if(pe->lval != NULL &&  pe->lval->type == ARRAYELEMENT){
-        string array_ele = get_gobal_array_element((ArrayElement*)pe->lval);
-        cout << "array ele is" << array_ele << endl;
-        return array_ele;
-    }
+    cout << "value is :" << ans << endl;
     return to_string(ans);
 } 
 
@@ -160,15 +156,6 @@ string make_array_ele_name(string array,int index){
     return array + "__" + to_string(index);
 }
 
-void get_array_def_number(InitVal* initVal, vector<int> &array_layer, int cur_layer){
-    int cur_number = initVal->initValList.size();
-    if(array_layer[cur_layer] == 0){
-        array_layer[cur_layer] = cur_number > array_layer[cur_layer] ? cur_number : array_layer[cur_layer];
-    }
-    for(int i = 0; i < cur_number; i++){
-        get_array_def_number(initVal->initValList[i], array_layer, cur_layer+1);
-    }
-}
 
 
 int get_array_element_number(ArrayDecl* nowarray){
@@ -188,11 +175,6 @@ int get_array_element_number(ArrayDecl* nowarray){
     }
     // because array decl is back to front
     reverse(array_layer.begin(),array_layer.end());
-
-    // //def
-    if(nowarray->initVal != NULL){
-        get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
-    }
 
     for(int i = 0; i < array_layer.size(); i++){
         number = number * array_layer[i];
@@ -218,11 +200,6 @@ int get_array_element_number_vec(ArrayDecl* nowarray, vector<int> &array_layer){
     }
     // because array decl is back to front
     reverse(array_layer.begin(),array_layer.end());
-
-    // //def
-    if(nowarray->initVal != NULL){
-        get_array_def_number((InitVal*)nowarray->initVal,array_layer,0);
-    }
     
     for(int i = 0; i < array_layer.size(); i++){
         number = number * array_layer[i];
@@ -280,6 +257,7 @@ void flat_array_elements(InitVal* initVal, vector<int> &ans, vector<int> &array_
     if(initVal->exp != NULL){
         int cur_idx = cal_array_flat_index(array_layers, cur_indexs);
         string cur_ele_number = get_var_value((AddExpression*)initVal->exp);
+        cout << "flat is : " << cur_ele_number << endl;
         ans[cur_idx] = stoi(cur_ele_number);
     }
 
@@ -419,6 +397,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
             if(varDecls[i]->VarDefList[j]->type == DIRECTDECL){
                 DirectDecl* now_varDecls = (DirectDecl*)varDecls[i]->VarDefList[j];
                 
+                cout << "number is :" << i << endl;
                 // now just support immediate number
                 if(now_varDecls->exp != NULL){
                     emit_gobal_var_def(now_varDecls->ident->id.c_str(), get_var_value((AddExpression*)now_varDecls->exp).c_str());
@@ -462,11 +441,12 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
                     if(ele_number - flat_array_eles.size() != 0){
                         emit_space((ele_number- flat_array_eles.size())*WORD_SIZE);
                     }
+
                     // vector<int> ans(ele_number);
                     // vector<int> cur_indexs(array_layers.size());
                     // flat_array_elements(now_arrDecls->initVal, ans, array_layers, cur_indexs, 0);
                     
-                    // // for(int i = 0; i < array_layers.size(); i++){
+                    // // for(int i = 0; i < ans.size(); i++){
                     // //     cout << ans[i] << endl;
                     // // }
                     
@@ -486,16 +466,19 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         }
     }
 
+    if(!is_many_global_var){
 
-    //gen var and array lable
-    emit_text();
-    string tmp = "";
-	int label_idx = 1;
-	gobal_ctx->init_label_for();
-	while(gobal_ctx->get_next_label(tmp,label_idx)){
-        if(tmp.find("label_") != 0)
-		    emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
-	}
+        //gen var and array lable
+        emit_text();
+        string tmp = "";
+        int label_idx = 1;
+        gobal_ctx->init_label_for();
+        while(gobal_ctx->get_next_label(tmp,label_idx)){
+            if(tmp.find("label_") != 0)
+                emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+        }
+    }
+
 
     // gen function
     for(int i = 0; i < funcDefs.size(); i++){
@@ -509,6 +492,20 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         delete funcxt;
     }
 
+    if(is_many_global_var){
+        //gen var and array lable
+        emit_text();
+        string tmp = "";
+        int label_idx = 1;
+        gobal_ctx->init_label_for();
+        while(gobal_ctx->get_next_label(tmp,label_idx)){
+            cout << tmp <<":" << gobal_ctx->is_used_var.count(tmp) << endl;
+            if(tmp.find("label_") != 0 && gobal_ctx->is_used_var.count(tmp)){
+                emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+
+            }
+        }
+    }
 
 }
 
@@ -1049,6 +1046,8 @@ void Ident::codeGen(Context &ctx){
 
     ctx.cur_var_name = id;
 
+    gobal_ctx->is_used_var.insert(id);
+
     int offset = ctx.get_offset(id);
     //local var
     if(offset != 0){
@@ -1107,6 +1106,7 @@ void ArrayElement::codeGen(Context &ctx){
     printf("gen arrayElement\n");
 
 
+
     if(ctx.cur_type != CLVAL && ctx.cur_type != CARRAY_ELE) return;
 
     bool cur_var_disload = ctx.cur_var_disload;
@@ -1115,6 +1115,7 @@ void ArrayElement::codeGen(Context &ctx){
     string array_name = get_array_name(this);
     cout << "assign array name is " << array_name << endl;
 
+    gobal_ctx->is_used_var.insert(array_name);
 
     if(array->type == IDENT){
         

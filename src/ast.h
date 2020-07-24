@@ -509,8 +509,8 @@ class PrimaryExpression: public Expression {
 public:
 	string number;
 	Lval *lval;
-	Expression *exp;
-	PrimaryExpression(string &number, Lval *lval, Expression *exp){
+	AddExpression *exp;
+	PrimaryExpression(string &number, Lval *lval, AddExpression *exp){
 		this->number = number;
 		this->lval = lval;
 		this->exp = exp;

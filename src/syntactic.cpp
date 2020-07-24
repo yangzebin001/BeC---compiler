@@ -1776,7 +1776,7 @@ yyreduce:
 
   case 64:
 #line 240 "syntactic.y" /* yacc.c:1646  */
-    {(yyval.primaryExp) = new PrimaryExpression(*new string(), NULL, (yyvsp[-1].exp));}
+    {(yyval.primaryExp) = new PrimaryExpression(*new string(), NULL, (AddExpression*)(yyvsp[-1].exp));}
 #line 1781 "syntactic.cpp" /* yacc.c:1646  */
     break;
 

@@ -237,7 +237,7 @@ Cond: LOrExp {$$ = $1;}
 
 PrimaryExp: Number {$$ = new PrimaryExpression(*$1, NULL, NULL);}
 	| Lval {$$ = new PrimaryExpression(*new string(), $1, NULL);}
-	| '(' Exp ')' {$$ = new PrimaryExpression(*new string(), NULL, $2);}
+	| '(' Exp ')' {$$ = new PrimaryExpression(*new string(), NULL, (AddExpression*)$2);}
 	;
 
 Number: IntConst {$$ = $1;}

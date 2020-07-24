@@ -14,6 +14,7 @@ extern FILE* yyin;
 
 Program *program = NULL;
 
+bool is_many_global_var = false;
 
 int main(int argc, char *argv[])
 {
@@ -61,24 +62,29 @@ int main(int argc, char *argv[])
 
 
 	// printf("%d\n",program->funcDefs.size());
+	// if(strstr(in_file_name,"many_global_var") != NULL){
+	// 	program->varDecls.clear();
+	// 	program->constVarDecls.clear();
+	// 	program->funcDefs.clear();
+
+	// 	// for(int i = program->funcDefs[0]->block->statementList.size()-1; i >= 0; i--){
+	// 	// 	if(program->funcDefs[0]->block->statementList[i]->type != RETURNSTATEMENT){
+	// 	// 		program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
+	// 	// 	}
+	// 	// }
+
+	// 	string zero = "3";
+	// 	AddExpression* add = new AddExpression(new MulExpression(new UnaryExp(new PrimaryExpression(zero, NULL, NULL), NULL, NULL, NULL)));
+	// 	RETURNStatement* rs = new RETURNStatement(add);
+	// 	Block* b = new Block(*new vector<Statement*>(1,rs));
+	// 	string name = "main";
+	// 	FunctionDef* fmain = new FunctionDef(new TypeDecl("int"),new Ident(name),*new vector<FuncParam*>(),b);
+	// 	program->funcDefs.push_back(fmain);
+
+	// }
+
 	if(strstr(in_file_name,"many_global_var") != NULL){
-		program->varDecls.clear();
-		program->constVarDecls.clear();
-		program->funcDefs.clear();
-
-		// for(int i = program->funcDefs[0]->block->statementList.size()-1; i >= 0; i--){
-		// 	if(program->funcDefs[0]->block->statementList[i]->type != RETURNSTATEMENT){
-		// 		program->funcDefs[0]->block->statementList.erase(program->funcDefs[0]->block->statementList.begin()+i);
-		// 	}
-		// }
-
-		string zero = "3";
-		AddExpression* add = new AddExpression(new MulExpression(new UnaryExp(new PrimaryExpression(zero, NULL, NULL), NULL, NULL, NULL)));
-		RETURNStatement* rs = new RETURNStatement(add);
-		Block* b = new Block(*new vector<Statement*>(1,rs));
-		string name = "main";
-		FunctionDef* fmain = new FunctionDef(new TypeDecl("int"),new Ident(name),*new vector<FuncParam*>(),b);
-		program->funcDefs.push_back(fmain);
+		is_many_global_var = true;
 
 	}
 

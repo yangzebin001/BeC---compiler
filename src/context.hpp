@@ -294,6 +294,7 @@ public:
     vector<pair<string, int>> while_false_labels;
     vector<pair<string, int>> while_true_labels;
     map<string, vector<string> > array_initvals;
+    set<string> is_used_var;
 
     GobalContext(){
         const_value.clear();
