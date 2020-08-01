@@ -31,7 +31,7 @@ printf                      return PRINTF;
 "return"                    return RETURN;
 "break"                     return BREAK;
 "continue"                  return CONTINUE;
-("0x"|"0X")[0-9A-F]*        SAVE_TOKEN;return HEXNUM;
+("0x"|"0X")[0-9A-Fa-f]*        SAVE_TOKEN;return HEXNUM;
 0[0-8]*                     SAVE_TOKEN;return OCTNUM;
 [1-9][0-9]*                 SAVE_TOKEN;return DECNUM;
 {alpha}({alpha}|{digit})*   SAVE_TOKEN;return ID;

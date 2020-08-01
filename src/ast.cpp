@@ -123,9 +123,13 @@ int cal_addexpression(Expression* exp){
         }else if(exp1->number.size() != 0){
             if(exp1->number.size() > 1 && exp1->number[0] == '0'){
                 if(exp1->number[1] == 'x' || exp1->number[1] == 'X'){
-                    return stoi(exp1->number,0,16);
+                    int temp;
+                    sscanf(exp1->number.c_str(),"%X",&temp);
+                    return temp;
                 }else{
-                    return stoi(exp1->number,0,8);
+                    int temp;
+                    sscanf(exp1->number.c_str(),"%o",&temp);
+                    return temp;
                 }
             }
             return stoi(exp1->number);

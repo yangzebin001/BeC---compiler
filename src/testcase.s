@@ -6,14 +6,46 @@
 	.type	arr, %object
 	.size	arr, 24
 arr:
-	.word	1
+	.word	7
 	.word	2
 	.word	3
 	.word	5
 	.space	8
+	.global c
+	.align	2
+	.type	c, %object
+	.size	c, 4
+c:
+	.word	291
+	.global d
+	.align	2
+	.type	d, %object
+	.size	d, 4
+d:
+	.word	291
+	.global e
+	.align	2
+	.type	e, %object
+	.size	e, 4
+e:
+	.word	83
+	.global f
+	.align	2
+	.type	f, %object
+	.size	f, 4
+f:
+	.word	2147483647
 	.text
 .L3:
 	.word	arr
+.L4:
+	.word	c
+.L5:
+	.word	d
+.L6:
+	.word	e
+.L7:
+	.word	f
 	.text
 	.align	2
 	.global	main
@@ -33,16 +65,17 @@ main:
     ldr        r3, =1
     ldr        r7, [fp, #-12]
     cmp        r7, r3
-    bne        label_IFEND6
-label_IFTRUE7:
+    bne        label_IFEND10
+label_IFTRUE11:
     ldr        r3, =20
     mov        r0, r3
-    b          label_RETURN5
-label_IFEND6:
-    ldr        r3, =0
+    b          label_RETURN9
+label_IFEND10:
+    ldr        r2, .L7
+    ldr        r3, [r2]
     mov        r0, r3
-    b          label_RETURN5
-label_RETURN5:
+    b          label_RETURN9
+label_RETURN9:
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
