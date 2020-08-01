@@ -34,16 +34,26 @@ e:
 	.type	f, %object
 	.size	f, 4
 f:
-	.word	2147483647
+	.word	16
 	.text
+.L3a:
+	.align	2
 .L3:
 	.word	arr
+.L4a:
+	.align	2
 .L4:
 	.word	c
+.L5a:
+	.align	2
 .L5:
 	.word	d
+.L6a:
+	.align	2
 .L6:
 	.word	e
+.L7a:
+	.align	2
 .L7:
 	.word	f
 	.text
@@ -65,7 +75,7 @@ main:
     ldr        r3, =1
     ldr        r7, [fp, #-12]
     cmp        r7, r3
-    bne        label_IFEND10
+    beq        label_IFEND10
 label_IFTRUE11:
     ldr        r3, =20
     mov        r0, r3
