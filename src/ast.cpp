@@ -1049,9 +1049,15 @@ void Ident::codeGen(Context &ctx){
     gobal_ctx->is_used_var.insert(id);
 
     int offset = ctx.get_offset(id);
+    
+
     //local var
     if(offset != 0){
-        if(ctx.cur_var_disload == false){
+        //local const var
+        string local_offset = ctx.get_const_value(id);
+        if(to_string(offset) == local_offset){
+            emit_instr_format("ldr", "r3, =%d", offset);
+        }else if(ctx.cur_var_disload == false){
             //local array
             if(ctx.get_def_array(id)){
                 if(abs(offset) > 255){
@@ -1069,34 +1075,30 @@ void Ident::codeGen(Context &ctx){
         }
         ctx.cur_type = CLOCAL_VAR;
     }else{
-        string const_val = ctx.get_const_value(id);
-        //local const var
-        if(const_val != ""){
-            emit_instr_format("ldr", "r3, =%s", const_val.c_str());
-        }else{
+        
         //gobal var
-            int label = gobal_ctx->get_label(id);
-            if(label != -1){
-                emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
-                if(ctx.cur_var_disload == false){
-                    if(gobal_ctx->get_def_gobal_array(id)){
-                        emit_instr_format("mov", "r3, r2");
-                    }else{
-                        emit_instr_format("ldr", "r3, [r2]");
-                    }
-                }
-                ctx.cur_type = CGOBAL_VAR;
-            }else{
-        //gobal const var
-                string gobal_const_var = gobal_ctx->get_const_value(id);
-                if(gobal_const_var != ""){
-                    emit_instr_format("ldr","r3, =%s",gobal_const_var.c_str());
-                }else {
-                    fprintf(stderr,"cannot find : %s not def\n", id.c_str());
-                    exit(-1);
+        int label = gobal_ctx->get_label(id);
+        if(label != -1){
+            emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
+            if(ctx.cur_var_disload == false){
+                if(gobal_ctx->get_def_gobal_array(id)){
+                    emit_instr_format("mov", "r3, r2");
+                }else{
+                    emit_instr_format("ldr", "r3, [r2]");
                 }
             }
+            ctx.cur_type = CGOBAL_VAR;
+        }else{
+            //gobal const var
+            string gobal_const_var = gobal_ctx->get_const_value(id);
+            if(gobal_const_var != ""){
+                emit_instr_format("ldr","r3, =%s",gobal_const_var.c_str());
+            }else {
+                fprintf(stderr,"cannot find : %s not def\n", id.c_str());
+                exit(-1);
+            }
         }
+        
     }
 }
 

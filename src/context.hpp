@@ -144,6 +144,7 @@ public:
     bool cur_var_disload;
     int cur_return_label;
 
+
     Context(){
         cur_offset = -8;
         label_count = 3;
@@ -161,6 +162,10 @@ public:
             int ll = now->get_offset(var);
 			if(ll != 0){
                 return ll;
+            }
+            string lt = now->get_const_value(var);
+			if(lt != ""){
+                return stoi(lt);
             }
             now = now->father;
         }
