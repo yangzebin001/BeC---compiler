@@ -1083,13 +1083,6 @@ void Ident::codeGen(Context &ctx){
         //gobal var
         int label = gobal_ctx->get_label(id);
         if(label != -1){
-            // if(is_many_global_var){
-            //     if(!gobal_ctx->is_used_label.count(label)){
-            //         emit_gobal_var_lable(get_gobal_label(label).c_str(), id.c_str());
-            //         gobal_ctx->is_used_label.insert(label);
-            //     }
-
-            // }
             emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
             if(ctx.cur_var_disload == false){
                 if(gobal_ctx->get_def_gobal_array(id)){
@@ -1376,6 +1369,7 @@ void WHILEStatement::codeGen(Context &ctx){
 
     (gobal_ctx->while_start_labels).pop_back();
     (gobal_ctx->while_false_labels).pop_back();
+    (gobal_ctx->while_true_labels).pop_back();
 }
 
 
