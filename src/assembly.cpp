@@ -69,11 +69,6 @@ void emit_label(const char* name){
 }
 
 void emit_gobal_var_lable(const char* name, const char* val){
-    char b[100];
-	strcpy(b,name);
-	strcat(b,"a");
-    emit_label(b);
-    fprintf(outfile, "	.align	2\n");
     emit_label(name);
     fprintf(outfile,"	.word	%s\n", val);
 }

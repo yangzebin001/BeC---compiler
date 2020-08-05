@@ -1,16 +1,4 @@
-
-
-int arr[3*2-3][8/4]={1+3*2,2,{3},5};
-const int a = 20;
-int c = 0x123;
-int d = 0X123;
-int e = 0123;
-int f = 0x10;
+int arr[100] = {};
 int main(){
-    
-    int b = 1;
-    if(b != 1){
-        return a;
-    }
-    return f;
+    return arr[4];
 }
