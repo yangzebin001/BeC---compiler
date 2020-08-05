@@ -470,18 +470,18 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         }
     }
 
-    if(!is_many_global_var){
+    // if(!is_many_global_var){
 
         //gen var and array lable
-        emit_text();
-        string tmp = "";
-        int label_idx = 1;
-        gobal_ctx->init_label_for();
-        while(gobal_ctx->get_next_label(tmp,label_idx)){
-            if(tmp.find("label_") != 0)
-                emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
-        }
-    }
+    //     emit_text();
+    //     string tmp = "";
+    //     int label_idx = 1;
+    //     gobal_ctx->init_label_for();
+    //     while(gobal_ctx->get_next_label(tmp,label_idx)){
+    //         if(tmp.find("label_") != 0)
+    //             emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+    //     }
+    // }
 
 
     // gen function
@@ -496,20 +496,20 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         delete funcxt;
     }
 
-    if(is_many_global_var){
+    // if(is_many_global_var){
         //gen var and array lable
-        // emit_text();
-        // string tmp = "";
-        // int label_idx = 1;
-        // gobal_ctx->init_label_for();
-        // while(gobal_ctx->get_next_label(tmp,label_idx)){
-        //     cout << tmp <<":" << gobal_ctx->is_used_var.count(tmp) << endl;
-        //     if(tmp.find("label_") != 0 && gobal_ctx->is_used_var.count(tmp)){
-        //         emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+        emit_text();
+        string tmp = "";
+        int label_idx = 1;
+        gobal_ctx->init_label_for();
+        while(gobal_ctx->get_next_label(tmp,label_idx)){
+            cout << tmp <<":" << gobal_ctx->is_used_var.count(tmp) << endl;
+            if(tmp.find("label_") != 0){
+                emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
 
-        //     }
-        // }
-    }
+            }
+        }
+    // }
 
 }
 
