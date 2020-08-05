@@ -3,6 +3,11 @@
 	.data
 	.comm	n,4,4
 	.text
+.L3a:
+	.align	2
+.L3:
+	.word	n
+	.text
 	.align	2
 	.global	bubblesort
 	.arch armv7-a
@@ -1790,8 +1795,3 @@ label_RETURN78:
     sub        sp, fp, #4
     pop        {fp, pc}
 	.size	main, .-main
-	.text
-.L3a:
-	.align	2
-.L3:
-	.word	n

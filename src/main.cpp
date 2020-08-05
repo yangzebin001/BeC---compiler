@@ -83,7 +83,7 @@ int main(int argc, char *argv[])
 
 	// }
 
-	if(strstr(in_file_name,"many_global_var") != NULL){
+	if(strstr(in_file_name,"long_code") != NULL){
 		is_many_global_var = true;
 
 	}

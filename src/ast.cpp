@@ -470,18 +470,18 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         }
     }
 
-    // if(!is_many_global_var){
+    if(is_many_global_var){
 
-        //gen var and array lable
-    //     emit_text();
-    //     string tmp = "";
-    //     int label_idx = 1;
-    //     gobal_ctx->init_label_for();
-    //     while(gobal_ctx->get_next_label(tmp,label_idx)){
-    //         if(tmp.find("label_") != 0)
-    //             emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
-    //     }
-    // }
+        // gen var and array lable
+        emit_text();
+        string tmp = "";
+        int label_idx = 1;
+        gobal_ctx->init_label_for();
+        while(gobal_ctx->get_next_label(tmp,label_idx)){
+            if(tmp.find("label_") != 0)
+                emit_gobal_var_lable(get_gobal_label(label_idx).c_str(), tmp.c_str());
+        }
+    }
 
 
     // gen function
@@ -496,7 +496,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
         delete funcxt;
     }
 
-    // if(is_many_global_var){
+    if(!is_many_global_var){
         //gen var and array lable
         emit_text();
         string tmp = "";
@@ -509,7 +509,7 @@ void Program::codeGen(const char* in_file_name, const char* out_file_name){
 
             }
         }
-    // }
+    }
 
 }
 
@@ -1083,13 +1083,13 @@ void Ident::codeGen(Context &ctx){
         //gobal var
         int label = gobal_ctx->get_label(id);
         if(label != -1){
-            if(is_many_global_var){
-                if(!gobal_ctx->is_used_label.count(label)){
-                    emit_gobal_var_lable(get_gobal_label(label).c_str(), id.c_str());
-                    gobal_ctx->is_used_label.insert(label);
-                }
+            // if(is_many_global_var){
+            //     if(!gobal_ctx->is_used_label.count(label)){
+            //         emit_gobal_var_lable(get_gobal_label(label).c_str(), id.c_str());
+            //         gobal_ctx->is_used_label.insert(label);
+            //     }
 
-            }
+            // }
             emit_instr_format("ldr", "r2, %s", get_gobal_label(label).c_str());
             if(ctx.cur_var_disload == false){
                 if(gobal_ctx->get_def_gobal_array(id)){
