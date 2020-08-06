@@ -733,7 +733,14 @@ void FunctionCall::codeGen(Context &ctx){
 
     for(int i = 0; i < ParamList.size() && i < 4; i++){
         ParamList[i]->codeGen(ctx);
-        emit_instr_format("mov", "r%d, r3",i);  
+        if(i == 2){
+            emit_instr_format("mov", "r7, r3");
+        }else{
+            emit_instr_format("mov", "r%d, r3",i);  
+        }
+    }
+    if(ParamList.size() >= 2){
+        emit_instr_format("mov", "r2, r7");
     }
     emit_instr_format("bl","%s",id->id.c_str());
     emit_instr_format("mov", "r3, r0");
