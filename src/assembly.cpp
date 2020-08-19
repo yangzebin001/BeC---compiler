@@ -1,12 +1,10 @@
-#include <cstdio>
-#include <cstdarg>
-#include <cstring>
-#include <cstdlib>
-#include "assembly.hpp"
+#include "assembly.h"
 
 
 static const int WORD_SIZE = 4;
 const int MAX_MNEMONIC_LENGTH = 7;
+
+
 static FILE* outfile;
 
 void emit_header(const char* name){
@@ -30,12 +28,8 @@ void emit_space(int number){
 }
 
 void emit_instr(char *instr, char *operands) {
-    // TODO: fix duplication with emit_instr_format.
-    // The assembler requires at least 4 spaces for indentation.
     fprintf(outfile, "    %s", instr);
 
-    // Ensure our argument are aligned, regardless of the assembly
-    // mnemonic length.
     int argument_offset = MAX_MNEMONIC_LENGTH - strlen(instr) + 4;
     while (argument_offset > 0) {
         fprintf(outfile, " ");
@@ -68,7 +62,7 @@ void emit_label(const char* name){
     fprintf(outfile,"%s:\n",name);
 }
 
-void emit_gobal_var_lable(const char* name, const char* val){
+void emit_global_var_lable(const char* name, const char* val){
     emit_label(name);
     fprintf(outfile,"	.word	%s\n", val);
 }
@@ -107,7 +101,7 @@ void emit_function_epilogue2(const char* name) {
     fprintf(outfile, "	.size	%s, .-%s\n", name, name);
 }
 
-void emit_part_gobal_var_def(const char* name, int ele_size){
+void emit_part_global_var_def(const char* name, int ele_size){
     fprintf(outfile, "	.global %s\n", name);
     fprintf(outfile, "	.align	2\n");
     fprintf(outfile, "	.type	%s, %%object\n", name);
@@ -115,13 +109,13 @@ void emit_part_gobal_var_def(const char* name, int ele_size){
     fprintf(outfile, "%s:\n",name);
 }
 
-void emit_gobal_var_def(const char* name, const char* data){
-    emit_part_gobal_var_def(name, 4);
+void emit_global_var_def(const char* name, const char* data){
+    emit_part_global_var_def(name, 4);
     emit_word(data);
 }
 
 
-void emit_gobal_var_decl(const char*name, int ele_size){
+void emit_global_var_decl(const char*name, int ele_size){
     fprintf(outfile, "	.comm	%s,%d,%d\n", name, ele_size,WORD_SIZE);
 }
 

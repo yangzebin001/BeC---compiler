@@ -1,6 +1,6 @@
 all: compiler
 
-OBJS = syntactic.o main.o lexical.o ast.o assembly.o
+OBJS = syntactic.o main.o lexical.o ast.o assembly.o ast_helper.o
 
 CPPFLAGS = -std=c++11
 
@@ -21,6 +21,6 @@ compiler: $(OBJS)
 clean:
 	$(RM) -rf syntactic.cpp syntactic.hpp lexical.cpp $(OBJS) compiler log.txt
 
-test: compiler ../testcase/test.sy
+test: compiler
 	./compiler ../testcase/test.sy
 

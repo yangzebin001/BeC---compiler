@@ -1,13 +1,43 @@
-# compiler
+# BeC-- compiler
 
-### website
-http://compiler.educg.net/
+BeC-- is a small compiler for the C programming language(`subset`), compile code and run on Raspbery4B/ARMv7 32bits assembly code. It's intended to support most C11 language features while keeping the code as small and simple as possible.
 
-### SysY definition
-https://gitlab.eduxiji.net/nscscc/docs/-/blob/master/SysY%E8%AF%AD%E8%A8%80%E5%AE%9A%E4%B9%89.pdf
 
-### sysyruntime
-https://gitlab.eduxiji.net/windcome/sysyruntimelibrary
+### Environment
+```bash
+flex 2.6.0
+bison 3.0.4
+clang 3.8.0
+```
+
+
+## Current feature set
+
+* positive integers (no other types yet)
+* local variables
+* array support
+* integer or array constants
+* variable assignment
+* arithmetic expressions (`foo + bar` `foo - bar` `foo * bar` `foo / bar`)
+* rel expressions (`foo == bar`, `foo != bar`, `foo < bar`, `foo <= bar`, `foo > bar`, `foo >= bar`)
+* negative expression (`-FOO`, `foo && bar`, `foo || bar`)
+* logical expresions (`!FOO` )
+* Comments (`// foo` and `/* foo */`)
+* sequences of statements (`foo; bar`)
+* if statements (`if (foo) { bar }` and `else if {} else {}`)
+* while loops (`while (foo) { bar }`)
+* return statement
+* break statement
+* continue statement
+* function definitions and calls
+* multilevel block
+
+
+### Front end
+use flex for lexical analysis and bison to build AST(abstract syntax tree).
+
+### Back end
+BeC-- generates code from AST directly. The algorithm is 1-TOSCA (top of stack caching). It is far from generating efficient code, but at least it works and generates code efficently.
 
 ### build
 ```
@@ -16,29 +46,21 @@ make
 ```
 
 ### test
-```
+```bash
+
+cd src
+
+// test all
 sh testall.sh ../testcase/functional_test
 
-./compiler  -S -o testcase.s ../testcase/functional_test/00_main.sy
+// test one
+./compiler -S -o testcase.s ../testcase/functional_test/00_main.sy
 ```
 
 ### clean
-```
+```bash
 make clean
 ```
-
-### Todo
-
-- many gobal const var
-- while and or
-
-
-- merge sub stack instr
-- reduce str and ldr instr
-- delete funcation call after instr
-- b return_label
-- replace array index calculate instr
-- eliminate temp instr
 
 
 ### Reference

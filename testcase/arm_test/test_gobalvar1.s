@@ -1,5 +1,5 @@
 	.arch armv7-a
-	.file	"test_gobalvar1.c"
+	.file	"test_globalvar1.c"
 	.text
 	.global	a
 	.data

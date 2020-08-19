@@ -1,3 +1,7 @@
+#ifndef CONTEXT_H
+#define CONTEXT_H
+
+
 #include<map>
 #include<cstdio>
 #include<string>
@@ -9,9 +13,9 @@ using namespace std;
 const int WORD_SIZE = 4;
 
 typedef enum{
-    CGOBAL_VAR,
-    CGOBAL_CONST_VAR,
-    CGOBAL_ARRAY,
+    CGLOBAL_VAR,
+    CGLOBAL_CONST_VAR,
+    CGLOBAL_ARRAY,
     CARRAY,
     CLOCAL_VAR,
     CLOCAL_CONST_VAR,
@@ -281,14 +285,14 @@ public:
 
 
 
-class GobalContext{
+class GlobalContext{
 
 private: 
     map<string, string> const_value;
     map<string, int> var_label;
     map<string,vector<int> > array_layers;
     map<string, int>::iterator it;
-    set<string> is_def_gobal_array;
+    set<string> is_def_global_array;
     int label_count;
 
 public:
@@ -299,9 +303,8 @@ public:
     vector<pair<string, int>> while_false_labels;
     vector<pair<string, int>> while_true_labels;
     map<string, vector<string> > array_initvals;
-    set<string> is_used_var;
 
-    GobalContext(){
+    GlobalContext(){
         const_value.clear();
         this->label_count = 3;
         if_false_labels.clear();
@@ -374,20 +377,23 @@ public:
         return true;
 	}
 
-    bool set_def_gobal_array(string name){
-        if(is_def_gobal_array.count(name)) return false;
-        is_def_gobal_array.insert(name);
+    bool set_def_global_array(string name){
+        if(is_def_global_array.count(name)) return false;
+        is_def_global_array.insert(name);
         return true;
     }
 
-    bool get_def_gobal_array(string name){
-        if(!is_def_gobal_array.count(name)) return false;
+    bool get_def_global_array(string name){
+        if(!is_def_global_array.count(name)) return false;
         return true;
     }
 
-    ~GobalContext(){
+    ~GlobalContext(){
     	const_value.clear();
         var_label.clear();
 	}
 
 };
+
+
+#endif

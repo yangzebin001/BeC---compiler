@@ -1,9 +1,16 @@
+#ifndef AST_H
+#define AST_H
+
 #include <iostream>
 #include <string>
 #include <vector>
 #include <map>
 #include <cstdio>
-#include "context.hpp"
+#include <cmath>
+#include <algorithm>
+#include <map>
+#include "context.h"
+#include "assembly.h"
 
 using namespace std;
 
@@ -50,6 +57,11 @@ typedef enum {
 } node_t;
 
 
+static GlobalContext* global_ctx = new GlobalContext();
+
+static const int WORD_SIZE_WIDTH = 2;
+
+
 class Node;
 class Program;
 class Statement;
@@ -88,8 +100,6 @@ class WHILEStatement;
 class RETURNStatement;
 class BREAKStatement;
 class CONTINUEStatement;
-
-
 
 
 
@@ -326,10 +336,6 @@ public:
 	}
 	virtual void codeGen(Context &ctx);
 };
-
-
-
-
 
 
 class Assignment: public Statement {
@@ -587,3 +593,5 @@ public:
 	}
 	virtual void codeGen(Context &ctx);
 };
+
+#endif

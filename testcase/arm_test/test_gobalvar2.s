@@ -9,7 +9,7 @@
 	.eabi_attribute 30, 6
 	.eabi_attribute 34, 1
 	.eabi_attribute 18, 4
-	.file	"test_gobalvar2.c"
+	.file	"test_globalvar2.c"
 	.text
 
 	.global	a

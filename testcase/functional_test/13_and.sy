@@ -1,11 +1,9 @@
 int a;
 int b;
-int c;
 int main(){
 	a = getint();
 	b = getint();
-	c = 1;
-	if ( a) {
+	if ( a && b ) {
 		return 1;
 	}
 	else {
