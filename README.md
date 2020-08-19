@@ -1,6 +1,6 @@
 # BeC-- compiler
 
-BeC-- is a small compiler for the C programming language(`subset`), compile code and run on Raspbery4B/ARMv7 32bits assembly code. It's intended to support most C11 language features while keeping the code as small and simple as possible.
+BeC-- is a small compiler for the C programming language(`subset`), compile  assembly code and run on Raspbery4B/ARMv7 32bits. It's intended to support most C11 language features while keeping the code as small and simple as possible.
 
 
 ### Environment
@@ -20,11 +20,11 @@ clang 3.8.0
 * variable assignment
 * arithmetic expressions (`foo + bar` `foo - bar` `foo * bar` `foo / bar`)
 * rel expressions (`foo == bar`, `foo != bar`, `foo < bar`, `foo <= bar`, `foo > bar`, `foo >= bar`)
-* negative expression (`-FOO`, `foo && bar`, `foo || bar`)
-* logical expresions (`!FOO` )
+* logical expression (`foo && bar`, `foo || bar`)
+* unary op expresions (`+FOO`, `-FOO`, `!FOO`)
 * Comments (`// foo` and `/* foo */`)
 * sequences of statements (`foo; bar`)
-* if statements (`if (foo) { bar }` and `else if {} else {}`)
+* if statements (`if (foo) { bar }` and `else if (foo) {bar} else {bar}`)
 * while loops (`while (foo) { bar }`)
 * return statement
 * break statement
